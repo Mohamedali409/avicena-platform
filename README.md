@@ -225,7 +225,7 @@ Avicena is designed as a real-world SaaS healthcare platform simulating producti
 
 ## 👨‍💻 Author
 
-Mohamed Ali  
+ENG Mohamed Ali  
 Full-Stack Developer  
 Project Type: SaaS Healthcare Platform  
 Purpose: Portfolio / Graduation Project / Startup Simulation
