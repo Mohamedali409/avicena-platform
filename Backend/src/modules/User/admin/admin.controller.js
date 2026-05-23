@@ -5,4 +5,6 @@ const createDoctor = (doctorData) => {
   return Doctor.create(doctorData);
 };
 
+// get all appointment 
+
 export {};
