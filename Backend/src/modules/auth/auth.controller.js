@@ -13,4 +13,25 @@ const login = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Login success", data);
 });
 
-export { register, login };
+// admin login
+
+const adminLogin = catchAsync(async (req, res) => {
+  const data = await authService.loginAdmin(req.body);
+  messageResponse.successResponse(res, "Admin Login Successfully", data);
+});
+
+// doctor login
+
+const doctorLogin = catchAsync(async (req, res) => {
+  const data = await authService.loginDoctor(req.body);
+  messageResponse.successResponse(res, "Doctor Login Successfully", data);
+});
+
+// lab login
+
+const labLogin = catchAsync(async (req, res) => {
+  const data = await authService.loginLab(req.body);
+  messageResponse.successResponse(res, "Lab Login Successfully", data);
+});
+
+export { register, login, adminLogin, doctorLogin, labLogin };

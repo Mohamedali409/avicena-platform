@@ -9,13 +9,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const FROM = `سلامتك <${process.env.EMAIL_USER}>`;
+const FROM = `Avicena <${process.env.EMAIL_USER}>`;
 
 export const sendWelcomeEmail = async (toEmail, name) => {
   await transporter.sendMail({
     from: FROM,
     to: toEmail,
-    subject: "مرحباً بك في سلامتك 🎉",
+    subject: "مرحباً بك في  Avicena 🎉",
     html: `
       <div style="font-family:Arial,sans-serif;padding:20px;color:#333">
         <h2 style="color:#2c7be5">أهلاً ${name} 👋</h2>

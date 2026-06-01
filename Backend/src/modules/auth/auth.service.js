@@ -10,6 +10,10 @@ import validator from "validator";
 import * as authRepository from "./auth.repository.js";
 import { sendWelcomeEmail } from "../../infrastructure/mail/mail.service.js";
 import { signToken } from "../../shared/utils/jwt.utlis.js";
+import * as doctorRepository from "../doctors/doctor.repository.js";
+import * as labRepository from "../labs/labs.repository.js";
+import * as userRepository from "../User/user.repository.js";
+
 // import User from "../User/user.model.js";
 // // auth.service.js
 // const modelMap = {
@@ -86,4 +90,82 @@ const loginPatient = async ({ email, password }) => {
     },
   };
 };
-export { registerPatient, loginPatient };
+
+// ── Google OAuth
+// TODO
+
+// ── Doctor login
+const loginDoctor = async ({ email, password }) => {
+  if (!email || !password) {
+    throw new ApiError("all filed is required", 400);
+  }
+  const doctor = await doctorRepository.findDoctorByEmail(email);
+  if (!doctor)
+    throw new ApiError(
+      "Sorry Email or Password if filed please try again later",
+      401,
+    );
+
+  if (!doctor.isActive) throw new ApiError("This Account is blocked", 403);
+
+  const match = await comparePassword(password, doctor.password);
+  if (!match) throw new ApiError("This Account is blocked", 403);
+
+  const token = await signToken({ id: doctor._id, role: "doctor" });
+  return {
+    token,
+    doctor: {
+      _id: doctor._id,
+      name: doctor.name,
+      email: doctor.email,
+      image: doctor.image,
+    },
+  };
+};
+
+const loginLab = async ({ email, password }) => {
+  if (!email || !password) throw new ApiError("All filed is required", 400);
+
+  const lab = await labRepository.findLabByEmail(email);
+  if (!lab)
+    throw new ApiError(
+      "Sorry Email or Password if filed please try again later",
+      401,
+    );
+
+  const match = await comparePassword(password, lab.password);
+  if (!match)
+    throw new ApiError(
+      "Sorry Email or Password if filed please try again later",
+      401,
+    );
+
+  const token = signToken({ id: lab._id, role: "lab" });
+  return { token, lab: { _id: lab._id, name: lab.name, email: lab.email } };
+};
+
+const loginAdmin = async ({ email, password }) => {
+  if (!email || !password) throw new ApiError("All filed is required", 400);
+
+  const user = await userRepository.findAdminByEmailAndRole(email);
+  if (!user)
+    throw new ApiError(
+      "Sorry Email or Password if filed please try again later",
+      401,
+    );
+
+  const match = await comparePassword(password, user.password);
+  if (!match)
+    throw new ApiError(
+      "Sorry Email or Password if filed please try again later",
+      401,
+    );
+
+  const token = signToken({ id: user._id, role: "admin" });
+  return {
+    token,
+    admin: { _id: user._id, name: user.name, email: user.email },
+  };
+};
+
+export { registerPatient, loginPatient, loginDoctor, loginAdmin, loginLab };
