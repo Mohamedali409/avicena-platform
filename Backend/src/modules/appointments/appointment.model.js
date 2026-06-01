@@ -25,6 +25,14 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Time slot is required"],
     },
+    userData: {
+      type: Object,
+      required: [true, "User data is required"],
+    },
+    doctorData: {
+      type: Object,
+      required: [true, "Doctor data is required"],
+    },
     amount: {
       type: Number,
       required: [true, "amount is required"],

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
       required: [true, "User name is required"],
     },
@@ -19,21 +19,25 @@ const userSchema = new mongoose.Schema(
       },
       select: false,
     },
-    confirmPassword: {
-      type: String,
-      required: [true, "Confirm password is required"],
-      validate: {
-        validator: function (val) {
-          return val === this.password;
-        },
-        message: "password are not match",
-      },
-      select: false,
-    },
+    // confirmPassword: {
+    //   type: String,
+    //   required: [true, "Confirm password is required"],
+    //   validate: {
+    //     validator: function (val) {
+    //       return val === this.password;
+    //     },
+    //     message: "password are not match",
+    //   },
+    //   select: false,
+    // },
     role: {
       type: String,
       enum: ["admin", "patient"],
       default: "patient",
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
     googleId: { type: String },
     image: {
@@ -62,11 +66,10 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
   this.password = await bcrypt.hash(this.password, 10);
-  this.confirmPassword = undefined;
-  next();
 });
 
 userSchema.methods.comparePassword = async function (passwordUserEnter) {
