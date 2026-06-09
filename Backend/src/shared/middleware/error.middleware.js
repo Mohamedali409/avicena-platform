@@ -28,7 +28,7 @@ export const errorMiddleware = (err, req, res, next) => {
     statusCode = 401;
   }
 
-  if (process.env.NODE_ENV === "development") console.error("❌ Error:", err);
+  if (process.env.NODE_ENV === "development") console.error("Error:", err);
 
   res.status(statusCode).json({
     success: false,

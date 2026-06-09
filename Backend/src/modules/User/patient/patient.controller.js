@@ -11,18 +11,71 @@ const updateProfile = catchAsync(async (req, res) => {
   successResponse(res, "Profile update successfully");
 });
 
-const bookAppointment = catchAsync(async (req, res) => {});
+const bookAppointment = catchAsync(async (req, res) => {
+  const appointment = await patientServers.bookAppointment(
+    req.userId,
+    req.body,
+  );
+  successResponse(
+    res,
+    "The book appointment successfully",
+    { appointment },
+    201,
+  );
+});
 
-const listAppointment = catchAsync(async (req, res) => {});
+const listAppointment = catchAsync(async (req, res) => {
+  const appointment = await patientServers.listAppointment(req.userId);
+  successResponse(res, "Done Get All Appointments", { appointment });
+});
 
-const cancelAppointment = catchAsync(async (req, res) => {});
-const getReport = catchAsync(async (req, res) => {});
+const cancelAppointment = catchAsync(async (req, res) => {
+  const cancelAppointment = await patientServers.cancelAppointment(
+    req.userId,
+    req.body.appointmentId,
+  );
+  successResponse(req, "Appointment cancel appointment Done", {
+    cancelAppointment,
+  });
+});
+const getReport = catchAsync(async (req, res) => {
+  const reports = await patientServers.getReport(req.userId);
+  successResponse(req, "Get All Report Done", { reports });
+});
 
-const getAllConsultations = catchAsync(async (req, res) => {});
-const updateConsultationTime = catchAsync(async (req, res) => {});
-const cancelConsultation = catchAsync(async (req, res) => {});
+const getAllConsultations = catchAsync(async (req, res) => {
+  const consultation = await patientServers.getAllConsultations(req.userId);
+  successResponse(res, "Get All Consultation", { consultation });
+});
 
-const getUserStats = catchAsync(async (req, res) => {});
+const getConsultationTime = catchAsync(async (req, res) => {
+  const consultation = await patientServers.getConsultation(
+    req.userId,
+    req.body,
+  );
+  successResponse(res, "Get  Consultation", { consultation });
+});
+const updateConsultationTime = catchAsync(async (req, res) => {
+  const consultation = await patientServers.updateConsultationTime(
+    req.userId,
+    req.body,
+  );
+  successResponse(res, "the consultation time updated success", {
+    consultation,
+  });
+});
+const cancelConsultation = catchAsync(async (req, res) => {
+  const consultation = await patientServers.cancelConsultation(
+    req.userId,
+    req.body,
+  );
+  successResponse(res, "The Consultation canceled success");
+});
+
+const getUserStats = catchAsync(async (req, res) => {
+  const stats = await patientServers.getUserStats(req.userId);
+  successResponse(res, "Get All User Stats ", { stats });
+});
 
 export {
   getProfile,
@@ -32,6 +85,7 @@ export {
   cancelAppointment,
   getReport,
   getAllConsultations,
+  getConsultationTime,
   updateConsultationTime,
   cancelConsultation,
   getUserStats,

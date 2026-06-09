@@ -66,15 +66,15 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+// userSchema.pre("save", async function () {
+//   if (!this.isModified("password")) return;
 
-  this.password = await bcrypt.hash(this.password, 10);
-});
+//   this.password = await bcrypt.hash(this.password, 10);
+// });
 
-userSchema.methods.comparePassword = async function (passwordUserEnter) {
-  return await bcrypt.compare(this.password, passwordUserEnter);
-};
+// userSchema.methods.comparePassword = async function (passwordUserEnter) {
+//   return await bcrypt.compare(this.password, passwordUserEnter);
+// };
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 

@@ -7,7 +7,7 @@ const createUser = (userData) => {
 };
 
 const findUserByEmail = (email) => {
-  return User.findOne({ email });
+  return User.findOne({ email }).select("+password");
 };
 
 export { createUser, findUserByEmail };
