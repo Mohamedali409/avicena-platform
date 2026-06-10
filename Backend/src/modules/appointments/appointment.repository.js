@@ -1,5 +1,9 @@
 import Appointment from "./appointment.model.js";
 
+const findById = (appointmentId) => {
+  return Appointment.findById(appointmentId);
+};
+
 const createAppointment = (data) => {
   return Appointment.create(data);
 };
@@ -36,8 +40,12 @@ const getAppointments = () => {
   return Appointment.find().sort({ date: -1 });
 };
 
-const cancelAppointment = (appointmentId, data) => {
-  return Appointment.findByIdAndUpdate(appointmentId, data, { new: true });
+const cancelAppointment = (appointmentId) => {
+  return Appointment.findByIdAndUpdate(
+    appointmentId,
+    { cancelled: true },
+    { new: true },
+  );
 };
 
 const getAppointmentsByUser = (userId) => {
@@ -53,7 +61,16 @@ const findUserByQuery = (query) => {
     ],
   }).limit(5);
 };
+
+const completeAppointment = (appointmentId) => {
+  return Appointment.findByIdAndUpdate(appointmentId, { isCompleted: true });
+};
+
+const findAppointmentByDoctorId = (docId) => {
+  return Appointment.find({ docId }).sort({ date: -1 });
+};
 export {
+  findById,
   createAppointment,
   findAllAppointmentByUserId,
   findAppointmentById,
@@ -65,4 +82,6 @@ export {
   cancelAppointment,
   getAppointmentsByUser,
   findUserByQuery,
+  completeAppointment,
+  findAppointmentByDoctorId,
 };

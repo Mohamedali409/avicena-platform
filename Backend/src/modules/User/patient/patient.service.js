@@ -2,20 +2,20 @@ import {
   deleteCache,
   getCache,
   setCache,
-} from "../../infrastructure/redis/cache.service.js";
-import { uploadImage } from "../../infrastructure/storage/cloudinary.service.js";
-import ApiError from "../../shared/utils/ApiError.js";
-import * as userRepository from "./user.repository.js";
-import * as doctorRepository from "../doctors/doctor.repository.js";
-import * as appointmentRepository from "../appointments/appointment.repository.js";
-import * as reportRepository from "../report/report.repository.js";
-import * as consultationRepository from "../consultations/consultation.repository.js";
+} from "../../../infrastructure/redis/cache.service.js";
+import { uploadImage } from "../../../infrastructure/storage/cloudinary.service.js";
+import ApiError from "../../../shared/utils/ApiError.js";
+import * as userRepository from "../user.repository.js";
+import * as doctorRepository from "../../doctors/doctor.repository.js";
+import * as appointmentRepository from "../../appointments/appointment.repository.js";
+import * as reportRepository from "../../report/report.repository.js";
+import * as consultationRepository from "../../consultations/consultation.repository.js";
 import {
   addSlot,
   isSlotTaken,
   removeSlot,
-} from "../../shared/utils/slots.utils.js";
-import { sendAppointmentEmail, sendConsultationEmail } from "../../infrastructure/mail/mail.service.js";
+} from "../../../shared/utils/slots.utils.js";
+import { sendAppointmentEmail, sendConsultationEmail } from "../../../infrastructure/mail/mail.service.js";
 
 const CACHE_TTL = 120;
 

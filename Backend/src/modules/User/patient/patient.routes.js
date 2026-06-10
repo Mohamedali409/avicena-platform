@@ -12,5 +12,20 @@ router.get("/profile", patientController.getProfile);
 router.put("/profile", upload.single("image"), patientController.updateProfile);
 
 // Appointments
+router.get("/appointments", patientController.listAppointment);
 router.post("/appointments", patientController.bookAppointment);
+router.patch("/appointments/cancel", patientController.cancelAppointment);
+
+// Router
+router.get("/reports", patientController.getReport);
+
+// Consultations
+router.get("/consultations", patientController.getAllConsultations);
+router.post("/consultations/single", patientController.getConsultation);
+router.post("/consultations/time", patientController.updateConsultationTime);
+router.post("/consultations/cancel", patientController.cancelConsultation);
+
+//Stats
+router.get("/stats", patientController.getUserStats);
+
 export default router;

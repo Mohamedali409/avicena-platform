@@ -1,5 +1,9 @@
 import Report from "./report.model.js";
 
+const createReport = (data) => {
+  return Report.create(data);
+};
+
 const findReportByUserId = (userId) => {
   return Report.find({ userId }).sort({ createdAt: -1 });
 };
@@ -28,7 +32,15 @@ const updateReport = (reportId, data) => {
   return Report.findByIdAndUpdate(reportId, data, { new: true });
 };
 
+const getReportWithDoctor = (docId) => {
+  return Report.find({ docId }).sort({ createdAt: -1 });
+};
+
+const getReportWithDoctorAndUser = (docId, userId) => {
+  return Report.find({ docId, userId }).sort({ createdAt: -1 });
+};
 export {
+  createReport,
   findReportByUserId,
   getReportCountDocumentsByUserId,
   getReportCountDocuments,
@@ -36,4 +48,6 @@ export {
   removeReport,
   getReportById,
   updateReport,
+  getReportWithDoctor,
+  getReportWithDoctorAndUser,
 };

@@ -152,9 +152,24 @@ const cancelAppointment = async (appointmentId) => {
   }
 };
 
+const completeAppointment = async ({ appointmentId, userId, docId }) => {
+  const appointment = await appointmentRepository.findById(appointmentId)
+  if (!appointment) throw new ApiError("The appointment Not Found", 404);
+  if (
+    !appointment.docId.equals(docId) ||
+    !appointment.userId.equals(userId)
+  ) {
+    throw new ApiError("The date is not equals", 400);
+  }
+
+  return await appointmentRepository.completeAppointment(appointmentId);
+};
+
+
+
 // ── Consultations ─────────────────────────────────────
 
-const getAllConsultation = async (consultationId) => {
+const getAllConsultation = async () => {
   return await consultationRepository.getConsultations();
 };
 
@@ -270,6 +285,7 @@ export {
   getAllAppointment,
   getUserAppointment,
   cancelAppointment,
+  completeAppointment,
   getAllConsultation,
   getUserConsultation,
   cancelConsultation,

@@ -30,6 +30,10 @@ const getDoctorCountDocuments = () => {
   return Doctor.countDocuments();
 };
 
+const findDoctorActive = () => {
+  return Doctor.find({ isActive: true }).select("-password -email");
+};
+
 export {
   createDoctor,
   getDoctors,
@@ -38,4 +42,5 @@ export {
   findDoctorById,
   findDoctorAndUpdate,
   getDoctorCountDocuments,
+  findDoctorActive,
 };

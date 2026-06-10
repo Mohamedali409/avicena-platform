@@ -1,6 +1,6 @@
 import { successResponse } from "../../../shared/utils/ApiResponse.js";
 import catchAsync from "../../../shared/utils/catchAsync.js";
-import * as patientServers from "../user.service.js";
+import * as patientServers from "./patient.service.js";
 const getProfile = catchAsync(async (req, res) => {
   const user = await patientServers.getProfile(req.userId);
   successResponse(res, "User profile data", { userData: user });
@@ -48,7 +48,7 @@ const getAllConsultations = catchAsync(async (req, res) => {
   successResponse(res, "Get All Consultation", { consultation });
 });
 
-const getConsultationTime = catchAsync(async (req, res) => {
+const getConsultation = catchAsync(async (req, res) => {
   const consultation = await patientServers.getConsultation(
     req.userId,
     req.body,
@@ -85,7 +85,7 @@ export {
   cancelAppointment,
   getReport,
   getAllConsultations,
-  getConsultationTime,
+  getConsultation,
   updateConsultationTime,
   cancelConsultation,
   getUserStats,
