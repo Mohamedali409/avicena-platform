@@ -10,7 +10,8 @@ const consultationSchema = new mongoose.Schema({
     type: Object,
     required: [true, "Appointment data is required"],
   },
-  doctorId: {
+
+  docId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Doctor",
     required: [true, "Doctor id is required"],

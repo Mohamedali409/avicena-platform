@@ -5,3 +5,9 @@ const findLabByEmail = (email) => {
 };
 
 export { findLabByEmail };
+
+const getLabCountDocuments = () => {
+  return Lab.countDocuments();
+};
+
+export { findLabByEmail, getLabCountDocuments };
