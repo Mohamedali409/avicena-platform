@@ -1,5 +1,17 @@
 import Doctor from "./doctor.model.js";
 
+const createDoctor = (data) => {
+  return Doctor.create(data);
+};
+
+const getDoctors = () => {
+  return Doctor.find().select("-password");
+};
+
+const removeDoctor = (docId) => {
+  return Doctor.findByIdAndDelete(docId);
+};
+
 const findDoctorByEmail = (email) => {
   return Doctor.findOne({ email }).select("+password");
 };
@@ -15,3 +27,22 @@ const findDoctorAndUpdate = (docId, data) => {
 };
 
 export { findDoctorByEmail, findDoctorById, findDoctorAndUpdate };
+
+const getDoctorCountDocuments = () => {
+  return Doctor.countDocuments();
+};
+
+const findDoctorActive = () => {
+  return Doctor.find({ isActive: true }).select("-password -email");
+};
+
+export {
+  createDoctor,
+  getDoctors,
+  removeDoctor,
+  findDoctorByEmail,
+  findDoctorById,
+  findDoctorAndUpdate,
+  getDoctorCountDocuments,
+  findDoctorActive,
+};

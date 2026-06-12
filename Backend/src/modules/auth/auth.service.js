@@ -28,7 +28,7 @@ const hashPassword = async (plain) => {
   return bcrypt.hash(plain, salt);
 };
 
-const comparePassword = (plain, hashed) => {
+const comparePassword = async (plain, hashed) => {
   return bcrypt.compare(plain, hashed);
 };
 
@@ -73,11 +73,17 @@ const loginPatient = async ({ email, password }) => {
   }
 
   const user = await authRepository.findUserByEmail(email).select("+password");
+
+  const user = await authRepository.findUserByEmail(email);
+
   if (!user) throw new ApiError("Email or Password is required", 401);
   if (!user.isActive) throw new ApiError("This Account is Blocked", 403);
 
   const match = await comparePassword(password, user.password);
+
   if (!match) throw new ApiError("Email or Password is required", 401);
+
+  if (!match) throw new ApiError("Invalid credentials", 401);
 
   const token = signToken({ id: user._id, role: "patient" });
   return {
@@ -85,7 +91,11 @@ const loginPatient = async ({ email, password }) => {
     user: {
       _id: user._id,
       name: user.name,
+
       email: user.name,
+
+      email: user.email,
+
       image: user.image,
     },
   };
