@@ -5,6 +5,7 @@ import {
 } from "../../infrastructure/redis/cache.service";
 import * as doctorRepository from "./doctor.repository.js";
 import * as appointmentRepository from "../appointments/appointment.repository.js";
+import * as consultationRepository from "../consultations/consultation.repository.js";
 import * as reportRepository from "../report/report.repository.js";
 import ApiError from "../../shared/utils/ApiError.js";
 import { removeSlot } from "../../shared/utils/slots.utils.js";
@@ -154,6 +155,156 @@ const getUserReports = async (docId, userId) => {
   return reports;
 };
 
+const editReport = async (docId, reportId, body) => {
+  const report = await reportRepository.getReportById(reportId);
+  if (!report) throw new ApiError("The report not found", 404);
+  if (report.docId.toString() !== docId)
+    throw new ApiError("Not Authorization for you", 403);
+
+  const { complaint, examination, diagnosis, treatment, notes, nextVisit } =
+    body;
+
+  await reportRepository.updateReport(reportId, {
+    complaint,
+    examination,
+    diagnosis,
+    treatment,
+    notes,
+    nextVisit,
+  });
+
+  await deleteCache(`doctor:${docId}:reports`);
+};
+
+const deleteReport = async (docId, reportId) => {
+  const report = await reportRepository.getReportById(reportId);
+  if (!report) throw new ApiError("The report not found", 404);
+  if (report.docId.toString() !== docId)
+    throw new ApiError("Not Authorization for you", 403);
+
+  await reportRepository.removeReport(reportId);
+  await deleteCache(`doctor:${docId}:reports`);
+};
+
+// ── Consultations ─────────────────────────────────────
+const createConsultation = async (docId, body) => {
+  const { userId, consultDay, notes, appointmentId, amount } = body;
+
+  if (!consultDay) throw new ApiError("Please select consultation day", 400);
+
+  const appointment =
+    await appointmentRepository.findAppointmentById(appointmentId);
+
+  if (!appointment) throw new ApiError("This time not found ", 404);
+  if (
+    appointment.docId.toString() !== docId ||
+    appointment.userId.toString() !== userId
+  )
+    throw new ApiError("This time not avilabily to this doctor or user", 400);
+
+  if (!appointment.isCompleted)
+    throw new ApiError("This appointment not completed yet", 400);
+
+  if (appointment.cancelled)
+    throw new ApiError("This appointment is cancelled", 400);
+
+  const [appDay, apptMonth, apptYear] = appointment.slotDate.split("-");
+  const appointmentDate = new Date(`${apptYear}-${apptMonth}-${appDay}`);
+
+  if (new Date(consultDay) <= appointmentDate)
+    throw new ApiError("The consultation day must be After appointment day");
+
+  return consultationRepository.createConsultation({
+    userId,
+    docId,
+    consultDay,
+    notes,
+    appointmentId,
+    amount,
+    appointmentDate: appointment,
+    userData: appointment.userData,
+    docData: appointment.docData,
+  });
+};
+
+const getConsultations = async (docId) => {
+  const cached = await getCache(`doctor"${docId}:consultations`);
+  if (cached) return cached;
+
+  const consultations =
+    await consultationRepository.getDoctorConsultations(docId);
+
+  await setCache(`doctor:${docId}:consultations`, consultations, TTL);
+  return consultations;
+};
+
+const completeConsultation = async (docId, { consultationId, userId }) => {
+  const consultation = await consultationRepository.findById(consultationId);
+  if (
+    !consultation ||
+    !consultation.docId.equals(docId) ||
+    !consultation.userId.equals(userId)
+  )
+    throw new ApiError("Not Authorization for you", 403);
+
+  await consultationRepository.completeConsultation(consultationId);
+};
+
+const cancelConsultation = async (docId, { consultationId, userId }) => {
+  const consultation = await consultationRepository.findById(consultationId);
+  if (
+    !consultation ||
+    !consultation.docId.equals(docId) ||
+    !consultation.userId.equals(userId)
+  )
+    throw new ApiError("Not Authorization for you", 403);
+
+  await consultationRepository.cancelConsultation(consultationId);
+};
+
+// ── Dashboard ─────────────────────────────────────────
+const getDashboard = async (docId) => {
+  const cached = await getCache(`doctor:${docId}:dashboard`);
+  if (cached) return cached;
+
+  const [appointments, consultations] = await Promise.all([
+    appointmentRepository.findAppointmentByDoctorId(docId),
+    consultationRepository.getDoctorConsultations(docId),
+  ]);
+
+  const earnings_appointments = appointments
+    .filter((a) => a.isCompleted || a.payment)
+    .reduce((sum, a) => sum + a.amount, 0);
+
+  const earnings_consultations = consultations
+    .filter((c) => c.isCompleted || c.payment)
+    .reduce((sum, c) => sum + c.amount, 0);
+
+  const uniquePatients = [
+    ...new Set(appointments.map((a) => a.userId.toString())),
+  ];
+  const uniqueConsultationsPatients = [
+    ...new Set(consultations.map((c) => c.userId.toString())),
+  ];
+
+  const dashboard = {
+    earnings_appointments,
+    earnings_consultations,
+    appointments: appointments.length,
+    patients: uniquePatients.length,
+    consultations_patients: uniqueConsultationsPatients.length,
+    lastAppointments: [...appointments].reverse().slice(0, 3),
+    lastConsultations: [...consultations].reverse().slice(0, 3),
+  };
+
+  await setCache(`doctor:${docId}:dashboard`, dashboard, TTL);
+  return dashboard;
+};
+
+// ── Search ─────────────────────────────────────────────
+
+// ── Slots ─────────────────────────────────────────────
+
 export {
   getDoctorList,
   getProfile,
@@ -164,4 +315,11 @@ export {
   addReport,
   getAllReports,
   getUserReports,
+  editReport,
+  deleteReport,
+  createConsultation,
+  getConsultations,
+  completeConsultation,
+  cancelConsultation,
+  getDashboard,
 };
