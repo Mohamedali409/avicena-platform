@@ -39,6 +39,10 @@ const getReportWithDoctor = (docId) => {
 const getReportWithDoctorAndUser = (docId, userId) => {
   return Report.find({ docId, userId }).sort({ createdAt: -1 });
 };
+
+const getCountDocumentsByUserId = (userId) => {
+  return Report.countDocuments(userId);
+};
 export {
   createReport,
   findReportByUserId,
@@ -50,4 +54,5 @@ export {
   updateReport,
   getReportWithDoctor,
   getReportWithDoctorAndUser,
+  getCountDocumentsByUserId,
 };

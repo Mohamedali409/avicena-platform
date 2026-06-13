@@ -54,8 +54,9 @@ const getAppointmentsByUser = (userId) => {
   return Appointment.find({ userId }).sort({ date: -1 });
 };
 
-const findUserByQuery = (query) => {
+const findUserByQuery = (docId, q) => {
   return Appointment.find({
+    docId,
     $or: [
       { "userData.name": { $regex: q, $options: "i" } },
       { "userData.nationalId": { $regex: q, $options: "i" } },
