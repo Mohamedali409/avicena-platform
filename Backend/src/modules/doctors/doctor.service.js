@@ -5,7 +5,9 @@ import {
 } from "../../infrastructure/redis/cache.service";
 import * as doctorRepository from "./doctor.repository.js";
 import * as appointmentRepository from "../appointments/appointment.repository.js";
+
 import * as consultationRepository from "../consultations/consultation.repository.js";
+
 import * as reportRepository from "../report/report.repository.js";
 import ApiError from "../../shared/utils/ApiError.js";
 import { removeSlot } from "../../shared/utils/slots.utils.js";
