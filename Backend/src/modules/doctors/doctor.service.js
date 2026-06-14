@@ -304,6 +304,7 @@ const getDashboard = async (docId) => {
 };
 
 // ── Search ─────────────────────────────────────────────
+
 const searchPatients = async (docId, q) => {
   if (!q) throw new ApiError("The search word required", 400);
   const appointments = await appointmentRepository.findUserByQuery(docId, q);
@@ -325,6 +326,8 @@ const getPatientStats = async (userId) => {
 
   return { appointments: userAppointments, reports: userAppointments };
 };
+
+// ── Slots ─────────────────────────────────────────────
 
 export {
   getDoctorList,
