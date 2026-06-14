@@ -305,6 +305,28 @@ const getDashboard = async (docId) => {
 
 // ── Search ─────────────────────────────────────────────
 
+const searchPatients = async (docId, q) => {
+  if (!q) throw new ApiError("The search word required", 400);
+  const appointments = await appointmentRepository.findUserByQuery(docId, q);
+
+  const users = await appointments.map((a) => a.userData);
+  return Array.form(new Map(users.map((u) => [u._id || u.phone, u])).values());
+};
+
+// ── Slots ─────────────────────────────────────────────
+const clearDoctorSlots = async (docId) => {
+  await doctorRepository.clearSlots(docId);
+};
+
+const getPatientStats = async (userId) => {
+  const [userAppointments, userReports] = await Promise.all([
+    appointmentRepository.countDocumentsWiteUserId(userId),
+    reportRepository.countDocumentsWiteUserId({ userId }),
+  ]);
+
+  return { appointments: userAppointments, reports: userAppointments };
+};
+
 // ── Slots ─────────────────────────────────────────────
 
 export {
@@ -324,4 +346,7 @@ export {
   completeConsultation,
   cancelConsultation,
   getDashboard,
+  searchPatients,
+  clearDoctorSlots,
+  getPatientStats,
 };

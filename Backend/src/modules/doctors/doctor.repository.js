@@ -36,6 +36,14 @@ const findDoctorActive = () => {
   return Doctor.find({ isActive: true }).select("-password -email");
 };
 
+const clearSlots = (docId) => {
+  return Doctor.findByIdAndUpdate(docId, { slots_booked: {} });
+};
+
+const countDocumentsWiteUserId = async (userId) => {
+  return Doctor.countDocuments({ userId });
+};
+
 export {
   createDoctor,
   getDoctors,
@@ -45,4 +53,6 @@ export {
   findDoctorAndUpdate,
   getDoctorCountDocuments,
   findDoctorActive,
+  clearSlots,
+  countDocumentsWiteUserId,
 };
