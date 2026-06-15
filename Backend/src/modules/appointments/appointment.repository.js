@@ -8,8 +8,6 @@ const createAppointment = (data) => {
   return Appointment.create(data);
 };
 
-export { createAppointment };
-
 const findAllAppointmentByUserId = (userId) => {
   return Appointment.find({ userId }).sort({ date: -1 });
 };

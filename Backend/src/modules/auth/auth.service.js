@@ -72,8 +72,6 @@ const loginPatient = async ({ email, password }) => {
     throw new ApiError("Some filed is required");
   }
 
-  const user = await authRepository.findUserByEmail(email).select("+password");
-
   const user = await authRepository.findUserByEmail(email);
 
   if (!user) throw new ApiError("Email or Password is required", 401);

@@ -4,20 +4,6 @@ import upload from "../../../shared/middleware/multer.midleware.js";
 
 import * as patientController from "./patient.controller.js";
 
-
-const patientRouter = Router();
-
-patientRouter.use(authGuard);
-
-patientRouter.get("/profile", patientController.getProfile);
-patientRouter.put(
-  "/profile",
-  upload.single("image"),
-  patientController.updateProfile,
-);
-
-export default patientRouter;
-
 const router = Router();
 
 router.use(authGuard);
@@ -43,4 +29,3 @@ router.post("/consultations/cancel", patientController.cancelConsultation);
 router.get("/stats", patientController.getUserStats);
 
 export default router;
-

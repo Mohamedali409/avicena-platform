@@ -126,9 +126,9 @@ const getAllAppointment = async () => {
   return appointmentRepository.getAppointments();
 };
 
-const getUserAppointment = async (userId) =>{
-    return await appointmentRepository.findAllAppointmentByUserId(userId)
-}
+const getUserAppointment = async (userId) => {
+  return await appointmentRepository.findAllAppointmentByUserId(userId);
+};
 
 const cancelAppointment = async (appointmentId) => {
   const appointment =
@@ -153,19 +153,14 @@ const cancelAppointment = async (appointmentId) => {
 };
 
 const completeAppointment = async ({ appointmentId, userId, docId }) => {
-  const appointment = await appointmentRepository.findById(appointmentId)
+  const appointment = await appointmentRepository.findById(appointmentId);
   if (!appointment) throw new ApiError("The appointment Not Found", 404);
-  if (
-    !appointment.docId.equals(docId) ||
-    !appointment.userId.equals(userId)
-  ) {
+  if (!appointment.docId.equals(docId) || !appointment.userId.equals(userId)) {
     throw new ApiError("The date is not equals", 400);
   }
 
   return await appointmentRepository.completeAppointment(appointmentId);
 };
-
-
 
 // ── Consultations ─────────────────────────────────────
 
@@ -227,55 +222,52 @@ const getUserReports = async (userId) => {
   return await reportRepository.findReportByUserId(userId);
 };
 
-const deleteReport = async (reportId)=>{
-    const report = await reportRepository.removeReport(reportId)
-    if(!report) throw new ApiError("The Report Is Not Found" , 404)
-}
+const deleteReport = async (reportId) => {
+  const report = await reportRepository.removeReport(reportId);
+  if (!report) throw new ApiError("The Report Is Not Found", 404);
+};
 
-const editReport = async (reportId , body)=>{
-    const {complaint , examination , diagnosis , treatment , notes , nextVisit} = body
+const editReport = async (reportId, body) => {
+  const { complaint, examination, diagnosis, treatment, notes, nextVisit } =
+    body;
 
-    const report = await reportRepository.getReportById(reportId)
-    if(!report) throw new ApiError("The Report Not Found" , 404)
-    return await reportRepository.updateReport(reportId , {
-        complaint,
-        examination,
-        diagnosis,
-        treatment,
-        notes,
-        nextVisit
-    })
-}
-
+  const report = await reportRepository.getReportById(reportId);
+  if (!report) throw new ApiError("The Report Not Found", 404);
+  return await reportRepository.updateReport(reportId, {
+    complaint,
+    examination,
+    diagnosis,
+    treatment,
+    notes,
+    nextVisit,
+  });
+};
 
 // ── Users Management ──────────────────────────────────
 
-const getAllUsers = async () =>{
-    return await userRepository.getUsers()
-}
+const getAllUsers = async () => {
+  return await userRepository.getUsers();
+};
 
-const searchUsers = async (q) =>{
-    if(!q) throw new ApiError("The search word is required" , 400)
-    
-    const appointments = await appointmentRepository.findUserByQuery(q)
+const searchUsers = async (q) => {
+  if (!q) throw new ApiError("The search word is required", 400);
 
-    const users = appointments.map(a => a.userData)
-    return Array.from(
-        new Map(users.map((user) => [user._id || user.nationalId || user.phone , user])).values()
-    )
-}
+  const appointments = await appointmentRepository.findUserByQuery(q);
 
+  const users = appointments.map((a) => a.userData);
+  return Array.from(
+    new Map(
+      users.map((user) => [user._id || user.nationalId || user.phone, user]),
+    ).values(),
+  );
+};
 
-const toggleUserStatus = async (userId)=>{
-    const user = await userRepository.getUserById(userId)
-    if(!user) throw new ApiError("User Not Found" , 404)
-    return await userRepository.toggleUserStatus(userId , user.isActive)
-}
+const toggleUserStatus = async (userId) => {
+  const user = await userRepository.getUserById(userId);
+  if (!user) throw new ApiError("User Not Found", 404);
+  return await userRepository.toggleUserStatus(userId, user.isActive);
+};
 
-
-
-
-const 
 export {
   getDashboard,
   addDoctor,
@@ -295,7 +287,6 @@ export {
   deleteReport,
   editReport,
   getAllUsers,
-  getUserReports,
   searchUsers,
-  toggleUserStatus
+  toggleUserStatus,
 };

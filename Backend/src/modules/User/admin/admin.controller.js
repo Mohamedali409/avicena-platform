@@ -35,7 +35,7 @@ const toggleAvailability = catchAsync(async (req, res) => {
 });
 
 // Appointment
-const getAllAppointments = catchAsync(async (res, res) => {
+const getAllAppointments = catchAsync(async (req, res) => {
   const appointments = await adminService.getAllAppointment();
   successResponse(res, "Get all appointments", { appointments });
 });

@@ -2,7 +2,7 @@ import {
   deleteCache,
   getCache,
   setCache,
-} from "../../infrastructure/redis/cache.service";
+} from "../../infrastructure/redis/cache.service.js";
 import * as doctorRepository from "./doctor.repository.js";
 import * as appointmentRepository from "../appointments/appointment.repository.js";
 

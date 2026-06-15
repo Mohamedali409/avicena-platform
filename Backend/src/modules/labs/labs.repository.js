@@ -4,8 +4,6 @@ const findLabByEmail = (email) => {
   return Lab.findOne({ email }).select("+password");
 };
 
-export { findLabByEmail };
-
 const getLabCountDocuments = () => {
   return Lab.countDocuments();
 };

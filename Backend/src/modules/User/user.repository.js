@@ -15,8 +15,6 @@ const updateUserById = (id, data) => {
 const findByNationalId = (nationalId) => {
   return User.findOne({ nationalId });
 };
-<<<<<<< HEAD
-=======
 
 const getUserCountDocuments = () => {
   return User.countDocuments();
@@ -29,16 +27,13 @@ const getUsers = () => {
 const toggleUserStatus = (userId, isActive) => {
   return User.findByIdAndUpdate(userId, { isActive: !isActive }, { new: true });
 };
->>>>>>> update
+
 export {
   findAdminByEmailAndRole,
   getUserById,
   updateUserById,
   findByNationalId,
-<<<<<<< HEAD
-=======
   getUserCountDocuments,
   getUsers,
   toggleUserStatus,
->>>>>>> update
 };

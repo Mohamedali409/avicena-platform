@@ -15,7 +15,10 @@ import {
   isSlotTaken,
   removeSlot,
 } from "../../../shared/utils/slots.utils.js";
-import { sendAppointmentEmail, sendConsultationEmail } from "../../../infrastructure/mail/mail.service.js";
+import {
+  sendAppointmentEmail,
+  sendConsultationEmail,
+} from "../../../infrastructure/mail/mail.service.js";
 
 const CACHE_TTL = 120;
 
@@ -159,92 +162,125 @@ const getAllConsultations = async (userId) => {
   return consultations;
 };
 
-const getConsultation = async (userId , {appointmentId , docId}) =>{
-  const cache = await getCache(`user:${userId}:consultation:${appointmentId}`)
-  if(cache) return cache
+const getConsultation = async (userId, { appointmentId, docId }) => {
+  const cache = await getCache(`user:${userId}:consultation:${appointmentId}`);
+  if (cache) return cache;
 
-  const data = await consultationRepository.getConsultation(appointmentId , docId , userId)
-  if(!data) throw new ApiError("the doctor not selected consultation time" , 404)
-  
-  await setCache(`user:${userId}:consultation:${appointmentId}`, CACHE_TTL)
-  return data 
-}
+  const data = await consultationRepository.getConsultation(
+    appointmentId,
+    docId,
+    userId,
+  );
+  if (!data)
+    throw new ApiError("the doctor not selected consultation time", 404);
 
-const updateConsultationTime = async (userId , {consultationId , consultTime})=>{
-  const consultation =  await consultationRepository.findById(consultationId)
-  if(!consultation) throw new ApiError("consultation not found" , 404)
-  if(consultation.userId.toString() !== userId){
-    throw new ApiError("not authrizred" , 403)
+  await setCache(`user:${userId}:consultation:${appointmentId}`, CACHE_TTL);
+  return data;
+};
+
+const updateConsultationTime = async (
+  userId,
+  { consultationId, consultTime },
+) => {
+  const consultation = await consultationRepository.findById(consultationId);
+  if (!consultation) throw new ApiError("consultation not found", 404);
+  if (consultation.userId.toString() !== userId) {
+    throw new ApiError("not authrizred", 403);
   }
-  const {consultDay , docId} = consultation
-  const doctor = await doctorRepository.findDoctorById(docId)
+  const { consultDay, docId } = consultation;
+  const doctor = await doctorRepository.findDoctorById(docId);
 
-  if(isSlotTaken(doctor.slots_booked, consultDay , consultTime)){
-    throw new ApiError("This time not avalibaily" , 400)
+  if (isSlotTaken(doctor.slots_booked, consultDay, consultTime)) {
+    throw new ApiError("This time not avalibaily", 400);
   }
 
-  const appointmentConflict = await appointmentRepository.getAppointment(docId,consultDay , consultTime)
+  const appointmentConflict = await appointmentRepository.getAppointment(
+    docId,
+    consultDay,
+    consultTime,
+  );
 
-  if(appointmentConflict) throw new ApiError("This time is booked for anther time , please choose anther time", 400)
+  if (appointmentConflict)
+    throw new ApiError(
+      "This time is booked for anther time , please choose anther time",
+      400,
+    );
 
-    const consultationConflict =  await consultationRepository.getConsultationConflict(docId , consultDay , consultTime , consultationId)
+  const consultationConflict =
+    await consultationRepository.getConsultationConflict(
+      docId,
+      consultDay,
+      consultTime,
+      consultationId,
+    );
 
-    if(consultationConflict) throw new ApiError("This time is booked, please choose anther time",400 )
+  if (consultationConflict)
+    throw new ApiError("This time is booked, please choose anther time", 400);
 
-      const slots_booked = addSlot(doctor.slots_booked, consultDay , consultTime)
-      await doctorRepository.findDoctorAndUpdate(docId , {slots_booked})
-      await consultationRepository.findConsultationAndUpdate(consultationId , consultTime)
+  const slots_booked = addSlot(doctor.slots_booked, consultDay, consultTime);
+  await doctorRepository.findDoctorAndUpdate(docId, { slots_booked });
+  await consultationRepository.findConsultationAndUpdate(
+    consultationId,
+    consultTime,
+  );
 
-      sendConsultationEmail(
-        consultation.userData.email,
-        consultation.userData.name,
-        consultation.docData,
-        consultDay,
-        consultTime,
-        consultation.notes
-      ).catch(console.error)
+  sendConsultationEmail(
+    consultation.userData.email,
+    consultation.userData.name,
+    consultation.docData,
+    consultDay,
+    consultTime,
+    consultation.notes,
+  ).catch(console.error);
+};
 
-}
-
-const cancelConsultation = async (userId ,{consultationId , docId}) =>{
-  const consultation = await consultationRepository.findById(consultationId)
-  if(!consultation) throw new ApiError("This Consultation Is Booked, please choose anther Time" , 400)
-  if(!consultation.userId.equals(userId) || !consultation.docId.equals(docId)){
-    throw new ApiError("not authrization to choose time" , 403)
+const cancelConsultation = async (userId, { consultationId, docId }) => {
+  const consultation = await consultationRepository.findById(consultationId);
+  if (!consultation)
+    throw new ApiError(
+      "This Consultation Is Booked, please choose anther Time",
+      400,
+    );
+  if (
+    !consultation.userId.equals(userId) ||
+    !consultation.docId.equals(docId)
+  ) {
+    throw new ApiError("not authrization to choose time", 403);
   }
 
   const cancelled = true;
-  await consultationRepository.findConsultationAndUpdate(consultation , cancelled )
+  await consultationRepository.findConsultationAndUpdate(
+    consultation,
+    cancelled,
+  );
 
-  const doctor = await doctorRepository.findDoctorById(docId)
+  const doctor = await doctorRepository.findDoctorById(docId);
   const slots_booked = removeSlot(
     doctor.slots_booked,
     consultation.consultDay,
-    consultation.consultTime
-  )
-  await doctorRepository.findDoctorAndUpdate(docId , slots_booked)
+    consultation.consultTime,
+  );
+  await doctorRepository.findDoctorAndUpdate(docId, slots_booked);
 
-  await deleteCache(`user:${userId}:consultations`)
-}
-
+  await deleteCache(`user:${userId}:consultations`);
+};
 
 // ──── Dashboard stats ───────────────────────────────────────────
-export const getUserStats = async (userId) =>{
-  const cached =  await getCache(`user:${userId}:stats`)
-  if(cached) return cached
+const getUserStats = async (userId) => {
+  const cached = await getCache(`user:${userId}:stats`);
+  if (cached) return cached;
 
-  const [appointments , reports , consultations] = await Promise.all([
+  const [appointments, reports, consultations] = await Promise.all([
     appointmentRepository.getAppointmentCountDocumentsByUserId(userId),
     reportRepository.getReportCountDocumentsByUserId(userId),
-    consultationRepository.getConsultationCountDocumentsByUserId(userId)
-  ])
+    consultationRepository.getConsultationCountDocumentsByUserId(userId),
+  ]);
 
-  const stats = {appointments , reports , consultations}
-  await setCache(`user:${userId}:stats` , stats , CACHE_TTL)
-  return stats
-}
+  const stats = { appointments, reports, consultations };
+  await setCache(`user:${userId}:stats`, stats, CACHE_TTL);
+  return stats;
+};
 
-const 
 export {
   getProfile,
   updateProfile,
@@ -256,6 +292,5 @@ export {
   getConsultation,
   updateConsultationTime,
   cancelConsultation,
-  getUserStats
-
+  getUserStats,
 };

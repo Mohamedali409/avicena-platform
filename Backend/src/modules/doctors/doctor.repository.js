@@ -26,8 +26,6 @@ const findDoctorAndUpdate = (docId, data) => {
   );
 };
 
-export { findDoctorByEmail, findDoctorById, findDoctorAndUpdate };
-
 const getDoctorCountDocuments = () => {
   return Doctor.countDocuments();
 };
