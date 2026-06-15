@@ -9,6 +9,8 @@ import adminRouter from "./src/modules/User/admin/admin.routes.js";
 import doctorRouter from "./src/modules/doctors/doctor.routes.js";
 import appointmentRouter from "./src/modules/appointments/appointment.routes.js";
 import consultationRouter from "./src/modules/consultations/consultation.routes.js";
+import labRouter from "./src/modules/labs/labs.routes.js";
+import reportRouter from "./src/modules/report/report.routes.js";
 
 const app = express();
 
@@ -29,7 +31,9 @@ app.use("/api/appointment", appointmentRouter);
 // consultation
 app.use("/api/consultation", consultationRouter);
 // reports
+app.use("/api/report", reportRouter);
 // lab
+app.use("/api/lab", labRouter);
 // chat
 // notification
 // subscriptions
