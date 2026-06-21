@@ -38,7 +38,7 @@ const cancelAppointment = catchAsync(async (req, res) => {
     req.userId,
     req.body.appointmentId,
   );
-  successResponse(req, "Appointment cancel appointment Done", {
+  successResponse(res, "Appointment cancelled", {
     cancelAppointment,
   });
 });

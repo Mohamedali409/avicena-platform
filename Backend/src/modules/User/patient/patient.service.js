@@ -66,25 +66,101 @@ const updateProfile = async (userId, body, imageFile) => {
 };
 
 // ──── Appointment ───────────────────────────────────────────
+// const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
+//   if (!slotDate) throw new ApiError("Please choose a good date for you", 400);
+//   if (!slotTime) throw new ApiError("Please choose a good Time for you", 400);
+
+//   const doctor = await doctorRepository.findDoctorById(docId);
+//   if (!doctor) throw new ApiError("The Doctor not found", 404);
+//   if (!doctor.available) throw new ApiError("The doctor available now", 400);
+//   console.log("Doctor Slots =>", doctor.slots_booked);
+//   console.log("Date =>", slotDate);
+//   console.log("Time =>", slotTime);
+//   console.log("Taken =>", isSlotTaken(doctor.slots_booked, slotDate, slotTime));
+//   if (isSlotTaken(doctor.slots_booked, slotDate, slotTime)) {
+//     throw new ApiError("This Time not available now");
+//   }
+
+//   const user = await userRepository.getUserById(userId);
+
+//   const slots_booked = addSlot(doctor.slots_booked, slotDate, slotTime);
+//   await doctorRepository.findDoctorAndUpdate(docId, { slots_booked });
+
+//   const docData = doctor.toObject();
+//   delete docData.slots_booked;
+//   delete docData.password;
+
+//   const appointment = await appointmentRepository.createAppointment({
+//     userId,
+//     docId,
+//     userData: user,
+//     docData,
+//     slotDate,
+//     slotTime,
+//     amount: doctor.fees,
+//   });
+
+//   sendAppointmentEmail(user.email, user.name, appointment, docData).catch(
+//     console.error,
+//   );
+//   return appointment;
+// };
+
 const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
-  if (!slotDate) throw new ApiError("Please choose a good date for you", 400);
-  if (!slotTime) throw new ApiError("Please choose a good Time for you", 400);
+  if (!docId) {
+    throw new ApiError("Doctor id is required", 400);
+  }
+
+  if (!slotDate) {
+    throw new ApiError("Please choose a date", 400);
+  }
+
+  if (!slotTime) {
+    throw new ApiError("Please choose a time", 400);
+  }
+
+  // منع الحجز في الماضي
+  const appointmentDate = new Date(slotDate);
+  const today = new Date();
+
+  appointmentDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  if (appointmentDate < today) {
+    throw new ApiError("Cannot book an appointment in the past", 400);
+  }
 
   const doctor = await doctorRepository.findDoctorById(docId);
-  if (!doctor) throw new ApiError("The Doctor not found", 404);
-  if (!doctor.available) throw new ApiError("The doctor available now", 400);
+
+  if (!doctor) {
+    throw new ApiError("Doctor not found", 404);
+  }
+
+  if (!doctor.available) {
+    throw new ApiError("Doctor is not available now", 400);
+  }
+
   if (isSlotTaken(doctor.slots_booked, slotDate, slotTime)) {
-    throw new ApiError("This Time not available now");
+    throw new ApiError("This time slot is already booked", 409);
   }
 
   const user = await userRepository.getUserById(userId);
 
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
   const slots_booked = addSlot(doctor.slots_booked, slotDate, slotTime);
-  await doctorRepository.findDoctorAndUpdate(docId, { slots_booked });
+
+  await doctorRepository.findDoctorAndUpdate(docId, {
+    slots_booked,
+  });
 
   const docData = doctor.toObject();
+
   delete docData.slots_booked;
   delete docData.password;
+  delete docData.confirmPassword;
 
   const appointment = await appointmentRepository.createAppointment({
     userId,
@@ -99,6 +175,7 @@ const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
   sendAppointmentEmail(user.email, user.name, appointment, docData).catch(
     console.error,
   );
+
   return appointment;
 };
 

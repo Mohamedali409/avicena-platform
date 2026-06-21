@@ -1,0 +1,1292 @@
+openapi: 3.0.3
+info:
+  title: Avicena Platform API
+  description: |
+    ## Healthcare SaaS API
+    
+    Platform connecting Patients, Doctors, Labs, and Admins.
+    
+    ### Authentication
+    Most endpoints require a token passed in the **request header**:
+    - **Patient/User:** `token: <jwt>`
+    - **Doctor:** `dtoken: <jwt>`
+    - **Admin:** `atoken: <jwt>`
+    - **Lab:** `ltoken: <jwt>`
+    
+    ### Known Issues (fix before testing)
+    1. `app.js` line: `app.use("api/doctor", doctorRouter)` → missing `/` → should be `/api/doctor`
+    2. `app.use("/api/auth", ...)` is commented out → auth routes not mounted on `/api/auth`
+    3. Admin route `consultations/user` and `report` missing leading `/`
+    
+  version: 1.0.0
+  contact:
+    name: Mohamed Ali
+    email: engmohamedali409@gmail.com
+
+servers:
+  - url: http://localhost:5000
+    description: Local Development
+
+tags:
+  - name: Auth
+    description: Authentication for all roles
+  - name: Patient
+    description: Patient profile, appointments, consultations
+  - name: Doctor
+    description: Doctor profile, appointments, reports, consultations
+  - name: Admin
+    description: Admin dashboard and management
+  - name: Labs
+    description: Lab management
+  - name: Chat
+    description: Real-time messaging (REST endpoints; Socket.IO for messages)
+  - name: Video Call
+    description: Video call history
+  - name: Notifications
+    description: In-app notifications
+  - name: Subscriptions
+    description: Subscription plans and billing
+
+paths:
+
+  # ─────────────────────────── AUTH ───────────────────────────
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  example: Ahmed Mohamed
+                email:
+                  type: string
+                  example: ahmed@test.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: Test1234!
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '409':
+          description: Email already used
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Patient login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Account blocked
+
+  /api/auth/admin/login:
+    post:
+      tags: [Auth]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Admin login success
+
+  /api/auth/doctor/login:
+    post:
+      tags: [Auth]
+      summary: Doctor login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Doctor login success
+
+  /api/auth/lab/login:
+    post:
+      tags: [Auth]
+      summary: Lab login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Lab login success
+
+  # ─────────────────────────── PATIENT ───────────────────────────
+  /api/user/profile:
+    get:
+      tags: [Patient]
+      summary: Get patient profile
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Profile data
+    put:
+      tags: [Patient]
+      summary: Update patient profile
+      security: [{ PatientToken: [] }]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/user/appointments:
+    get:
+      tags: [Patient]
+      summary: List my appointments
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Appointments list
+    post:
+      tags: [Patient]
+      summary: Book appointment
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [docId, slotDate, slotTime]
+              properties:
+                docId:
+                  type: string
+                  example: 64abc123def456789abc1234
+                slotDate:
+                  type: string
+                  format: date
+                  example: "2025-08-15"
+                slotTime:
+                  type: string
+                  example: "10:00"
+      responses:
+        '201':
+          description: Appointment booked
+
+  /api/user/appointments/cancel:
+    patch:
+      tags: [Patient]
+      summary: Cancel appointment
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+      responses:
+        '200':
+          description: Appointment cancelled
+
+  /api/user/reports:
+    get:
+      tags: [Patient]
+      summary: Get my reports
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Reports list
+
+  /api/user/consultations:
+    get:
+      tags: [Patient]
+      summary: Get all consultations
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Consultations list
+
+  /api/user/consultations/single:
+    post:
+      tags: [Patient]
+      summary: Get single consultation
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId, docId]
+              properties:
+                appointmentId:
+                  type: string
+                docId:
+                  type: string
+      responses:
+        '200':
+          description: Consultation details
+
+  /api/user/consultations/time:
+    post:
+      tags: [Patient]
+      summary: Update consultation time
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId, consultTime]
+              properties:
+                consultationId:
+                  type: string
+                consultTime:
+                  type: string
+                  example: "14:00"
+      responses:
+        '200':
+          description: Time updated
+
+  /api/user/consultations/cancel:
+    post:
+      tags: [Patient]
+      summary: Cancel consultation
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId, docId]
+              properties:
+                consultationId:
+                  type: string
+                docId:
+                  type: string
+      responses:
+        '200':
+          description: Consultation cancelled
+
+  /api/user/stats:
+    get:
+      tags: [Patient]
+      summary: Get user stats (appointments, reports, consultations count)
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Stats data
+
+  # ─────────────────────────── DOCTOR ───────────────────────────
+  /api/doctor/list:
+    get:
+      tags: [Doctor]
+      summary: Get all doctors (public)
+      responses:
+        '200':
+          description: Doctor list
+
+  /api/doctor/profile:
+    get:
+      tags: [Doctor]
+      summary: Get doctor profile
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Profile data
+    put:
+      tags: [Doctor]
+      summary: Update doctor profile
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                about:
+                  type: string
+                fees:
+                  type: number
+                available:
+                  type: boolean
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/doctor/appointments:
+    get:
+      tags: [Doctor]
+      summary: Get doctor appointments
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Appointments list
+
+  /api/doctor/appointments/complete:
+    patch:
+      tags: [Doctor]
+      summary: Mark appointment as complete
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+      responses:
+        '200':
+          description: Appointment completed
+
+  /api/doctor/appointments/cancel:
+    patch:
+      tags: [Doctor]
+      summary: Cancel appointment
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+      responses:
+        '200':
+          description: Appointment cancelled
+
+  /api/doctor/reports:
+    get:
+      tags: [Doctor]
+      summary: Get all reports
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Reports list
+    post:
+      tags: [Doctor]
+      summary: Add medical report
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportBody'
+      responses:
+        '201':
+          description: Report created
+    put:
+      tags: [Doctor]
+      summary: Edit report
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ReportBody'
+                - type: object
+                  required: [reportId]
+                  properties:
+                    reportId:
+                      type: string
+      responses:
+        '200':
+          description: Report updated
+    delete:
+      tags: [Doctor]
+      summary: Delete report
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reportId]
+              properties:
+                reportId:
+                  type: string
+      responses:
+        '200':
+          description: Report deleted
+
+  /api/doctor/reports/patient:
+    post:
+      tags: [Doctor]
+      summary: Get reports for specific patient
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Patient reports
+
+  /api/doctor/consultations:
+    get:
+      tags: [Doctor]
+      summary: Get doctor consultations
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Consultations list
+    post:
+      tags: [Doctor]
+      summary: Create consultation
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, appointmentId, consultDay]
+              properties:
+                userId:
+                  type: string
+                appointmentId:
+                  type: string
+                consultDay:
+                  type: string
+                  format: date
+                  example: "2025-08-20"
+                notes:
+                  type: string
+                amount:
+                  type: number
+                  example: 150
+      responses:
+        '201':
+          description: Consultation created
+
+  /api/doctor/consultations/complete:
+    patch:
+      tags: [Doctor]
+      summary: Mark consultation as complete
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId]
+              properties:
+                consultationId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/doctor/consultations/cancel:
+    patch:
+      tags: [Doctor]
+      summary: Cancel consultation
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId, userId]
+              properties:
+                consultationId:
+                  type: string
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/doctor/dashboard:
+    get:
+      tags: [Doctor]
+      summary: Get doctor dashboard stats
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Dashboard data
+
+  /api/doctor/search:
+    post:
+      tags: [Doctor]
+      summary: Search patients
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                  example: Ahmed
+      responses:
+        '200':
+          description: Search results
+
+  /api/doctor/slots:
+    delete:
+      tags: [Doctor]
+      summary: Clear all doctor slots
+      security: [{ DoctorToken: [] }]
+      responses:
+        '200':
+          description: Slots cleared
+
+  /api/doctor/patient-stats:
+    post:
+      tags: [Doctor]
+      summary: Get stats for specific patient
+      security: [{ DoctorToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Patient stats
+
+  # ─────────────────────────── ADMIN ───────────────────────────
+  /api/admin/dashboard:
+    get:
+      tags: [Admin]
+      summary: Get admin dashboard
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Dashboard data
+
+  /api/admin/doctors:
+    get:
+      tags: [Admin]
+      summary: Get all doctors
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Doctors list
+    post:
+      tags: [Admin]
+      summary: Add new doctor
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, email, password, speciality, degree, experience, fees]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                  minLength: 8
+                speciality:
+                  type: string
+                  example: Cardiology
+                degree:
+                  type: string
+                  example: MBBS, MD
+                experience:
+                  type: integer
+                  example: 10
+                about:
+                  type: string
+                fees:
+                  type: number
+                  example: 200
+                phone:
+                  type: string
+                start_booked:
+                  type: string
+                  example: "09:00"
+                consultation_fees:
+                  type: number
+                  example: 150
+                address:
+                  type: string
+                  description: JSON string e.g. {"line1":"Nasr City","line2":"Cairo"}
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Doctor added
+    delete:
+      tags: [Admin]
+      summary: Remove doctor
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [docId]
+              properties:
+                docId:
+                  type: string
+      responses:
+        '200':
+          description: Doctor removed
+
+  /api/admin/doctors/availability:
+    patch:
+      tags: [Admin]
+      summary: Toggle doctor availability
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [docId]
+              properties:
+                docId:
+                  type: string
+      responses:
+        '200':
+          description: Availability toggled
+
+  /api/admin/appointment:
+    get:
+      tags: [Admin]
+      summary: Get all appointments
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Appointments
+
+  /api/admin/appointment/cancel:
+    patch:
+      tags: [Admin]
+      summary: Cancel appointment
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/admin/appointment/complete:
+    patch:
+      tags: [Admin]
+      summary: Complete appointment
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [appointmentId]
+              properties:
+                appointmentId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/admin/consultations:
+    get:
+      tags: [Admin]
+      summary: Get all consultations
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Consultations
+
+  /api/admin/consultation/cancel:
+    patch:
+      tags: [Admin]
+      summary: Cancel consultation
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId]
+              properties:
+                consultationId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/admin/consultation/complete:
+    patch:
+      tags: [Admin]
+      summary: Complete consultation
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consultationId]
+              properties:
+                consultationId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/admin/reports:
+    get:
+      tags: [Admin]
+      summary: Get all reports
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Reports
+
+  /api/admin/reports/user:
+    post:
+      tags: [Admin]
+      summary: Get reports for user
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: User reports
+
+  /api/admin/report:
+    patch:
+      tags: [Admin]
+      summary: Delete report (soft)
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reportId]
+              properties:
+                reportId:
+                  type: string
+      responses:
+        '200':
+          description: Done
+
+  /api/admin/users:
+    get:
+      tags: [Admin]
+      summary: Get all users
+      security: [{ AdminToken: [] }]
+      responses:
+        '200':
+          description: Users list
+
+  /api/admin/users/search:
+    get:
+      tags: [Admin]
+      summary: Search users
+      security: [{ AdminToken: [] }]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+
+  /api/admin/users/status:
+    patch:
+      tags: [Admin]
+      summary: Toggle user active/blocked status
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Status toggled
+
+  # ─────────────────────────── LABS ───────────────────────────
+  /api/lab:
+    get:
+      tags: [Labs]
+      summary: Get all labs (public)
+      responses:
+        '200':
+          description: Labs list
+    post:
+      tags: [Labs]
+      summary: Add lab (admin only)
+      security: [{ AdminToken: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, email, password, phone]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Lab created
+
+  /api/lab/{id}:
+    get:
+      tags: [Labs]
+      summary: Get lab by ID (public)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lab details
+
+  /api/lab/me/profile:
+    get:
+      tags: [Labs]
+      summary: Get my lab profile
+      security: [{ LabToken: [] }]
+      responses:
+        '200':
+          description: Lab profile
+    put:
+      tags: [Labs]
+      summary: Update lab profile
+      security: [{ LabToken: [] }]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Updated
+
+  # ─────────────────────────── CHAT ───────────────────────────
+  /api/chat/conversations:
+    get:
+      tags: [Chat]
+      summary: Get my conversations
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      responses:
+        '200':
+          description: Conversations list
+
+  /api/chat/room/{otherId}/id:
+    get:
+      tags: [Chat]
+      summary: Get room ID with another user
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      parameters:
+        - name: otherId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room ID
+
+  /api/chat/room/{roomId}:
+    get:
+      tags: [Chat]
+      summary: Get messages in a room
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Messages
+
+  /api/chat/room/{roomId}/unread:
+    get:
+      tags: [Chat]
+      summary: Get unread message count in room
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Unread count
+
+  /api/chat/room/{roomId}/read:
+    get:
+      tags: [Chat]
+      summary: Mark room as read
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Marked as read
+
+  # ─────────────────────────── VIDEO CALL ───────────────────────────
+  /api/video-call/history:
+    get:
+      tags: [Video Call]
+      summary: Get call history
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      responses:
+        '200':
+          description: Call history
+
+  /api/video-call/{id}:
+    get:
+      tags: [Video Call]
+      summary: Get call by ID
+      security: [{ PatientToken: [] }, { DoctorToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Call details
+
+  # ─────────────────────────── NOTIFICATIONS ───────────────────────────
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Get all notifications
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Notifications list
+
+  /api/notifications/unread:
+    get:
+      tags: [Notifications]
+      summary: Get unread notifications count
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Unread count
+
+  /api/notifications/read:
+    patch:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: All marked as read
+
+  # ─────────────────────────── SUBSCRIPTIONS ───────────────────────────
+  /api/subscriptions/plans:
+    get:
+      tags: [Subscriptions]
+      summary: Get available subscription plans (public)
+      responses:
+        '200':
+          description: Plans list
+
+  /api/subscriptions:
+    post:
+      tags: [Subscriptions]
+      summary: Subscribe to a plan
+      security: [{ PatientToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan, paymentId]
+              properties:
+                plan:
+                  type: string
+                  example: premium
+                paymentId:
+                  type: string
+                  example: PAY_12345
+      responses:
+        '201':
+          description: Subscribed
+
+  /api/subscriptions/active:
+    get:
+      tags: [Subscriptions]
+      summary: Get active subscription
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Active subscription
+
+  /api/subscriptions/history:
+    get:
+      tags: [Subscriptions]
+      summary: Get subscription history
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: History
+
+  /api/subscriptions/cancel:
+    delete:
+      tags: [Subscriptions]
+      summary: Cancel subscription
+      security: [{ PatientToken: [] }]
+      responses:
+        '200':
+          description: Cancelled
+
+  # ─────────────────────────── SHARED ───────────────────────────
+  /api/appointment:
+    get:
+      tags: [Patient]
+      summary: Get appointment by ID
+      security: [{ PatientToken: [] }]
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Appointment details
+
+  /api/report/{id}:
+    get:
+      tags: [Doctor]
+      summary: Get report by ID
+      security: [{ PatientToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Report details
+
+  /api/consultation/{id}:
+    get:
+      tags: [Patient]
+      summary: Get consultation by ID
+      security: [{ PatientToken: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Consultation details
+
+components:
+  securitySchemes:
+    PatientToken:
+      type: apiKey
+      in: header
+      name: token
+    DoctorToken:
+      type: apiKey
+      in: header
+      name: dtoken
+    AdminToken:
+      type: apiKey
+      in: header
+      name: atoken
+    LabToken:
+      type: apiKey
+      in: header
+      name: ltoken
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          example: Password123!
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+            user:
+              type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                image:
+                  type: string
+
+    ReportBody:
+      type: object
+      required: [appointmentId, complaint, diagnosis, treatment]
+      properties:
+        appointmentId:
+          type: string
+        complaint:
+          type: string
+          example: Chest pain and shortness of breath
+        examination:
+          type: string
+          example: BP 140/90, HR 88
+        diagnosis:
+          type: string
+          example: Hypertension Stage 1
+        treatment:
+          type: string
+          example: Amlodipine 5mg daily
+        notes:
+          type: string
+        nextVisit:
+          type: string
+          format: date
+          example: "2025-09-15"

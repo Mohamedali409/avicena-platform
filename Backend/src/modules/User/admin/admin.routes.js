@@ -24,7 +24,7 @@ router.patch("/appointment/complete", adminController.completeAppointment);
 
 // Consultation
 router.get("/consultations", adminController.getAllConsultations);
-router.post("consultations/user", adminController.getUserConsultation);
+router.post("/consultations/user", adminController.getUserConsultation);
 router.patch("/consultation/cancel", adminController.cancelConsultation);
 router.patch("/consultation/complete", adminController.completeConsultation);
 
@@ -32,7 +32,7 @@ router.patch("/consultation/complete", adminController.completeConsultation);
 router.get("/reports", adminController.getAllReports);
 router.post("/reports/user", adminController.getUserReports);
 router.patch("/report", adminController.deleteReport);
-router.put("report", adminController.editReport);
+router.put("/report", adminController.editReport);
 
 // Users
 router.get("/users", adminController.getAllUsers);

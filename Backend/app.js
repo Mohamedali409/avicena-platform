@@ -29,12 +29,10 @@ app.use(cookieParser());
 
 app.get("/", (req, res) => res.json({ status: "ok", app: "Avicana API " }));
 
-// app.use("/api/auth", authRouter);
-// app.use("/api/user", patientRouter);
-
+app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
-app.use("api/doctor", doctorRouter);
+app.use("/api/doctor", doctorRouter);
 // appointment
 
 app.use("/api/appointment", appointmentRouter);

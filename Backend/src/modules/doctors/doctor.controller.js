@@ -48,8 +48,7 @@ const getAllReports = catchAsync(async (req, res) => {
 
 const getUserReports = catchAsync(async (req, res) => {
   const userReport = await doctorService.getUserReports(
-    req,
-    docId,
+    req.docId,
     req.body.userId,
   );
   successResponse(res, "Dene get All reports for user ");

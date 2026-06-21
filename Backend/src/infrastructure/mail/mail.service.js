@@ -40,8 +40,8 @@ export const sendAppointmentEmail = async (
         <h2 style="color:#2c7be5;text-align:center">مرحباً ${name} 👋</h2>
         <p style="text-align:center">تم حجز موعدك الطبي بنجاح ✅</p>
         <hr/>
-        <p><strong>الطبيب:</strong> ${docData.name}</p>
-        <p><strong>التخصص:</strong> ${docData.speciality}</p>
+        <p><strong>الطبيب:</strong> ${docData.doctorName}</p>
+        <p><strong>التخصص:</strong> ${docData.Specialization}</p>
         <p><strong>اليوم:</strong> ${appointment.slotDate}</p>
         <p><strong>الساعة:</strong> ${appointment.slotTime}</p>
         <p><strong>العنوان:</strong> ${docData.address?.line1}</p>

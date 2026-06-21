@@ -47,6 +47,8 @@ const registerPatient = async ({ name, email, password }) => {
   if (exists) throw new ApiError("this email is used before", 409);
 
   const hashed = await hashPassword(password);
+  console.log("Password:", password);
+  console.log("Hash:", hashed);
   const user = await authRepository.createUser({
     name,
     email,
@@ -74,7 +76,7 @@ const loginPatient = async ({ email, password }) => {
 
   const user = await authRepository.findUserByEmail(email);
 
-  if (!user) throw new ApiError("Email or Password is required", 401);
+  if (!user) throw new ApiError("User not found", 401);
   if (!user.isActive) throw new ApiError("This Account is Blocked", 403);
 
   const match = await comparePassword(password, user.password);
@@ -89,11 +91,7 @@ const loginPatient = async ({ email, password }) => {
     user: {
       _id: user._id,
       name: user.name,
-
-      email: user.name,
-
       email: user.email,
-
       image: user.image,
     },
   };
@@ -108,13 +106,16 @@ const loginDoctor = async ({ email, password }) => {
     throw new ApiError("all filed is required", 400);
   }
   const doctor = await doctorRepository.findDoctorByEmail(email);
+  console.log("Doctor =>", doctor);
+  console.log("isActive =>", doctor.isActive);
+  console.log("DB Password =>", doctor.password);
   if (!doctor)
     throw new ApiError(
       "Sorry Email or Password if filed please try again later",
       401,
     );
 
-  if (!doctor.isActive) throw new ApiError("This Account is blocked", 403);
+  // if (!doctor.isActive) throw new ApiError("This Account is blocked", 403);
 
   const match = await comparePassword(password, doctor.password);
   if (!match) throw new ApiError("This Account is blocked", 403);

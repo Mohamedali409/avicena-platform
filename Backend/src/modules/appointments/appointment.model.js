@@ -12,7 +12,7 @@ const appointmentSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "user id is required"],
     },
-    doctorId: {
+    docId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
       required: [true, "doctor id is required"],
@@ -29,7 +29,7 @@ const appointmentSchema = new mongoose.Schema(
       type: Object,
       required: [true, "User data is required"],
     },
-    doctorData: {
+    docData: {
       type: Object,
       required: [true, "Doctor data is required"],
     },
@@ -37,7 +37,7 @@ const appointmentSchema = new mongoose.Schema(
       type: Number,
       required: [true, "amount is required"],
     },
-    date: { type: Number, required: true },
+    // date: { type: Number, required: true },
     cancelled: {
       type: Boolean,
       required: false,

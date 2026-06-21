@@ -25,7 +25,7 @@ const consultationSchema = new mongoose.Schema({
     type: Object,
     required: [true, "User data is required"],
   },
-  doctorData: {
+  docData: {
     type: Object,
     required: [true, "Doctor data is required"],
   },

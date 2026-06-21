@@ -85,4 +85,5 @@ export {
   findUserByQuery,
   completeAppointment,
   findAppointmentByDoctorId,
+  findAppointmentByIdAndUpdate,
 };
