@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as chatController from "./chat.controller.js";
+import * as videoController from "./video.controller.js";
 import { doctorGuard } from "../../shared/guards/doctor.guard.js";
 import { authGuard } from "../../shared/guards/auth.guard.js";
 
@@ -14,10 +14,7 @@ const anyAuth = (req, res, next) => {
 
 router.use(anyAuth);
 
-router.get("/conversations", chatController.getMyConversations);
-router.get("/room/:otherId/id", chatController.getRoomIdWith);
-router.get("/room/:roomId", chatController.getRoomMessages);
-router.get("/room/:roomId/unread", chatController.getRoomUnreadCount);
-router.get("/room/:roomId/read", chatController.markRoomAsRead);
+router.get("/history", videoController.getCallHistory);
+router.get("/:id", videoController.getCallById);
 
 export default router;

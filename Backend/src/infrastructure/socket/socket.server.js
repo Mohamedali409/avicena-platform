@@ -2,8 +2,14 @@ import { Server } from "socket.io";
 import { verifyToken } from "../../shared/utils/jwt.utils.js";
 import ChatModel from "../../modules/chat/message.model.js";
 import NotificationModel from "../../modules/notifications/notification.model.js";
+import { socketAuthMiddleware } from "./socket.auth.js";
+import { registerChatHandlers } from "../../modules/chat/chat.socket.js";
+import { registerVideoHandlers } from "../../modules/video-call/video.socket.js";
+import { registerNotificationHandlers } from "../../modules/notifications/notification.socket.js";
 
 let io;
+
+const onlineUser = new Map();
 
 export const initSocket = (httpServer) => {
   io = new Server(httpServer, {
@@ -16,89 +22,54 @@ export const initSocket = (httpServer) => {
       ].filter(Boolean),
       credentials: true,
     },
+    pingTimeout: 60000,
+    pingInterval: 25000,
   });
 
-  // Auth middleware
-  io.use((socket, next) => {
-    const token =
-      socket.handshake.auth?.token || socket.handshake.headers?.token;
-    if (!token) return next(new Error("Authentication error"));
-    try {
-      const decoded = verifyToken(token);
-      socket.userId = decoded.id;
-      socket.role = decoded.role || "patient";
-      next();
-    } catch {
-      next(new Error("Invalid token"));
-    }
-  });
+  io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
-    console.log(`🔌 Connected: ${socket.userId} [${socket.role}]`);
-
+    const uid = socket.userId;
+    console.log(`Connected: ${uid} [${socket.role}]`);
     // Join personal notification room
-    socket.join(`user:${socket.userId}`);
+    socket.join(`user:${uid}`);
 
-    // ── Chat ───────────────────────────────────────────
-    socket.on("join:room", (roomId) => {
-      socket.join(roomId);
-    });
+    // Track online presence
+    onlineUser.set(uid, socket.id);
+    io.emit("presence:online", { userId: uid });
 
-    socket.on("chat:message", async ({ roomId, receiverId, message }) => {
-      const senderType = socket.role === "doctor" ? "doctor" : "user";
-      const saved = await ChatModel.create({
-        roomId,
-        senderId: socket.userId,
-        senderType,
-        message,
+    // Chat
+    registerChatHandlers(io, socket);
+
+    // Video Call (WebRTC signaling)
+    registerVideoHandlers(io, socket);
+
+    // Notification
+    registerNotificationHandlers(io, socket);
+
+    // presence check
+
+    socket.on("presence:check", ({ userId }) => {
+      socket.emit("presence:status", {
+        userId,
+        online: onlineUser.has(userId),
       });
-      io.to(roomId).emit("chat:message", saved);
-
-      // Notify receiver
-      io.to(`user:${receiverId}`).emit("notification:new", {
-        type: "chat",
-        title: "رسالة جديدة",
-        message: message.substring(0, 50),
-      });
-    });
-
-    // ── Video Call Signaling ───────────────────────────
-    socket.on("call:offer", ({ targetId, offer }) => {
-      io.to(`user:${targetId}`).emit("call:offer", {
-        from: socket.userId,
-        offer,
-      });
-    });
-
-    socket.on("call:answer", ({ targetId, answer }) => {
-      io.to(`user:${targetId}`).emit("call:answer", {
-        from: socket.userId,
-        answer,
-      });
-    });
-
-    socket.on("call:ice-candidate", ({ targetId, candidate }) => {
-      io.to(`user:${targetId}`).emit("call:ice-candidate", {
-        from: socket.userId,
-        candidate,
-      });
-    });
-
-    socket.on("call:end", ({ targetId }) => {
-      io.to(`user:${targetId}`).emit("call:end", { from: socket.userId });
     });
 
     socket.on("disconnect", () => {
-      console.log(`🔌 Disconnected: ${socket.userId}`);
+      console.log(`Disconnected: ${uid}`);
+      onlineUser.delete(uid);
+      io.emit("presence:offline", { userId: uid });
     });
   });
 
   return io;
 };
 
-/** Emit a notification to a specific user/doctor via socket */
 export const emitNotification = (recipientId, payload) => {
   if (io) io.to(`user:${recipientId}`).emit("notification:new", payload);
 };
+
+export const isUserOnline = (userId) => onlineUser.has(userId.toString());
 
 export { io };
