@@ -1,5 +1,4 @@
 import { Server } from "socket.io";
-import { verifyToken } from "../../shared/utils/jwt.utils.js";
 import ChatModel from "../../modules/chat/message.model.js";
 import NotificationModel from "../../modules/notifications/notification.model.js";
 import { socketAuthMiddleware } from "./socket.auth.js";

@@ -1,6 +1,6 @@
 import * as videoRepo from "./video.repository.js";
 import { buildRoomId } from "../chat/chat.service.js";
-import ApiError from "../../shared/utils/ApiError";
+import ApiError from "../../shared/utils/ApiError.js";
 
 const initiateCall = async ({
   callerId,

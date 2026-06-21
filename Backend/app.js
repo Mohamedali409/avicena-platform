@@ -9,14 +9,11 @@ import doctorRouter from "./src/modules/doctors/doctor.routes.js";
 import appointmentRouter from "./src/modules/appointments/appointment.routes.js";
 import consultationRouter from "./src/modules/consultations/consultation.routes.js";
 
-import labRouter from "./src/modules/labs/labs.routes.js";
-import reportRouter from "./src/modules/report/report.routes.js";
-
 import reportRouter from "./src/modules/report/report.routes.js";
 import labRouter from "./src/modules/labs/labs.routes.js";
 
 import chatRouter from "./src/modules/chat/chat.routes.js";
-import videoRouter from "./src/modules/video-call/video.routes";
+import videoRouter from "./src/modules/video-call/video.routes.js";
 import notificationRouter from "./src/modules/notifications/notification.routes.js";
 import subscriptionRouter from "./src/modules/subscriptions/subscription.routes.js";
 

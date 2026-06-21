@@ -1,5 +1,5 @@
-import ApiError from "../../shared/utils/ApiError";
-import { verifyToken } from "../../shared/utils/jwt.utlis";
+import ApiError from "../../shared/utils/ApiError.js";
+import { verifyToken } from "../../shared/utils/jwt.utlis.js";
 
 export const socketAuthMiddleware = (socket, next) => {
   const token = socket.handshake.auth?.token || socket.handshake.headers?.token;

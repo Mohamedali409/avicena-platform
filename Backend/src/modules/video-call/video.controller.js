@@ -1,4 +1,4 @@
-import { successResponse } from "../../shared/utils/ApiResponse";
+import { successResponse } from "../../shared/utils/ApiResponse.js";
 import catchAsync from "../../shared/utils/catchAsync.js";
 import * as videoService from "./video.service.js";
 
