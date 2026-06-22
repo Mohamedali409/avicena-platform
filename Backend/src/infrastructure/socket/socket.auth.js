@@ -8,7 +8,7 @@ export const socketAuthMiddleware = (socket, next) => {
 
   try {
     const decode = verifyToken(token);
-    socket.userId = decode.userId;
+    socket.userId = decode.id || decode.userId;
     socket.role = decode.role || "patient";
     next();
   } catch (error) {

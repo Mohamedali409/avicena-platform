@@ -21,35 +21,42 @@ const registerChatHandlers = (io, socket) => {
         message,
       });
 
-      io.to(roomId).emit("chat:message", saved);
+      // broadcast to room except sender (sender already added it in UI)
+      socket.to(roomId).emit("chat:message", saved);
+      // confirm to sender
+      socket.emit("chat:message:sent", saved);
 
-      const notification = await notificationService.createNotification({
-        recipientId: receiverId,
-        recipientType: senderType === "doctor" ? "user" : "doctor",
-        type: "chat",
-        title: "New Message",
-        message: message.substring(0, 50),
-        data: { roomId, senderId: socket.userId },
-      });
-
-      emitNotification(receiverId, notification);
+      // send notification only if receiverId is valid
+      if (receiverId && receiverId !== "") {
+        const notification = await notificationService.createNotification({
+          recipientId: receiverId,
+          recipientType: senderType === "doctor" ? "user" : "doctor",
+          type: "chat",
+          title: "New Message",
+          message: message.substring(0, 50),
+          data: { roomId, senderId: socket.userId },
+        });
+        emitNotification(receiverId, notification);
+      }
     } catch (error) {
       socket.emit("chat:error", { message: error.message });
     }
   });
 
-  socket.on("chat:typing", ({ roomId, receiverId }) => {
-    io.to(roomId).emit("chat:typing", { roomId, senderId: socket.userId });
+  socket.on("chat:typing", ({ roomId }) => {
+    socket.to(roomId).emit("chat:typing", { roomId, senderId: socket.userId });
   });
 
-  socket.on("chat:stopTyping", ({ roomId, receiverId }) => {
-    io.to(roomId).emit("chat:stopTyping", { roomId, senderId: socket.userId });
+  socket.on("chat:stopTyping", ({ roomId }) => {
+    socket
+      .to(roomId)
+      .emit("chat:stopTyping", { roomId, senderId: socket.userId });
   });
 
   socket.on("chat:read", async ({ roomId }) => {
     try {
       await chatService.markRoomAsRead(roomId, socket.userId);
-      io.to(roomId).emit("chat:read", { roomId, readerId: socket.userId });
+      socket.to(roomId).emit("chat:read", { roomId, readerId: socket.userId });
     } catch (error) {
       socket.emit("chat:error", { message: error.message });
     }

@@ -71,4 +71,5 @@ export {
   getMessagesByRoom,
   markRoomMessageAsRead,
   getUnreadCountFromRoom,
+  getRoomsForParticipant,
 };

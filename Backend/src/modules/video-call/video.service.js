@@ -29,7 +29,7 @@ const acceptCall = async (callId) => {
   const call = await videoRepo.getCallById(callId);
   if (!call) throw new ApiError("The call not found", 404);
 
-  return videoRepo.updateCall(call, {
+  return videoRepo.updateCall(callId, {
     status: "ongoing",
     startedAt: new Date(),
   });

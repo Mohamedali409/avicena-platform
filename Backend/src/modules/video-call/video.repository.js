@@ -5,7 +5,7 @@ const createCall = async (data) => Call.create(data);
 const getCallById = async (id) => Call.findById(id);
 
 const updateCall = async (id, update) => {
-  Call.findByIdAndUpdate(id, update, { new: true });
+  return Call.findByIdAndUpdate(id, update, { new: true });
 };
 
 const getCallsForParticipant = async (

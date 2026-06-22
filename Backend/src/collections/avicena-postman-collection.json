@@ -1,16 +1,21 @@
 {
   "info": {
-    "name": "Avicena Platform API",
-    "description": "Complete API documentation for Avicena Healthcare SaaS Platform",
-    "version": "1.0.0",
+    "name": "Avicena Platform API v2",
+    "description": "Complete & corrected API collection for Avicena Healthcare Platform.\n\n**Auth Headers:**\n- Patient → `token`\n- Doctor  → `dtoken`\n- Admin   → `atoken`\n- Lab     → `ltoken`\n\nAlternatively use `Authorization: Bearer <jwt>` for all roles.",
+    "version": "2.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "baseUrl", "value": "http://localhost:4000", "type": "string" },
     { "key": "patientToken", "value": "", "type": "string" },
     { "key": "doctorToken", "value": "", "type": "string" },
     { "key": "adminToken", "value": "", "type": "string" },
-    { "key": "labToken", "value": "", "type": "string" }
+    { "key": "labToken", "value": "", "type": "string" },
+    { "key": "doctorId", "value": "", "type": "string" },
+    { "key": "appointmentId", "value": "", "type": "string" },
+    { "key": "consultationId", "value": "", "type": "string" },
+    { "key": "reportId", "value": "", "type": "string" },
+    { "key": "roomId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -23,11 +28,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('patientToken', res.data.token);",
-                  "  console.log('Patient token saved:', res.data.token);",
-                  "}"
+                  "const r = pm.response.json();",
+                  "if (r.data?.token) pm.collectionVariables.set('patientToken', r.data.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -38,7 +40,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Ahmed Mohamed\",\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"Test1234!\"\n}"
+              "raw": "{\n  \"name\": \"Test Patient\",\n  \"email\": \"newpatient@test.com\",\n  \"password\": \"Test@1234\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/register"
           }
@@ -50,10 +52,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('patientToken', res.data.token);",
-                  "}"
+                  "const r = pm.response.json();",
+                  "if (r.data?.token) pm.collectionVariables.set('patientToken', r.data.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -64,7 +64,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"Test1234!\"\n}"
+              "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"Patient@1234\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/login"
           }
@@ -76,10 +76,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('adminToken', res.data.token);",
-                  "}"
+                  "const r = pm.response.json();",
+                  "if (r.data?.token) pm.collectionVariables.set('adminToken', r.data.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -90,7 +88,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@avicena.com\",\n  \"password\": \"Admin1234!\"\n}"
+              "raw": "{\n  \"email\": \"admin@avicena.com\",\n  \"password\": \"Admin@1234\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/admin/login"
           }
@@ -102,10 +100,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('doctorToken', res.data.token);",
-                  "}"
+                  "const r = pm.response.json();",
+                  "if (r.data?.token) pm.collectionVariables.set('doctorToken', r.data.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -116,7 +112,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"doctor@avicena.com\",\n  \"password\": \"Doctor1234!\"\n}"
+              "raw": "{\n  \"email\": \"khaled.doc@avicena.com\",\n  \"password\": \"Doctor@1234\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/doctor/login"
           }
@@ -128,10 +124,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('labToken', res.data.token);",
-                  "}"
+                  "const r = pm.response.json();",
+                  "if (r.data?.token) pm.collectionVariables.set('labToken', r.data.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -142,13 +136,14 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"lab@avicena.com\",\n  \"password\": \"Lab1234!\"\n}"
+              "raw": "{\n  \"email\": \"cairo.lab@avicena.com\",\n  \"password\": \"Lab@1234\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/lab/login"
           }
         }
       ]
     },
+
     {
       "name": "👤 Patient",
       "item": [
@@ -168,16 +163,38 @@
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "name", "value": "Ahmed Mohamed Updated", "type": "text" },
-                { "key": "phone", "value": "01012345678", "type": "text" },
-                { "key": "image", "type": "file", "src": "" }
+                { "key": "name", "value": "Ahmed Updated", "type": "text" },
+                { "key": "phone", "value": "01099999999", "type": "text" },
+                { "key": "gender", "value": "Male", "type": "text" },
+                { "key": "dob", "value": "1995-06-15", "type": "text" },
+                { "key": "image", "type": "file", "src": "", "disabled": true }
               ]
             },
             "url": "{{baseUrl}}/api/user/profile"
           }
         },
         {
+          "name": "Get User Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "token", "value": "{{patientToken}}" }],
+            "url": "{{baseUrl}}/api/user/stats"
+          }
+        },
+        {
           "name": "Book Appointment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data?.appointment?._id) pm.collectionVariables.set('appointmentId', r.data.appointment._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -186,7 +203,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"docId\": \"DOCTOR_MONGO_ID\",\n  \"slotDate\": \"2025-08-15\",\n  \"slotTime\": \"10:00\"\n}"
+              "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"slotDate\": \"2025-09-10\",\n  \"slotTime\": \"10:00\"\n}"
             },
             "url": "{{baseUrl}}/api/user/appointments"
           }
@@ -209,7 +226,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/user/appointments/cancel"
           }
@@ -240,7 +257,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\",\n  \"docId\": \"DOCTOR_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"docId\": \"{{doctorId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/user/consultations/single"
           }
@@ -255,7 +272,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\",\n  \"consultTime\": \"14:00\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"consultTime\": \"14:00\"\n}"
             },
             "url": "{{baseUrl}}/api/user/consultations/time"
           }
@@ -270,26 +287,32 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\",\n  \"docId\": \"DOCTOR_MONGO_ID\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"docId\": \"{{doctorId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/user/consultations/cancel"
-          }
-        },
-        {
-          "name": "Get User Stats",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/user/stats"
           }
         }
       ]
     },
+
     {
       "name": "👨‍⚕️ Doctor",
       "item": [
         {
           "name": "Get Doctor List (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "const docs = r.data?.doctor;",
+                  "if (docs?.length) pm.collectionVariables.set('doctorId', docs[0]._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/doctor/list"
@@ -313,9 +336,17 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"about\": \"Experienced cardiologist\",\n  \"fees\": 200,\n  \"available\": true\n}"
+              "raw": "{\n  \"about\": \"Updated bio — cardiologist with 10 years experience.\",\n  \"fees\": 275,\n  \"available\": true\n}"
             },
             "url": "{{baseUrl}}/api/doctor/profile"
+          }
+        },
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/dashboard"
           }
         },
         {
@@ -336,7 +367,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/appointments/complete"
           }
@@ -351,13 +382,25 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/appointments/cancel"
           }
         },
         {
           "name": "Add Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data?.report?._id) pm.collectionVariables.set('reportId', r.data.report._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -366,7 +409,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\",\n  \"complaint\": \"Chest pain and shortness of breath\",\n  \"examination\": \"Blood pressure 140/90, HR 88\",\n  \"diagnosis\": \"Hypertension Stage 1\",\n  \"treatment\": \"Amlodipine 5mg daily\",\n  \"notes\": \"Patient advised to reduce salt intake\",\n  \"nextVisit\": \"2025-09-15\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"complaint\": \"Chest pain and shortness of breath\",\n  \"examination\": \"BP 140/90, HR 88 bpm, clear lung sounds\",\n  \"diagnosis\": \"Hypertension Stage 1\",\n  \"treatment\": \"Amlodipine 5mg once daily\",\n  \"notes\": \"Reduce salt intake, follow up in 1 month\",\n  \"nextVisit\": \"2025-10-10\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/reports"
           }
@@ -404,7 +447,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"reportId\": \"REPORT_MONGO_ID\",\n  \"diagnosis\": \"Hypertension Stage 2\",\n  \"treatment\": \"Amlodipine 10mg daily\"\n}"
+              "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"diagnosis\": \"Hypertension Stage 2\",\n  \"treatment\": \"Amlodipine 10mg once daily\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/reports"
           }
@@ -419,13 +462,25 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"reportId\": \"REPORT_MONGO_ID\"\n}"
+              "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/reports"
           }
         },
         {
           "name": "Create Consultation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data?.consultation?._id) pm.collectionVariables.set('consultationId', r.data.consultation._id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -434,7 +489,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"PATIENT_MONGO_ID\",\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\",\n  \"consultDay\": \"2025-08-20\",\n  \"notes\": \"Follow-up for hypertension management\",\n  \"amount\": 150\n}"
+              "raw": "{\n  \"userId\": \"PATIENT_MONGO_ID\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"consultDay\": \"2025-09-20\",\n  \"notes\": \"Follow-up for hypertension management\",\n  \"amount\": 180\n}"
             },
             "url": "{{baseUrl}}/api/doctor/consultations"
           }
@@ -457,7 +512,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/consultations/complete"
           }
@@ -472,17 +527,9 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\",\n  \"userId\": \"PATIENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"PATIENT_MONGO_ID\"\n}"
             },
             "url": "{{baseUrl}}/api/doctor/consultations/cancel"
-          }
-        },
-        {
-          "name": "Get Dashboard",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
-            "url": "{{baseUrl}}/api/doctor/dashboard"
           }
         },
         {
@@ -493,19 +540,8 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "dtoken", "value": "{{doctorToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"query\": \"Ahmed\"\n}"
-            },
+            "body": { "mode": "raw", "raw": "{\n  \"query\": \"Ahmed\"\n}" },
             "url": "{{baseUrl}}/api/doctor/search"
-          }
-        },
-        {
-          "name": "Clear Slots",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
-            "url": "{{baseUrl}}/api/doctor/slots"
           }
         },
         {
@@ -522,9 +558,18 @@
             },
             "url": "{{baseUrl}}/api/doctor/patient-stats"
           }
+        },
+        {
+          "name": "Clear Slots",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/slots"
+          }
         }
       ]
     },
+
     {
       "name": "🛡️ Admin",
       "item": [
@@ -544,19 +589,35 @@
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "name", "value": "Dr. Sara Ali", "type": "text" },
-                { "key": "email", "value": "sara@avicena.com", "type": "text" },
-                { "key": "password", "value": "Doctor1234!", "type": "text" },
-                { "key": "speciality", "value": "Cardiology", "type": "text" },
-                { "key": "degree", "value": "MBBS, MD", "type": "text" },
-                { "key": "experience", "value": "10", "type": "text" },
-                { "key": "about", "value": "Specialist in cardiovascular diseases", "type": "text" },
-                { "key": "fees", "value": "200", "type": "text" },
-                { "key": "phone", "value": "01098765432", "type": "text" },
+                { "key": "name", "value": "Dr. New Doctor", "type": "text" },
+                {
+                  "key": "email",
+                  "value": "new.doc@avicena.com",
+                  "type": "text"
+                },
+                { "key": "password", "value": "Doctor@1234", "type": "text" },
+                {
+                  "key": "speciality",
+                  "value": "General Medicine",
+                  "type": "text"
+                },
+                { "key": "degree", "value": "MBBS", "type": "text" },
+                { "key": "experience", "value": "5", "type": "text" },
+                {
+                  "key": "about",
+                  "value": "General practitioner",
+                  "type": "text"
+                },
+                { "key": "fees", "value": "150", "type": "text" },
+                { "key": "phone", "value": "01099990000", "type": "text" },
                 { "key": "start_booked", "value": "09:00", "type": "text" },
-                { "key": "consultation_fees", "value": "150", "type": "text" },
-                { "key": "address", "value": "{\"line1\":\"Nasr City\",\"line2\":\"Cairo\"}", "type": "text" },
-                { "key": "image", "type": "file", "src": "" }
+                { "key": "consultation_fees", "value": "100", "type": "text" },
+                {
+                  "key": "address",
+                  "value": "{\"line1\":\"Nasr City\",\"line2\":\"Cairo\"}",
+                  "type": "text"
+                },
+                { "key": "image", "type": "file", "src": "", "disabled": true }
               ]
             },
             "url": "{{baseUrl}}/api/admin/doctors"
@@ -580,7 +641,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"docId\": \"DOCTOR_MONGO_ID\"\n}"
+              "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/doctors"
           }
@@ -595,7 +656,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"docId\": \"DOCTOR_MONGO_ID\"\n}"
+              "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/doctors/availability"
           }
@@ -618,7 +679,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/appointment/cancel"
           }
@@ -633,7 +694,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"appointmentId\": \"APPOINTMENT_MONGO_ID\"\n}"
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/appointment/complete"
           }
@@ -647,6 +708,21 @@
           }
         },
         {
+          "name": "Get User Consultations",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "atoken", "value": "{{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"PATIENT_MONGO_ID\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/consultations/user"
+          }
+        },
+        {
           "name": "Cancel Consultation",
           "request": {
             "method": "PATCH",
@@ -656,7 +732,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/consultation/cancel"
           }
@@ -671,7 +747,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"consultationId\": \"CONSULTATION_MONGO_ID\"\n}"
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/consultation/complete"
           }
@@ -709,7 +785,22 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"reportId\": \"REPORT_MONGO_ID\"\n}"
+              "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/admin/report"
+          }
+        },
+        {
+          "name": "Edit Report",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "atoken", "value": "{{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"diagnosis\": \"Updated diagnosis\"\n}"
             },
             "url": "{{baseUrl}}/api/admin/report"
           }
@@ -734,7 +825,7 @@
           }
         },
         {
-          "name": "Toggle User Status",
+          "name": "Toggle User Status (Block/Unblock)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -747,27 +838,10 @@
             },
             "url": "{{baseUrl}}/api/admin/users/status"
           }
-        },
-        {
-          "name": "Add Lab",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                { "key": "name", "value": "Cairo Central Lab", "type": "text" },
-                { "key": "email", "value": "lab@avicena.com", "type": "text" },
-                { "key": "password", "value": "Lab1234!", "type": "text" },
-                { "key": "phone", "value": "01011112222", "type": "text" },
-                { "key": "image", "type": "file", "src": "" }
-              ]
-            },
-            "url": "{{baseUrl}}/api/lab"
-          }
         }
       ]
     },
+
     {
       "name": "🏥 Labs",
       "item": [
@@ -801,16 +875,43 @@
             "body": {
               "mode": "formdata",
               "formdata": [
-                { "key": "name", "value": "Cairo Central Lab Updated", "type": "text" },
-                { "key": "phone", "value": "01099998888", "type": "text" },
-                { "key": "image", "type": "file", "src": "" }
+                {
+                  "key": "name",
+                  "value": "Cairo Central Lab v2",
+                  "type": "text"
+                },
+                { "key": "phone", "value": "0225099999", "type": "text" },
+                { "key": "image", "type": "file", "src": "", "disabled": true }
               ]
             },
             "url": "{{baseUrl}}/api/lab/me/profile"
           }
+        },
+        {
+          "name": "Add Lab (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "New Test Lab", "type": "text" },
+                {
+                  "key": "email",
+                  "value": "newlab@avicena.com",
+                  "type": "text"
+                },
+                { "key": "password", "value": "Lab@1234", "type": "text" },
+                { "key": "phone", "value": "01011112222", "type": "text" },
+                { "key": "image", "type": "file", "src": "", "disabled": true }
+              ]
+            },
+            "url": "{{baseUrl}}/api/lab"
+          }
         }
       ]
     },
+
     {
       "name": "💬 Chat",
       "item": [
@@ -831,11 +932,23 @@
           }
         },
         {
-          "name": "Get Room ID with Other User",
+          "name": "Get Room ID with Doctor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data?.roomId) pm.collectionVariables.set('roomId', r.data.roomId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/chat/room/DOCTOR_MONGO_ID/id"
+            "url": "{{baseUrl}}/api/chat/room/{{doctorId}}/id"
           }
         },
         {
@@ -843,7 +956,7 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/chat/room/ROOM_ID"
+            "url": "{{baseUrl}}/api/chat/room/{{roomId}}"
           }
         },
         {
@@ -851,7 +964,7 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/chat/room/ROOM_ID/unread"
+            "url": "{{baseUrl}}/api/chat/room/{{roomId}}/unread"
           }
         },
         {
@@ -859,11 +972,12 @@
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/chat/room/ROOM_ID/read"
+            "url": "{{baseUrl}}/api/chat/room/{{roomId}}/read"
           }
         }
       ]
     },
+
     {
       "name": "🎥 Video Call",
       "item": [
@@ -893,6 +1007,7 @@
         }
       ]
     },
+
     {
       "name": "🔔 Notifications",
       "item": [
@@ -922,11 +1037,12 @@
         }
       ]
     },
+
     {
       "name": "💳 Subscriptions",
       "item": [
         {
-          "name": "Get Available Plans (Public)",
+          "name": "Get Plans (Public)",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/subscriptions/plans"
@@ -942,7 +1058,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"plan\": \"premium\",\n  \"paymentId\": \"PAY_12345\"\n}"
+              "raw": "{\n  \"plan\": \"premium\",\n  \"paymentId\": \"PAY_TEST_001\"\n}"
             },
             "url": "{{baseUrl}}/api/subscriptions"
           }
@@ -973,8 +1089,9 @@
         }
       ]
     },
+
     {
-      "name": "📋 Appointments (Shared)",
+      "name": "📋 Shared Lookups",
       "item": [
         {
           "name": "Get Appointment by ID",
@@ -982,35 +1099,25 @@
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
             "url": {
-              "raw": "{{baseUrl}}/api/appointment?id=APPOINTMENT_MONGO_ID",
-              "query": [{ "key": "id", "value": "APPOINTMENT_MONGO_ID" }]
+              "raw": "{{baseUrl}}/api/appointment?id={{appointmentId}}",
+              "query": [{ "key": "id", "value": "{{appointmentId}}" }]
             }
           }
-        }
-      ]
-    },
-    {
-      "name": "📄 Reports (Shared)",
-      "item": [
+        },
         {
           "name": "Get Report by ID",
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/report/REPORT_MONGO_ID"
+            "url": "{{baseUrl}}/api/report/{{reportId}}"
           }
-        }
-      ]
-    },
-    {
-      "name": "🩺 Consultations (Shared)",
-      "item": [
+        },
         {
           "name": "Get Consultation by ID",
           "request": {
             "method": "GET",
             "header": [{ "key": "token", "value": "{{patientToken}}" }],
-            "url": "{{baseUrl}}/api/consultation/CONSULTATION_MONGO_ID"
+            "url": "{{baseUrl}}/api/consultation/{{consultationId}}"
           }
         }
       ]
