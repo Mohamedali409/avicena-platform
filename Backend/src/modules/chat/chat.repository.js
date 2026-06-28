@@ -13,16 +13,11 @@ const getMessagesByRoom = async (roomId, { page = 1, limit = 30 } = {}) => {
     .limit(limit);
 };
 
-const markRoomMessageAsRead = async (rooId, readerId) => {
-  return ChatModel.updateMany(
-    {
-      rooId,
-      senderId: { $ne: readerId },
-      isRead: false,
-    },
-    { isRead: false },
+const markRoomMessageAsRead = async (roomId, readerId) =>
+  ChatModel.updateMany(
+    { roomId, senderId: { $ne: readerId }, isRead: false },
+    { isRead: true },
   );
-};
 
 const getUnreadCountFromRoom = async (roomId, readerId) => {
   return ChatModel.countDocuments({
