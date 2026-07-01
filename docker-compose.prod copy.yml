@@ -1,0 +1,71 @@
+name: avicena-prod
+
+networks:
+  avicena-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  redis-data:
+
+services:
+
+  mongo:
+    image: mongo:7.0
+    container_name: avicena-mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    expose:
+      - "27017"
+    networks:
+      - avicena-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: avicena-redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    expose:
+      - "6379"
+    networks:
+      - avicena-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: prod
+    container_name: avicena-backend
+    restart: always
+    env_file:
+      - ./Backend/.env
+    environment:
+      MONGODB_URL: mongodb://mongo:27017
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - avicena-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M

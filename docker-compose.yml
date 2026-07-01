@@ -1,0 +1,72 @@
+name: avicena
+
+networks:
+  avicena-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  redis-data:
+
+services:
+  # ── MongoDB ─────────────────────────────────────────
+  mongo:
+    image: mongo:7.0
+    container_name: avicena-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - avicena-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: avicena-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - avicena-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: avicena-backend
+    restart: unless-stopped
+    env_file:
+      - ./Backend/.env
+    environment:
+      # override الـ 127.0.0.1 بأسماء الـ containers
+      MONGODB_URL: mongodb://mongo:27017
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./Backend:/app
+      - /app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - avicena-net
