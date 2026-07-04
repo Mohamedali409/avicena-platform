@@ -1,8 +1,8 @@
 # 🏥 Avicena – Healthcare SaaS Platform
 
-Avicena is a full-stack, scalable Healthcare SaaS platform designed to connect patients, doctors, laboratories, and healthcare providers in a unified digital ecosystem.
+Avicena is a full-stack, scalable Healthcare SaaS platform designed to connect patients, doctors, laboratories, and admins in a unified digital ecosystem.
 
-Inspired by the legacy of Ibn Sina (Avicenna), the platform aims to digitize healthcare services through modern web technologies including real-time communication, video consultations, subscription-based access, and intelligent healthcare workflows.
+Inspired by the legacy of Ibn Sina (Avicenna), the platform digitizes healthcare services through real-time communication, video consultations, medical records management, and intelligent healthcare workflows — all containerized with Docker for consistent deployment.
 
 ---
 
@@ -11,227 +11,281 @@ Inspired by the legacy of Ibn Sina (Avicenna), the platform aims to digitize hea
 To build a complete digital healthcare SaaS ecosystem that enables:
 
 - Seamless communication between patients and doctors
-- Online appointment booking and management
-- Real-time medical consultations (chat & video)
+- Online appointment booking and consultation management
+- Real-time chat with doctor approval workflow
+- WebRTC video consultations
+- Medical reports with PDF generation and email delivery
 - Integration with laboratories and radiology centers
 - Subscription-based access model (SaaS)
-- Scalable architecture for future AI and automation features
+- Scalable Dockerized architecture ready for production
+
+---
+
+## ✅ Current Status
+
+| Feature | Status |
+|---|---|
+| Authentication (JWT + Google OAuth) | ✅ Done |
+| Patient & Doctor Management | ✅ Done |
+| Appointment System | ✅ Done |
+| Consultation System | ✅ Done |
+| Medical Reports + PDF | ✅ Done |
+| Real-time Chat (with approval flow) | ✅ Done |
+| Notifications System | ✅ Done |
+| Video Calls (WebRTC + Socket.io) | ✅ Done |
+| Labs Module | ✅ Done |
+| Subscription System | ✅ Done |
+| Redis Caching | ✅ Done |
+| Docker Containerization | ✅ Done |
+| Admin Dashboard | 🚧 In Progress |
+| BullMQ Email Queues | 🚧 In Progress |
+| RAG AI Medical Assistant | 🔜 Planned |
+| Payment Integration (Stripe) | 🔜 Planned |
 
 ---
 
 ## 🧠 Core Features
 
-### 👨‍⚕️ Users & Doctors
-
-- Patient registration & authentication
-- Doctor profiles with specialization and availability
-- Role-Based Access Control (RBAC)
+### 👤 Auth System
+- Patient registration & login
+- Google OAuth 2.0
+- Doctor & Lab login (separate endpoints)
+- Admin login (env-based credentials)
+- JWT-based authentication with RBAC
 
 ### 📅 Appointment System
+- Book, cancel appointments
+- Smart slot management (conflict-free)
+- Doctor availability scheduling
+- Email confirmation on booking
 
-- Book, cancel, and reschedule appointments
-- Smart doctor availability scheduling
-- Conflict-free booking system
-
-### 💬 Real-Time Chat System
-
-- Socket.io based live chat
-- Patient ↔ Doctor communication
+### 💬 Real-Time Chat (with Approval Flow)
+- Patient sends a chat request with an initial message
+- Doctor receives real-time notification and approves or rejects
+- After approval → full chat opens via Socket.io
+- Rejected patients can retry after a period
 - Message persistence in MongoDB
-- Online/offline presence tracking using Redis
+- Typing indicators + read receipts
 
 ### 🎥 Video Consultation
-
-- WebRTC-based video calls
+- WebRTC-based peer-to-peer video calls
 - Real-time signaling via Socket.io
-- Secure doctor-patient sessions
+- Secure doctor–patient sessions
 
 ### 🧾 Medical Records System
-
-- Consultation history tracking
-- Medical reports management
-- Prescriptions and patient history
-
-### 🏥 Labs & Radiology Integration
-
-- Lab centers management
-- Upload and view medical results
-- Doctor access to patient diagnostics
-
-### 💳 Subscription System (SaaS Model)
-
-- Free vs Paid plans
-- Feature-based access control
-- Subscription management system (future payments integration)
+- Doctors write reports after completed appointments
+- PDF generation and delivery via email (PDFKit + Nodemailer)
+- Full consultation history per patient
+- Prescriptions and treatment plans
 
 ### 🔔 Notifications System
+- Real-time in-app notifications (Socket.io)
+- Pagination + unread count
+- Supports: patient, doctor, admin
+- Types: appointment, consultation, report, chat, chat_request
 
-- Email notifications
-- Real-time in-app notifications
-- Event-driven system (planned with queues)
+### 🏥 Labs Module
+- Lab profiles with tests and pricing
+- Lab authentication (separate login)
+- Admin can add/manage labs
 
-### 📊 Admin Dashboard (Planned)
+### 💳 Subscription System
+- Free / Basic / Premium plans
+- Feature-based access control
+- Subscription lifecycle management
 
-- Platform analytics
-- User management
-- Revenue tracking
-- Doctor & lab verification system
-
-### 🤖 AI Chat Bot (Future Feature)
-
-- Medical assistant chatbot
-- Basic symptom guidance
-- Smart healthcare recommendations
+### 📊 Admin Dashboard
+- Doctor CRUD (add, remove, toggle availability)
+- User management (search, activate/deactivate)
+- All appointments and consultations overview
+- Reports management (edit, delete)
+- Platform statistics
 
 ---
 
 ## 🏗️ System Architecture
 
-The project follows a Modular Monolith Architecture using Clean Architecture principles, designed for future scalability into microservices.
-
-Frontend (React / Next.js)
-↓
-Backend API (Node.js / Express)
-↓
-
----
-
-Modules Layer:
-
-- Auth
-- Users
-- Doctors
-- Appointments
-- Chat
-- Video Call
-- Labs
-- Subscriptions
-- Notifications
-
----
-
-Infrastructure Layer:
-
-- MongoDB (Database)
-- Redis (Cache + Queue)
-- Socket.io (Real-time communication)
-- External Services (Email, Payments, AI)
+```
+Frontend (React + Vite) — 3 separate apps
+├── Patient App      :5173
+├── Doctor Dashboard :5174
+└── Admin Dashboard  :5175
+          │
+          ▼
+Backend API (Node.js / Express)  :4000
+          │
+    ┌─────┴──────┐
+    │            │
+Socket.io      REST API
+(real-time)   (HTTP)
+          │
+    ┌─────┴───────────────┐
+    │         │           │
+ MongoDB    Redis       BullMQ
+(Database) (Cache)     (Queues)
+```
 
 ---
 
 ## 🧱 Backend Structure
 
-src/
-├── modules/
-│ ├── auth
-│ ├── users
-│ ├── doctors
-│ ├── appointments
-│ ├── chat
-│ ├── video-call
-│ ├── consultations
-│ ├── reports
-│ ├── labs
-│ ├── subscriptions
-│ └── notifications
-│
-├── shared/
-│ ├── middleware
-│ ├── utils
-│ ├── errors
-│ └── guards (RBAC)
-│
-├── infrastructure/
-│ ├── database (MongoDB)
-│ ├── redis
-│ ├── socket
-│ ├── queue (BullMQ)
-│ └── external-services
-│
-├── config/
+```
+Backend/
+├── server.js
 ├── app.js
-└── server.js
+├── Dockerfile
+└── src/
+    ├── modules/
+    │   ├── auth/
+    │   ├── users/
+    │   │   ├── user.model.js
+    │   │   ├── patient/          ← patient controller + routes
+    │   │   └── admin/            ← admin controller + routes
+    │   ├── doctors/
+    │   ├── appointments/
+    │   ├── consultations/
+    │   ├── reports/
+    │   ├── chat/
+    │   │   ├── chat-request.model.js
+    │   │   ├── chat-request.service.js
+    │   │   └── chat.socket.js
+    │   ├── notifications/
+    │   ├── labs/
+    │   └── subscriptions/
+    │
+    ├── shared/
+    │   ├── guards/               ← auth / doctor / admin / lab
+    │   ├── middleware/           ← error, sanitize, rate-limit, multer
+    │   └── utils/                ← ApiError, ApiResponse, catchAsync, jwt, slots
+    │
+    └── infrastructure/
+        ├── database/
+        ├── redis/                ← client + cache service
+        ├── socket/               ← Socket.io server
+        ├── storage/              ← Cloudinary
+        ├── mail/                 ← Nodemailer
+        ├── pdf/                  ← PDFKit
+        └── queue/                ← BullMQ (planned)
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-Backend: Node.js, Express.js  
-Database: MongoDB + Mongoose  
-Real-time: Socket.io  
-Video Calls: WebRTC  
-Cache & Queue: Redis + BullMQ  
-Authentication: JWT + RBAC  
-File Storage: Cloudinary / AWS S3 (planned)
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Database | MongoDB + Mongoose |
+| Cache | Redis |
+| Real-time | Socket.io |
+| Video Calls | WebRTC |
+| Job Queues | BullMQ |
+| Authentication | JWT + Google OAuth |
+| File Storage | Cloudinary |
+| Email | Nodemailer (Gmail) |
+| PDF Generation | PDFKit |
+| Containerization | Docker + Docker Compose |
+| Input Validation | Zod |
+| Security | Helmet, XSS, Rate Limiting |
 
 ---
 
-## ⚙️ Setup Instructions
+## 🐳 Docker Setup
 
-git clone https://github.com/your-username/avicena-platform  
-npm install  
+The project is fully containerized with 3 services:
+
+```
+avicena-mongo    → MongoDB :27017
+avicena-redis    → Redis   :6379
+avicena-backend  → API     :4000
+```
+
+### Run with Docker (recommended)
+
+```bash
+git clone https://github.com/Mohamedali409/avicena-platform
+cd avicena-platform
+
+# Add your environment variables
+cp Backend/.env.example Backend/.env
+
+# Start all services
+docker compose up -d
+
+# View logs
+docker compose logs -f backend
+
+# Stop
+docker compose down
+```
+
+### Run locally (without Docker)
+
+```bash
+cd Backend
+npm install
 npm run dev
+```
 
 ---
 
 ## 🌱 Environment Variables
 
-PORT=5000  
-MONGO_URI=your_mongodb_uri  
-JWT_SECRET=your_secret  
-REDIS_URL=your_redis_url  
-EMAIL_SERVICE_KEY=your_key
+```env
+NODE_ENV=development
+PORT=4000
+FRONTEND_URL=http://localhost:5173
+ADMIN_URL=http://localhost:5174
+
+MONGODB_URL=mongodb://127.0.0.1:27017
+DB_NAME=avicena
+
+JWT_SECRET=your_secret_key
+
+ADMIN_EMAIL=admin@avicena.com
+ADMIN_PASSWORD=your_password
+
+REDIS_URL=redis://127.0.0.1:6379
+
+CLOUDINARY_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_SECRET_KEY=your_secret
+
+EMAIL_USER=your@gmail.com
+EMAIL_PASS=your_app_password
+```
 
 ---
 
 ## 🧭 Roadmap
 
-Phase 1 (MVP):
+**Phase 1 ✅ — Core System**
+- Auth, Doctors, Patients, Appointments, Consultations, Reports
 
-- Authentication system
-- Doctor & patient management
-- Appointment system
+**Phase 2 ✅ — Real-time**
+- Chat with approval flow, Notifications, Video Calls
 
-Phase 2:
+**Phase 3 ✅ — Infrastructure**
+- Redis caching, Docker, Labs, Subscriptions
 
-- Real-time chat
-- Notifications system
-- File uploads (reports)
+**Phase 4 🚧 — Production Ready**
+- BullMQ email queues, Admin dashboard, Stripe payments
 
-Phase 3:
-
-- Video consultation
-- Subscription system
-
-Phase 4:
-
-- Labs integration
-- Admin dashboard
-- Analytics system
-
-Phase 5 (Advanced):
-
-- AI chatbot assistant
-- Smart recommendations system
-- Mobile app (React Native)
-
----
-
-## 🎯 Project Goal
-
-Avicena is designed as a real-world SaaS healthcare platform simulating production-level architecture used in modern telemedicine systems.
+**Phase 5 🔜 — AI**
+- RAG system reads patient medical reports
+- AI medical assistant answers patient questions
+- Smart recommendations
 
 ---
 
 ## 👨‍💻 Author
 
-ENG Mohamed Ali  
-Full-Stack Developer  
-Project Type: SaaS Healthcare Platform  
-Purpose: Portfolio / Graduation Project / Startup Simulation
+**Mohamed Ali** — Full Stack Developer  
+🔗 [GitHub](https://github.com/Mohamedali409) · 📧 engmohamedali409@gmail.com
 
 ---
 
-## 📌 Status
+## 📌 Project Type
 
-🚧 Active Development (MVP Phase)
+> Portfolio · Graduation Capstone · SaaS Simulation · Production-Level Architecture
