@@ -7,7 +7,8 @@ import * as labRepository from "../../labs/labs.repository.js";
 import ApiError from "../../../shared/utils/ApiError.js";
 import { uploadImage } from "../../../infrastructure/storage/cloudinary.service.js";
 import { removeSlot } from "../../../shared/utils/slots.utils.js";
-
+import validator from "validator";
+import bcrypt from "bcryptjs";
 // ── Dashboard ─────────────────────────────────────────
 const getDashboard = async () => {
   const [doctors, users, appointments, consultations, reports, labs] =
@@ -52,7 +53,7 @@ const addDoctor = async (body, imageFile) => {
     phone,
     start_booked,
     consultation_fees,
-  } = req.body;
+  } = body;
 
   if (
     !name ||
@@ -191,7 +192,7 @@ const cancelConsultation = async ({ consultationId, userId, docId }) => {
     const slots = removeSlot(
       doctor.slots_booked,
       consultation.consultDay,
-      consultTime,
+      consultation.consultTime,
     );
     return await doctorRepository.findDoctorAndUpdate(docId, {
       slots_booked: slots,

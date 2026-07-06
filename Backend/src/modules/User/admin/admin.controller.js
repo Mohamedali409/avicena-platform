@@ -3,6 +3,7 @@ import Doctor from "../../doctors/doctor.model.js";
 import catchAsync from "../../../shared/utils/catchAsync.js";
 import * as adminService from "./admin.service.js";
 import { successResponse } from "../../../shared/utils/ApiResponse.js";
+
 // const createDoctor = (doctorData) => {
 //   return Doctor.create(doctorData);
 // };
@@ -16,7 +17,7 @@ const getDashboard = catchAsync(async (req, res) => {
 // Doctor
 const addDoctor = catchAsync(async (req, res) => {
   await adminService.addDoctor(req.body, req.file);
-  successResponse(req, "Doctor added success", {}, 201);
+  successResponse(res, "Doctor added success", {}, 201);
 });
 
 const getDoctors = catchAsync(async (req, res) => {
@@ -30,7 +31,7 @@ const removeDoctor = catchAsync(async (req, res) => {
 });
 
 const toggleAvailability = catchAsync(async (req, res) => {
-  await adminService.toggleDoctorAvailability(req.body, docId);
+  await adminService.toggleDoctorAvailability(req.body, req.body.docId);
   successResponse(res, "Doctor status updated success");
 });
 
@@ -42,7 +43,7 @@ const getAllAppointments = catchAsync(async (req, res) => {
 
 const canceledAppointment = catchAsync(async (req, res) => {
   await adminService.cancelAppointment(req.body.appointmentId);
-  successResponse(req, "appointment done canceled ");
+  successResponse(res, "appointment done canceled ");
 });
 
 const getUserAppointment = catchAsync(async (req, res) => {
@@ -87,7 +88,7 @@ const getAllReports = catchAsync(async (req, res) => {
 
 const getUserReports = catchAsync(async (req, res) => {
   const reports = await adminService.getAllReports();
-  successResponse(req, "Done get all user reports", { reports });
+  successResponse(res, "Done get all user reports", { reports });
 });
 
 const deleteReport = catchAsync(async (req, res) => {

@@ -4,6 +4,6 @@ import { authGuard } from "../../shared/guards/auth.guard.js";
 
 const router = Router();
 
-router.get("/", authGuard, appointmentController.getAppointmentById);
+router.get("/:id", authGuard, appointmentController.getAppointmentById);
 
 export default router;

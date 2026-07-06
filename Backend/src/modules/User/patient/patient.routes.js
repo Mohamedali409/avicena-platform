@@ -22,7 +22,7 @@ router.get("/reports", patientController.getReport);
 // Consultations
 router.get("/consultations", patientController.getAllConsultations);
 router.post("/consultations/single", patientController.getConsultation);
-router.post("/consultations/time", patientController.updateConsultationTime);
+router.patch("/consultations/time", patientController.updateConsultationTime);
 router.post("/consultations/cancel", patientController.cancelConsultation);
 
 //Stats

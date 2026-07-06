@@ -33,7 +33,7 @@ const consultationSchema = new mongoose.Schema({
     type: String,
     required: [true, "Consultation Day is required"],
   },
-  consulTime: {
+  consultTime: {
     type: String,
     required: [true, "Consultation Time is required"],
   },

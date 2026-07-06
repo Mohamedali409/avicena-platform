@@ -89,7 +89,7 @@ const cancelConsultation = catchAsync(async (req, res) => {
 });
 
 // Dashboard
-const getDashboard = catchAsync(async (Req, res) => {
+const getDashboard = catchAsync(async (req, res) => {
   const dashData = await doctorService.getDashboard(req.docId);
   successResponse(res, "Done get dashboard data", { dashData });
 });

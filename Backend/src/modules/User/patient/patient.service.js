@@ -218,7 +218,7 @@ const cancelAppointment = async (userId, appointmentId) => {
 
 // ──── Report ───────────────────────────────────────────
 const getReport = async (userId) => {
-  const cached = await getCache(`user:${userId}:reports`);
+  const cached = await getCache(`user:${userId}:report`);
   if (cached) return cached;
 
   const reports = await reportRepository.findReportByUserId(userId);
@@ -229,7 +229,7 @@ const getReport = async (userId) => {
 
 // ──── consultations ───────────────────────────────────────────
 const getAllConsultations = async (userId) => {
-  const cached = await getCache(`user:${userId}":consultations`);
+  const cached = await getCache(`user:${userId}:consultations`);
   if (cached) return cached;
 
   const consultations =
@@ -251,7 +251,11 @@ const getConsultation = async (userId, { appointmentId, docId }) => {
   if (!data)
     throw new ApiError("the doctor not selected consultation time", 404);
 
-  await setCache(`user:${userId}:consultation:${appointmentId}`, CACHE_TTL);
+  await setCache(
+    `user:${userId}:consultation:${appointmentId}`,
+    data,
+    CACHE_TTL,
+  );
   return data;
 };
 
@@ -337,7 +341,7 @@ const cancelConsultation = async (userId, { consultationId, docId }) => {
     consultation.consultDay,
     consultation.consultTime,
   );
-  await doctorRepository.findDoctorAndUpdate(docId, slots_booked);
+  await doctorRepository.findDoctorAndUpdate(docId, { slots_booked });
 
   await deleteCache(`user:${userId}:consultations`);
 };

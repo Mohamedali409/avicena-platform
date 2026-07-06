@@ -83,7 +83,7 @@ const loginPatient = async ({ email, password }) => {
 
   if (!match) throw new ApiError("Email or Password is required", 401);
 
-  if (!match) throw new ApiError("Invalid credentials", 401);
+  // if (!match) throw new ApiError("Invalid credentials", 401);
 
   const token = signToken({ id: user._id, role: "patient" });
   return {

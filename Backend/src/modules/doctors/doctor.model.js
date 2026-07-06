@@ -17,17 +17,17 @@ const doctorSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       select: false,
     },
-    confirmPassword: {
-      type: String,
-      required: [true, "Confirm Password is required"],
-      validate: {
-        validator: function (val) {
-          return val === this.password;
-        },
-        message: "Password are not match",
-      },
-      select: false,
-    },
+    // confirmPassword: {
+    //   type: String,
+    //   required: [true, "Confirm Password is required"],
+    //   validate: {
+    //     validator: function (val) {
+    //       return val === this.password;
+    //     },
+    //     message: "Password are not match",
+    //   },
+    //   select: false,
+    // },
     role: {
       type: String,
       enum: ["doctor", "lab"],

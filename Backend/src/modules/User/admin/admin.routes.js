@@ -31,7 +31,7 @@ router.patch("/consultation/complete", adminController.completeConsultation);
 //Router
 router.get("/reports", adminController.getAllReports);
 router.post("/reports/user", adminController.getUserReports);
-router.patch("/report", adminController.deleteReport);
+router.delete("/report", adminController.deleteReport);
 router.put("/report", adminController.editReport);
 
 // Users

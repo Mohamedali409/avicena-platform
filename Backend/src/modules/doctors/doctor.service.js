@@ -28,7 +28,7 @@ const getProfile = async (docId) => {
   const cached = await getCache(`doctor:${docId}:profile`);
   if (cached) return cached;
   const doctor = await doctorRepository.findDoctorById(docId);
-  await setCache(`doctor:${docId}:profile`);
+  await setCache(`doctor:${docId}:profile`, doctor, TTL);
   return doctor;
 };
 
@@ -128,9 +128,12 @@ const addReport = async (docId, body) => {
     notes,
     nextVisit,
     treatment: Array.isArray(treatment) ? treatment : JSON.parse(treatment),
+    userId: appointment.userId,
+    docId: appointment.docId,
     userData: appointment.userData,
     docData: appointment.docData,
     appointmentData: appointment,
+    appointmentId,
   });
 
   sendReportEmail(appointment.userData.email, report).catch(console.error);
@@ -310,7 +313,7 @@ const searchPatients = async (docId, q) => {
   const appointments = await appointmentRepository.findUserByQuery(docId, q);
 
   const users = await appointments.map((a) => a.userData);
-  return Array.form(new Map(users.map((u) => [u._id || u.phone, u])).values());
+  return Array.from(new Map(users.map((u) => [u._id || u.phone, u])).values());
 };
 
 // ── Slots ─────────────────────────────────────────────
@@ -324,7 +327,7 @@ const getPatientStats = async (userId) => {
     reportRepository.countDocumentsWiteUserId({ userId }),
   ]);
 
-  return { appointments: userAppointments, reports: userAppointments };
+  return { appointments: userAppointments, reports: userReports };
 };
 
 // ── Slots ─────────────────────────────────────────────

@@ -7,7 +7,7 @@ const reportSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "User id is required"],
     },
-    doctorId: {
+    docId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
       required: [true, "Doctor id is required"],
@@ -17,7 +17,7 @@ const reportSchema = new mongoose.Schema(
       ref: "Appointment",
       required: [true, "Appointment id is required"],
     },
-    doctorData: {
+    docData: {
       type: Object,
       required: [true, "Doctor data is required"],
     },
