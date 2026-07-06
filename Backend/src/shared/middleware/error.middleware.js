@@ -11,7 +11,6 @@ export const errorMiddleware = (err, req, res, next) => {
     statusCode = 409;
   }
 
-  // Mongoose validation error
   if (err.name === "ValidationError") {
     message = Object.values(err.errors)
       .map((e) => e.message)
@@ -28,7 +27,7 @@ export const errorMiddleware = (err, req, res, next) => {
     statusCode = 401;
   }
 
-  if (process.env.NODE_ENV === "development") console.error("❌ Error:", err);
+  if (process.env.NODE_ENV === "development") console.error(" Error:", err);
 
   if (process.env.NODE_ENV === "development") console.error("Error:", err);
 

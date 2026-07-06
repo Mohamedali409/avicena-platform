@@ -23,30 +23,31 @@ To build a complete digital healthcare SaaS ecosystem that enables:
 
 ## ✅ Current Status
 
-| Feature | Status |
-|---|---|
-| Authentication (JWT + Google OAuth) | ✅ Done |
-| Patient & Doctor Management | ✅ Done |
-| Appointment System | ✅ Done |
-| Consultation System | ✅ Done |
-| Medical Reports + PDF | ✅ Done |
-| Real-time Chat (with approval flow) | ✅ Done |
-| Notifications System | ✅ Done |
-| Video Calls (WebRTC + Socket.io) | ✅ Done |
-| Labs Module | ✅ Done |
-| Subscription System | ✅ Done |
-| Redis Caching | ✅ Done |
-| Docker Containerization | ✅ Done |
-| Admin Dashboard | 🚧 In Progress |
-| BullMQ Email Queues | 🚧 In Progress |
-| RAG AI Medical Assistant | 🔜 Planned |
-| Payment Integration (Stripe) | 🔜 Planned |
+| Feature                             | Status         |
+| ----------------------------------- | -------------- |
+| Authentication (JWT + Google OAuth) | ✅ Done        |
+| Patient & Doctor Management         | ✅ Done        |
+| Appointment System                  | ✅ Done        |
+| Consultation System                 | ✅ Done        |
+| Medical Reports + PDF               | ✅ Done        |
+| Real-time Chat (with approval flow) | ✅ Done        |
+| Notifications System                | ✅ Done        |
+| Video Calls (WebRTC + Socket.io)    | ✅ Done        |
+| Labs Module                         | ✅ Done        |
+| Subscription System                 | ✅ Done        |
+| Redis Caching                       | ✅ Done        |
+| Docker Containerization             | ✅ Done        |
+| Admin Dashboard                     | 🚧 In Progress |
+| BullMQ Email Queues                 | 🚧 In Progress |
+| RAG AI Medical Assistant            | 🔜 Planned     |
+| Payment Integration (Stripe)        | 🔜 Planned     |
 
 ---
 
 ## 🧠 Core Features
 
 ### 👤 Auth System
+
 - Patient registration & login
 - Google OAuth 2.0
 - Doctor & Lab login (separate endpoints)
@@ -54,12 +55,14 @@ To build a complete digital healthcare SaaS ecosystem that enables:
 - JWT-based authentication with RBAC
 
 ### 📅 Appointment System
+
 - Book, cancel appointments
 - Smart slot management (conflict-free)
 - Doctor availability scheduling
 - Email confirmation on booking
 
 ### 💬 Real-Time Chat (with Approval Flow)
+
 - Patient sends a chat request with an initial message
 - Doctor receives real-time notification and approves or rejects
 - After approval → full chat opens via Socket.io
@@ -68,33 +71,39 @@ To build a complete digital healthcare SaaS ecosystem that enables:
 - Typing indicators + read receipts
 
 ### 🎥 Video Consultation
+
 - WebRTC-based peer-to-peer video calls
 - Real-time signaling via Socket.io
 - Secure doctor–patient sessions
 
 ### 🧾 Medical Records System
+
 - Doctors write reports after completed appointments
 - PDF generation and delivery via email (PDFKit + Nodemailer)
 - Full consultation history per patient
 - Prescriptions and treatment plans
 
 ### 🔔 Notifications System
+
 - Real-time in-app notifications (Socket.io)
 - Pagination + unread count
 - Supports: patient, doctor, admin
 - Types: appointment, consultation, report, chat, chat_request
 
 ### 🏥 Labs Module
+
 - Lab profiles with tests and pricing
 - Lab authentication (separate login)
 - Admin can add/manage labs
 
 ### 💳 Subscription System
+
 - Free / Basic / Premium plans
 - Feature-based access control
 - Subscription lifecycle management
 
 ### 📊 Admin Dashboard
+
 - Doctor CRUD (add, remove, toggle availability)
 - User management (search, activate/deactivate)
 - All appointments and consultations overview
@@ -172,22 +181,22 @@ Backend/
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js |
-| Framework | Express.js |
-| Database | MongoDB + Mongoose |
-| Cache | Redis |
-| Real-time | Socket.io |
-| Video Calls | WebRTC |
-| Job Queues | BullMQ |
-| Authentication | JWT + Google OAuth |
-| File Storage | Cloudinary |
-| Email | Nodemailer (Gmail) |
-| PDF Generation | PDFKit |
-| Containerization | Docker + Docker Compose |
-| Input Validation | Zod |
-| Security | Helmet, XSS, Rate Limiting |
+| Layer            | Technology                 |
+| ---------------- | -------------------------- |
+| Runtime          | Node.js                    |
+| Framework        | Express.js                 |
+| Database         | MongoDB + Mongoose         |
+| Cache            | Redis                      |
+| Real-time        | Socket.io                  |
+| Video Calls      | WebRTC                     |
+| Job Queues       | BullMQ                     |
+| Authentication   | JWT + Google OAuth         |
+| File Storage     | Cloudinary                 |
+| Email            | Nodemailer (Gmail)         |
+| PDF Generation   | PDFKit                     |
+| Containerization | Docker + Docker Compose    |
+| Input Validation | Zod                        |
+| Security         | Helmet, XSS, Rate Limiting |
 
 ---
 
@@ -261,18 +270,23 @@ EMAIL_PASS=your_app_password
 ## 🧭 Roadmap
 
 **Phase 1 ✅ — Core System**
+
 - Auth, Doctors, Patients, Appointments, Consultations, Reports
 
 **Phase 2 ✅ — Real-time**
+
 - Chat with approval flow, Notifications, Video Calls
 
 **Phase 3 ✅ — Infrastructure**
+
 - Redis caching, Docker, Labs, Subscriptions
 
 **Phase 4 🚧 — Production Ready**
+
 - BullMQ email queues, Admin dashboard, Stripe payments
 
 **Phase 5 🔜 — AI**
+
 - RAG system reads patient medical reports
 - AI medical assistant answers patient questions
 - Smart recommendations

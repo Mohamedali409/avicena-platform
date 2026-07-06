@@ -12,7 +12,6 @@ export const adminGuard = catchAsync(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  // Admin token stores email+password string (legacy) OR { role: 'admin' }
   if (
     decoded !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD &&
     decoded?.role !== "admin"

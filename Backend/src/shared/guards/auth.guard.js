@@ -2,10 +2,6 @@ import jwt from "jsonwebtoken";
 import ApiError from "../utils/ApiError.js";
 import catchAsync from "../utils/catchAsync.js";
 
-/**
- * Verifies the JWT from Authorization header or legacy token/dtoken/atoken headers.
- * Attaches decoded id to req.userId / req.user
- */
 export const authGuard = catchAsync(async (req, res, next) => {
   const token =
     req.headers.authorization?.split(" ")[1] ||
