@@ -1,6 +1,7 @@
 import * as authService from "./auth.service.js";
 import * as messageResponse from "../../shared/utils/ApiResponse.js";
 import catchAsync from "../../shared/utils/catchAsync.js";
+import { refreshAccessToken, logout } from "./auth.service.js";
 
 const register = catchAsync(async (req, res) => {
   console.log("BODY => ", req.body);
@@ -34,4 +35,23 @@ const labLogin = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Lab Login Successfully", data);
 });
 
-export { register, login, adminLogin, doctorLogin, labLogin };
+const refresh = catchAsync(async (req, res) => {
+  const { refreshToken } = req.body;
+  const data = await refreshAccessToken(refreshToken);
+  messageResponse.successResponse(res, "token is refreshed", data);
+});
+
+const logoutUser = catchAsync(async (req, res) => {
+  await logout(req.userId);
+  messageResponse.successResponse(res, "logout successfully");
+});
+
+export {
+  register,
+  login,
+  adminLogin,
+  doctorLogin,
+  labLogin,
+  refresh,
+  logoutUser,
+};

@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 
 const FROM = `Avicena <${process.env.EMAIL_USER}>`;
 
-export const sendWelcomeEmail = async (toEmail, name) => {
+const sendWelcomeEmail = async (toEmail, name) => {
   await transporter.sendMail({
     from: FROM,
     to: toEmail,
@@ -25,12 +25,7 @@ export const sendWelcomeEmail = async (toEmail, name) => {
   });
 };
 
-export const sendAppointmentEmail = async (
-  toEmail,
-  name,
-  appointment,
-  docData,
-) => {
+const sendAppointmentEmail = async (toEmail, name, appointment, docData) => {
   await transporter.sendMail({
     from: FROM,
     to: toEmail,
@@ -51,7 +46,7 @@ export const sendAppointmentEmail = async (
   });
 };
 
-export const sendConsultationEmail = async (
+const sendConsultationEmail = async (
   toEmail,
   name,
   docData,
@@ -78,7 +73,7 @@ export const sendConsultationEmail = async (
   });
 };
 
-export const sendReportEmail = async (toEmail, report) => {
+const sendReportEmail = async (toEmail, report) => {
   const pdfBuffer = await generateReportPDF(report);
   await transporter.sendMail({
     from: FROM,
@@ -93,4 +88,11 @@ export const sendReportEmail = async (toEmail, report) => {
       },
     ],
   });
+};
+
+export {
+  sendWelcomeEmail,
+  sendAppointmentEmail,
+  sendConsultationEmail,
+  sendReportEmail,
 };

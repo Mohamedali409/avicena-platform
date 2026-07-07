@@ -70,6 +70,25 @@ const completeAppointment = (appointmentId) => {
 const findAppointmentByDoctorId = (docId) => {
   return Appointment.find({ docId }).sort({ date: -1 });
 };
+
+const findConflictingAppointment = (userId, slotDate, slotTime) => {
+  return Appointment.findOne({
+    userId,
+    slotDate,
+    slotTime,
+    cancelled: false,
+  });
+};
+
+const findAllAppointmentByUserIdPaginated = (userId, skip, limit) => {
+  return Promise.all([
+    Appointment.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    Appointment.countDocuments({ userId }),
+  ]);
+};
 export {
   findById,
   createAppointment,
@@ -86,4 +105,6 @@ export {
   completeAppointment,
   findAppointmentByDoctorId,
   findAppointmentByIdAndUpdate,
+  findConflictingAppointment,
+  findAllAppointmentByUserIdPaginated,
 };

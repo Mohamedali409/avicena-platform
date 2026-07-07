@@ -3,6 +3,10 @@ import {
   getCache,
   setCache,
 } from "../../../infrastructure/redis/cache.service.js";
+import {
+  parsePagination,
+  paginatedResponse,
+} from "../../../shared/utils/pagination.js";
 import { uploadImage } from "../../../infrastructure/storage/cloudinary.service.js";
 import ApiError from "../../../shared/utils/ApiError.js";
 import * as userRepository from "../user.repository.js";
@@ -150,6 +154,15 @@ const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
     throw new ApiError("User not found", 404);
   }
 
+  // منع المريض من حجز نفس اليوم والوقت مع دكتور آخر
+  const conflict = await appointmentRepository.findConflictingAppointment(
+    userId,
+    slotDate,
+    slotTime,
+  );
+  if (conflict)
+    throw new ApiError("لديك حجز بالفعل في نفس اليوم والوقت مع دكتور آخر", 409);
+
   const slots_booked = addSlot(doctor.slots_booked, slotDate, slotTime);
 
   await doctorRepository.findDoctorAndUpdate(docId, {
@@ -179,15 +192,23 @@ const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
   return appointment;
 };
 
-const listAppointment = async (userId) => {
-  const cached = await getCache(`user:${userId}:appointments`);
+const listAppointment = async (userId, query = {}) => {
+  const { page, limit, skip } = parsePagination(query);
+  const cacheKey = `user:${userId}:appointments:${page}:${limit}`;
+
+  const cached = await getCache(cacheKey);
   if (cached) return cached;
 
-  const appointment =
-    await appointmentRepository.findAllAppointmentByUserId(userId);
+  const [appointments, total] =
+    await appointmentRepository.findAllAppointmentByUserIdPaginated(
+      userId,
+      skip,
+      limit,
+    );
 
-  await setCache(`user:${userId}:appointments`, appointment, CACHE_TTL);
-  return appointment;
+  const result = paginatedResponse(appointments, total, page, limit);
+  await setCache(cacheKey, result, CACHE_TTL);
+  return result;
 };
 
 const cancelAppointment = async (userId, appointmentId) => {
@@ -305,7 +326,7 @@ const updateConsultationTime = async (
     consultTime,
   );
 
-  sendConsultationEmail(
+  queueConsultationEmail(
     consultation.userData.email,
     consultation.userData.name,
     consultation.docData,

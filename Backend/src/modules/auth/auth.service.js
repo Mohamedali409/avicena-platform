@@ -13,6 +13,15 @@ import { signToken } from "../../shared/utils/jwt.utlis.js";
 import * as doctorRepository from "../doctors/doctor.repository.js";
 import * as labRepository from "../labs/labs.repository.js";
 import * as userRepository from "../User/user.repository.js";
+import {
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../../shared/utils/jwt.utlis.js";
+import {
+  saveRefreshToken,
+  getRefreshToken,
+  deleteRefreshToken,
+} from "../../infrastructure/redis/session.service.js";
 
 // import User from "../User/user.model.js";
 // // auth.service.js
@@ -177,4 +186,42 @@ const loginAdmin = async ({ email, password }) => {
   };
 };
 
-export { registerPatient, loginPatient, loginDoctor, loginAdmin, loginLab };
+const issueTokens = async (payload) => {
+  const accessToken = signToken(payload);
+  const refreshToken = signRefreshToken(payload);
+  await saveRefreshToken(payload.id, refreshToken);
+  return { accessToken, refreshToken };
+};
+
+const refreshAccessToken = async (refreshToken) => {
+  if (!refreshToken) throw new ApiError("Refresh Token is required ", 400);
+
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch (error) {
+    throw new ApiError("The Refresh Token Is Ended ", 401);
+  }
+
+  const stored = await getRefreshToken(decoded.id);
+  if (!stored || stored !== refreshToken)
+    throw new ApiError("The Refresh Token Is Ended ", 401);
+
+  const accessToken = signToken({ id: decoded.id, role: decoded.role });
+  return { accessToken };
+};
+
+const logout = async (userId) => {
+  await deleteRefreshToken(userId);
+};
+
+export {
+  registerPatient,
+  loginPatient,
+  loginDoctor,
+  loginAdmin,
+  loginLab,
+  issueTokens,
+  refreshAccessToken,
+  logout,
+};
