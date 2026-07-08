@@ -1,3 +1,4 @@
+import { indexReport } from "../../infrastructure/ai/rag.service.js";
 import {
   deleteCache,
   getCache,
