@@ -137,6 +137,9 @@ const addReport = async (docId, body) => {
     appointmentId,
   });
 
+  // أضف التقرير للـ Vector DB
+  await indexReport(report);
+
   sendReportEmail(appointment.userData.email, report).catch(console.error);
   return report;
 };
@@ -324,8 +327,8 @@ const clearDoctorSlots = async (docId) => {
 
 const getPatientStats = async (userId) => {
   const [userAppointments, userReports] = await Promise.all([
-    appointmentRepository.countDocumentsWiteUserId(userId),
-    reportRepository.countDocumentsWiteUserId({ userId }),
+    appointmentRepository.getCountDocumentsByUserId(userId),
+    reportRepository.getCountDocumentsByUserId({ userId }),
   ]);
 
   return { appointments: userAppointments, reports: userReports };

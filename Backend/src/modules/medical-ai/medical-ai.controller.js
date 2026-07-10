@@ -37,7 +37,7 @@ export const askQuestion = catchAsync(async (req, res) => {
   if (question.trim().length < 3) {
     throw new ApiError("The question is short", 400);
   }
-  const answer = await askAboutPatient(userId, question, (chatHistory = []));
+  const answer = await askAboutPatient(userId, question, chatHistory || []);
   successResponse(res, "Question answered successfully.", { answer, question });
 });
 

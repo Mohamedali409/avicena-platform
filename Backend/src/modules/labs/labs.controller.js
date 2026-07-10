@@ -9,7 +9,7 @@ const getAllLabs = catchAsync(async (req, res) => {
 
 const getLabById = catchAsync(async (req, res) => {
   const lab = await labService.getLabById(req.params.id);
-  successResponse(req, "Done get labe ", { lab });
+  successResponse(res, "Done get labe ", { lab });
 });
 
 const getLabProfile = catchAsync(async (req, res) => {

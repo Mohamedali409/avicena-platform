@@ -89,6 +89,11 @@ const findAllAppointmentByUserIdPaginated = (userId, skip, limit) => {
     Appointment.countDocuments({ userId }),
   ]);
 };
+
+const getCountDocumentsByUserId = (userId) => {
+  return Report.countDocuments(userId);
+};
+
 export {
   findById,
   createAppointment,
@@ -107,4 +112,5 @@ export {
   findAppointmentByIdAndUpdate,
   findConflictingAppointment,
   findAllAppointmentByUserIdPaginated,
+  getCountDocumentsByUserId,
 };

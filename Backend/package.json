@@ -13,7 +13,7 @@
   "description": "",
   "dependencies": {
     "@cerebras/cerebras_cloud_sdk": "^1.64.1",
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^2.11.0",
     "@qdrant/js-client-rest": "^1.18.0",
     "axios": "^1.16.0",
     "bcrypt": "^6.0.0",

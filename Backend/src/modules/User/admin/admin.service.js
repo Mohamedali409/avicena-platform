@@ -22,7 +22,7 @@ const getDashboard = async () => {
     ]);
 
   const [lastAppointment, lastConsultation] = await Promise.all([
-    appointmentRepository.lastAppointment(),
+    appointmentRepository.getLastAppointment(),
     consultationRepository.lastConsultation(),
   ]);
 

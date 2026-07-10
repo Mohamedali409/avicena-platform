@@ -16,7 +16,7 @@ import chatRouter from "./src/modules/chat/chat.routes.js";
 import videoRouter from "./src/modules/video-call/video.routes.js";
 import notificationRouter from "./src/modules/notifications/notification.routes.js";
 import subscriptionRouter from "./src/modules/subscriptions/subscription.routes.js";
-import medicalAiRouter from "./src/modules/medical-ai/medical-ai.routes.js";
+import medicalAiRouter from "./src/modules/medical-ai/medical.ai.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";

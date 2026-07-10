@@ -1,19 +1,19 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import "dotenv/config";
+import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
-// هنا هحول النص
+export const embedText = async (text) => {
+  const response = await ai.models.embedContent({
+    model: "gemini-embedding-001",
+    contents: text,
+  });
 
-const embedText = async (text) => {
-  const result = await model.embedContent(text);
-  return result.embedding.values;
+  return response.embeddings[0].values;
 };
 
-// تحويل كل ال vectors النصوص مره وحده
-const embedBatch = async (texts) => {
-  const results = await Promise.all(texts.map((t) => embedBatch(t)));
-  return results;
+export const embedBatch = async (texts) => {
+  return Promise.all(texts.map(embedText));
 };
-
-export { embedText, embedBatch };

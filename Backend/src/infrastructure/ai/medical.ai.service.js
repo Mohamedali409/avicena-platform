@@ -22,57 +22,38 @@ Important rules:
 - When possible, reference the relevant medical report or report date that supports your answer.`;
 
 export const generatePatientSummary = async (userId) => {
-  const reports = await Report.find({ userId }).sort({ createdAt: -1 });
-  // تحميل كل التقارير وعمل index لو مش متعمل
+  const reports = await Report.find({ userId });
+
   if (!reports.length) {
     return {
-      summary: "No previous medical records are available for this patient.",
+      summary: "No previous medical records are available.",
       reportsCount: 0,
     };
   }
-};
 
+  await indexAllReportsForUser(reports);
+
+  return {
+    summary: `${reports.length} reports indexed successfully.`,
+    reportsCount: reports.length,
+  };
+};
 /**
  * الدكتور يسأل سؤال عن المريض
  */
 
 export const askAboutPatient = async (userId, question, chatHistory = []) => {
-  // البحث في الـ vector DB
+  const reports = await Report.find({ userId });
+
+  if (!reports.length) {
+    return "There are no available medical reports to answer this question.";
+  }
+
+  await indexAllReportsForUser(reports);
 
   const relevantChunks = await searchReports(question, userId, 5);
 
   if (!relevantChunks.length) {
     return "There are no available medical reports to answer this question.";
   }
-
-  const context = relevantChunks
-    .map(
-      (c) =>
-        `[${c.section} - ${new Date(c.date).toLocaleDateString("ar-EG")}]\n${c.text}`,
-    )
-    .join("\n---\n");
-
-  // بناء الـ messages مع history للمحادثةconst
-  const messages = [
-    { role: "system", context: SYSTEM_PROMPT },
-    ...chatHistory.slice(-6),
-    {
-      role: "user",
-      content: `Context retrieved from the patient's medical records:
-
-        ${context}
-
-        Based only on the information above, answer the physician's question.
-
-        Physician's Question:
-        ${question}`,
-    },
-  ];
-  const response = await cerebras.chat.completions.create({
-    model: "llama-4-scout-17b-16e-instruct",
-    max_tokens: 600,
-    messages,
-  });
-
-  return response.choices[0].message.content;
 };

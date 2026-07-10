@@ -7,9 +7,9 @@ networks:
 volumes:
   mongo-data:
   redis-data:
+  qdrant-data:
 
 services:
-
   mongo:
     image: mongo:7.0
     container_name: avicena-mongo
@@ -55,6 +55,7 @@ services:
     environment:
       MONGODB_URL: mongodb://mongo:27017
       REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
       NODE_ENV: production
     ports:
       - "4000:4000"

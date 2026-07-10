@@ -11,7 +11,7 @@ const getDoctorList = catchAsync(async (req, res) => {
 // Profile
 const getProfile = catchAsync(async (req, res) => {
   const doctorInfo = await doctorService.getProfile(req.docId);
-  successResponse(req, "Doctor Profile ", { doctorInfo });
+  successResponse(res, "Doctor Profile ", { doctorInfo });
 });
 
 const updateProfile = catchAsync(async (req, res) => {

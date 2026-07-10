@@ -5,7 +5,8 @@ const client = new QdrantClient({
 });
 
 export const COLLECTION_NAME = "medical_reports";
-export const VECTOR_SIZE = 768;
+// export const VECTOR_SIZE = 768;
+export const VECTOR_SIZE = 3072;
 
 export const initQdrant = async () => {
   try {

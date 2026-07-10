@@ -44,7 +44,7 @@ const cancelAppointment = catchAsync(async (req, res) => {
 });
 const getReport = catchAsync(async (req, res) => {
   const reports = await patientServers.getReport(req.userId);
-  successResponse(req, "Get All Report Done", { reports });
+  successResponse(res, "Get All Report Done", { reports });
 });
 
 const getAllConsultations = catchAsync(async (req, res) => {
