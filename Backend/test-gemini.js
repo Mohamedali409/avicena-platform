@@ -39,14 +39,27 @@
 //   console.error(err);
 // }
 
-import "dotenv/config";
-import qdrantClient, {
-  COLLECTION_NAME,
-} from "./src/infrastructure/ai/qdrant.client.js";
+// import "dotenv/config";
+// import qdrantClient, {
+//   COLLECTION_NAME,
+// } from "./src/infrastructure/ai/qdrant.client.js";
 
-try {
-  await qdrantClient.deleteCollection(COLLECTION_NAME);
-  console.log("Collection deleted successfully.");
-} catch (err) {
-  console.error(err);
-}
+// try {
+//   await qdrantClient.deleteCollection(COLLECTION_NAME);
+//   console.log("Collection deleted successfully.");
+// } catch (err) {
+//   console.error(err);
+// }
+
+import Cerebras from "@cerebras/cerebras_cloud_sdk/index.mjs";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const client = new Cerebras({
+  apiKey: process.env.CEREBRAS_API_KEY,
+});
+
+const models = await client.models.list();
+
+console.log(models);

@@ -29,7 +29,10 @@ const getReportById = (reportId) => {
 };
 
 const updateReport = (reportId, data) => {
-  return Report.findByIdAndUpdate(reportId, data, { new: true });
+  return Report.findByIdAndUpdate(reportId, data, {
+    new: true,
+    runValidators: true,
+  });
 };
 
 const getReportWithDoctor = (docId) => {

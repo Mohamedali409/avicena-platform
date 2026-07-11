@@ -147,3 +147,18 @@ export const deleteUserVectors = async (userId) => {
     },
   });
 };
+
+export const deleteReportVectors = async (reportId) => {
+  await qdrantClient.delete(COLLECTION_NAME, {
+    filter: {
+      must: [
+        {
+          key: "reportId",
+          match: {
+            value: reportId.toString(),
+          },
+        },
+      ],
+    },
+  });
+};

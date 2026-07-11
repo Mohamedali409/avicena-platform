@@ -1,4 +1,7 @@
-import { indexReport } from "../../infrastructure/ai/rag.service.js";
+import {
+  deleteReportVectors,
+  indexReport,
+} from "../../infrastructure/ai/rag.service.js";
 import {
   deleteCache,
   getCache,
@@ -137,10 +140,14 @@ const addReport = async (docId, body) => {
     appointmentId,
   });
 
-  // أضف التقرير للـ Vector DB
-  await indexReport(report);
+  try {
+    await indexReport(report);
+  } catch (err) {
+    console.error("Failed to index report:", err);
+  }
 
   sendReportEmail(appointment.userData.email, report).catch(console.error);
+
   return report;
 };
 
@@ -173,7 +180,7 @@ const editReport = async (docId, reportId, body) => {
   const { complaint, examination, diagnosis, treatment, notes, nextVisit } =
     body;
 
-  await reportRepository.updateReport(reportId, {
+  const updatedReport = await reportRepository.updateReport(reportId, {
     complaint,
     examination,
     diagnosis,
@@ -182,17 +189,37 @@ const editReport = async (docId, reportId, body) => {
     nextVisit,
   });
 
+  try {
+    await deleteReportVectors(reportId);
+    await indexReport(updatedReport);
+  } catch (err) {
+    console.error("Failed to reindex report:", err);
+  }
+
   await deleteCache(`doctor:${docId}:reports`);
 };
 
 const deleteReport = async (docId, reportId) => {
   const report = await reportRepository.getReportById(reportId);
-  if (!report) throw new ApiError("The report not found", 404);
-  if (report.docId.toString() !== docId)
+
+  if (!report) {
+    throw new ApiError("The report not found", 404);
+  }
+
+  if (report.docId.toString() !== docId) {
     throw new ApiError("Not Authorization for you", 403);
+  }
 
   await reportRepository.removeReport(reportId);
+
+  try {
+    await deleteReportVectors(reportId);
+  } catch (err) {
+    console.error("Failed to delete vectors:", err);
+  }
+
   await deleteCache(`doctor:${docId}:reports`);
+  await deleteCache(`doctor:${docId}:user:${report.userId}:reports`);
 };
 
 // ── Consultations ─────────────────────────────────────

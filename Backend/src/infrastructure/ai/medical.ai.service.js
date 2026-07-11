@@ -1,8 +1,10 @@
 import Cerebras from "@cerebras/cerebras_cloud_sdk/index.mjs";
-import { searchReports, indexAllReportsForUser } from "./rag.service.js";
+import { searchReports } from "./rag.service.js";
 import Report from "../../modules/report/report.model.js";
 
-const cerebras = new Cerebras({ apiKey: process.env.CEREBRAS_API_KEY });
+const cerebras = new Cerebras({
+  apiKey: process.env.CEREBRAS_API_KEY,
+});
 
 const SYSTEM_PROMPT = `You are an intelligent medical assistant designed to support physicians during patient consultations.
 
@@ -21,8 +23,11 @@ Important rules:
 - If the available information is insufficient to answer the question, clearly state that the reports do not contain enough information.
 - When possible, reference the relevant medical report or report date that supports your answer.`;
 
+/**
+ * Generate a simple summary about patient's reports
+ */
 export const generatePatientSummary = async (userId) => {
-  const reports = await Report.find({ userId });
+  const reports = await Report.find({ userId }).sort({ createdAt: -1 });
 
   if (!reports.length) {
     return {
@@ -31,29 +36,72 @@ export const generatePatientSummary = async (userId) => {
     };
   }
 
-  await indexAllReportsForUser(reports);
-
   return {
-    summary: `${reports.length} reports indexed successfully.`,
+    summary: `${reports.length} medical report(s) available.`,
     reportsCount: reports.length,
   };
 };
+
 /**
- * الدكتور يسأل سؤال عن المريض
+ * Answer doctor's question using RAG
  */
-
 export const askAboutPatient = async (userId, question, chatHistory = []) => {
-  const reports = await Report.find({ userId });
+  try {
+    const relevantChunks = await searchReports(question, userId, 5);
 
-  if (!reports.length) {
-    return "There are no available medical reports to answer this question.";
-  }
+    console.log("Relevant Chunks:", relevantChunks.length);
 
-  await indexAllReportsForUser(reports);
+    if (!relevantChunks.length) {
+      return "There are no available medical reports to answer this question.";
+    }
 
-  const relevantChunks = await searchReports(question, userId, 5);
+    const context = relevantChunks
+      .map(
+        (chunk) =>
+          `[${chunk.section} - ${new Date(chunk.date).toLocaleDateString(
+            "ar-EG",
+          )}]\n${chunk.text}`,
+      )
+      .join("\n\n-------------------------\n\n");
 
-  if (!relevantChunks.length) {
-    return "There are no available medical reports to answer this question.";
+    console.log("Context:\n", context);
+
+    const messages = [
+      {
+        role: "system",
+        content: SYSTEM_PROMPT,
+      },
+      ...chatHistory.slice(-6),
+      {
+        role: "user",
+        content: `Context retrieved from the patient's medical records:
+
+${context}
+
+Based ONLY on the information above, answer the physician's question.
+
+If the answer is not found in the reports, explicitly say that it is unavailable.
+
+Physician's Question:
+${question}`,
+      },
+    ];
+
+    console.log("Using model: gpt-oss-120b");
+
+    const response = await cerebras.chat.completions.create({
+      model: "gpt-oss-120b",
+      messages,
+      max_tokens: 600,
+    });
+
+    const answer = response.choices[0].message.content;
+
+    console.log("AI Answer:\n", answer);
+
+    return answer;
+  } catch (error) {
+    console.error("Medical AI Error:", error);
+    throw error;
   }
 };

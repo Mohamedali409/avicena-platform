@@ -2,12 +2,10 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-// ── Models ─────────────────────────────────────────────────────────────────
 import User from "./modules/User/user.model.js";
 import Doctor from "./modules/doctors/doctor.model.js";
 import Lab from "./modules/labs/labs.model.js";
 
-// ── DB Connect ─────────────────────────────────────────────────────────────
 const connectDB = async () => {
   await mongoose.connect(process.env.MONGODB_URL, {
     dbName: process.env.DB_NAME || "avicena",
@@ -17,34 +15,27 @@ const connectDB = async () => {
 
 const hash = (plain) => bcrypt.hash(plain, 10);
 
-// ── Placeholder image (small gray avatar base64) ───────────────────────────
 const AVATAR =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAABmJLR0QA/wD/AP+gvaeTAAAA60lEQVR4nO3BMQEAAADCoPVP7WsIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMBuAABHgAAAABJRU5ErkJggg==";
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  SEED DATA
-// ══════════════════════════════════════════════════════════════════════════════
-
+// ── Users ──────────────────────────────────────────────────
 const USERS = [
-  // ── Admin ──────────────────────────────────────────────────────────────────
   {
     name: "Super Admin",
     email: "admin@avicena.com",
     password: "Admin@1234",
     role: "admin",
     phone: "01000000001",
-    gender: "Male",
+    gender: "Not selected",
     address: { line1: "Nasr City", line2: "Cairo" },
   },
-
-  // ── Patients ───────────────────────────────────────────────────────────────
   {
-    name: "Mohamed ALi",
+    name: "Mohamed Ali",
     email: "mohamed@test.com",
     password: "Patient@1234",
     role: "patient",
     phone: "01012345678",
-    gender: "Male",
+    gender: "Not selected",
     dob: "1995-06-15",
     address: { line1: "Heliopolis", line2: "Cairo" },
   },
@@ -54,7 +45,7 @@ const USERS = [
     password: "Patient@1234",
     role: "patient",
     phone: "01087654321",
-    gender: "Female",
+    gender: "Not selected",
     dob: "1998-03-22",
     address: { line1: "Maadi", line2: "Cairo" },
   },
@@ -64,25 +55,26 @@ const USERS = [
     password: "Patient@1234",
     role: "patient",
     phone: "01156789012",
-    gender: "Male",
+    gender: "Not selected",
     dob: "1990-11-05",
     address: { line1: "Dokki", line2: "Giza" },
   },
 ];
 
+// ── Doctors ─────────────────────────────────────────────────
+// استخدام نفس الـ field names الموجودة في doctor.model.js
 const DOCTORS = [
   {
     doctorName: "Dr. Khaled Ibrahim",
     email: "khaled.doc@avicena.com",
     password: "Doctor@1234",
-    confirmPassword: "Doctor@1234",
     image: AVATAR,
     phone: "01198765432",
     Specialization: "Cardiology",
     degree: "MBBS, MD Cardiology",
     expertise: "10",
     about:
-      "Specialist in cardiovascular diseases with over 10 years of experience in diagnosing and treating heart conditions.",
+      "Specialist in cardiovascular diseases with over 10 years of experience.",
     available: true,
     fees: 250,
     consultation_fees: 180,
@@ -95,14 +87,13 @@ const DOCTORS = [
     doctorName: "Dr. Mona Youssef",
     email: "mona.doc@avicena.com",
     password: "Doctor@1234",
-    confirmPassword: "Doctor@1234",
     image: AVATAR,
     phone: "01234567890",
     Specialization: "Dermatology",
     degree: "MBBS, Diploma Dermatology",
     expertise: "7",
     about:
-      "Experienced dermatologist specializing in skin care, acne treatment, and cosmetic procedures.",
+      "Experienced dermatologist specializing in skin care and cosmetic procedures.",
     available: true,
     fees: 200,
     consultation_fees: 150,
@@ -115,14 +106,13 @@ const DOCTORS = [
     doctorName: "Dr. Tarek Saad",
     email: "tarek.doc@avicena.com",
     password: "Doctor@1234",
-    confirmPassword: "Doctor@1234",
     image: AVATAR,
     phone: "01567890123",
     Specialization: "Orthopedics",
     degree: "MBBS, MS Orthopedics",
     expertise: "15",
     about:
-      "Senior orthopedic surgeon with expertise in joint replacement, sports injuries, and spinal surgery.",
+      "Senior orthopedic surgeon with expertise in joint replacement and sports injuries.",
     available: true,
     fees: 300,
     consultation_fees: 220,
@@ -135,14 +125,12 @@ const DOCTORS = [
     doctorName: "Dr. Dina Farouk",
     email: "dina.doc@avicena.com",
     password: "Doctor@1234",
-    confirmPassword: "Doctor@1234",
     image: AVATAR,
     phone: "01698765432",
     Specialization: "Pediatrics",
     degree: "MBBS, MD Pediatrics",
     expertise: "8",
-    about:
-      "Dedicated pediatrician providing comprehensive care for children from newborns to teenagers.",
+    about: "Dedicated pediatrician providing comprehensive care for children.",
     available: false,
     fees: 180,
     consultation_fees: 130,
@@ -155,14 +143,13 @@ const DOCTORS = [
     doctorName: "Dr. Amr Mostafa",
     email: "amr.doc@avicena.com",
     password: "Doctor@1234",
-    confirmPassword: "Doctor@1234",
     image: AVATAR,
     phone: "01745678901",
     Specialization: "Neurology",
     degree: "MBBS, MD Neurology, Fellowship",
     expertise: "12",
     about:
-      "Neurologist specializing in headaches, epilepsy, stroke management, and neurodegenerative disorders.",
+      "Neurologist specializing in headaches, epilepsy, and stroke management.",
     available: true,
     fees: 350,
     consultation_fees: 250,
@@ -173,6 +160,7 @@ const DOCTORS = [
   },
 ];
 
+// ── Labs ─────────────────────────────────────────────────────
 const LABS = [
   {
     name: "Cairo Central Lab",
@@ -246,7 +234,7 @@ const LABS = [
         description: "ALT, AST, bilirubin panel",
       },
       {
-        name: "Kidney Function Tests (KFT)",
+        name: "Kidney Function Tests",
         price: 130,
         duration: "3 hours",
         description: "Creatinine, urea, uric acid",
@@ -302,83 +290,78 @@ const LABS = [
   },
 ];
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  SEED RUNNER
-// ══════════════════════════════════════════════════════════════════════════════
-
+// ══════════════════════════════════════════════════════════════
+//  RUNNER
+// ══════════════════════════════════════════════════════════════
 const seed = async () => {
   try {
     await connectDB();
 
-    // ── Wipe existing data ──────────────────────────────────────────────────
     console.log("\n🗑️  Clearing existing data...");
     await Promise.all([
       User.deleteMany({}),
       Doctor.deleteMany({}),
       Lab.deleteMany({}),
     ]);
-    console.log("   Users, Doctors, Labs cleared");
+    console.log("   Cleared: Users, Doctors, Labs");
 
-    // ── Seed Users (Admin + Patients) ───────────────────────────────────────
+    // ── Users ──────────────────────────────────────────────────
     console.log("\n👤 Seeding Users...");
-    for (const userData of USERS) {
-      const hashed = await hash(userData.password);
-      await User.create({ ...userData, password: hashed });
-      const icon = userData.role === "admin" ? "🛡️ " : "🙍 ";
+    for (const u of USERS) {
+      await User.create({ ...u, password: await hash(u.password) });
+      const icon = u.role === "admin" ? "🛡️" : "🙍";
       console.log(
-        `   ${icon} ${userData.role.toUpperCase()} — ${userData.name} (${userData.email})`,
+        `   ${icon}  ${u.role.toUpperCase().padEnd(8)} — ${u.name} (${u.email})`,
       );
     }
 
-    // ── Seed Doctors ────────────────────────────────────────────────────────
+    // ── Doctors ────────────────────────────────────────────────
     console.log("\n👨‍⚕️ Seeding Doctors...");
-    for (const docData of DOCTORS) {
-      const hashed = await hash(docData.password);
-      await Doctor.create({
-        ...docData,
-        password: hashed,
-        confirmPassword: hashed, // bypass pre-save validator
-      });
+    for (const d of DOCTORS) {
+      await Doctor.create({ ...d, password: await hash(d.password) });
       console.log(
-        `   🩺 ${docData.doctorName} — ${docData.Specialization} (${docData.email})`,
+        `   🩺 ${d.doctorName.padEnd(22)} — ${d.Specialization} (${d.email})`,
       );
     }
 
-    // ── Seed Labs ────────────────────────────────────────────────────────────
+    // ── Labs ───────────────────────────────────────────────────
     console.log("\n🏥 Seeding Labs...");
-    for (const labData of LABS) {
-      const hashed = await hash(labData.password);
-      await Lab.create({ ...labData, password: hashed });
-      console.log(`   🔬 ${labData.name} (${labData.email})`);
+    for (const l of LABS) {
+      await Lab.create({ ...l, password: await hash(l.password) });
+      console.log(`   🔬 ${l.name.padEnd(25)} (${l.email})`);
     }
 
-    // ── Summary ──────────────────────────────────────────────────────────────
-    console.log("\n════════════════════════════════════════");
-    console.log("✅ Seed completed successfully!\n");
-
+    // ── Summary ────────────────────────────────────────────────
+    console.log("\n════════════════════════════════════════════");
+    console.log("✅ Seed completed!\n");
     console.log("📋 Login Credentials:");
-    console.log("────────────────────────────────────────");
+    console.log("────────────────────────────────────────────");
+
     console.log("🛡️  ADMIN");
     console.log("   Email    : admin@avicena.com");
     console.log("   Password : Admin@1234");
 
-    console.log("\n🙍 PATIENTS");
-    console.log("   Email    : ahmed@test.com  | Password: Patient@1234");
-    console.log("   Email    : sara@test.com   | Password: Patient@1234");
-    console.log("   Email    : omar@test.com   | Password: Patient@1234");
+    console.log("\n🙍 PATIENTS  (password: Patient@1234)");
+    console.log("   mohamed@test.com");
+    console.log("   sara@test.com");
+    console.log("   omar@test.com");
 
-    console.log("\n🩺 DOCTORS  (all password: Doctor@1234)");
+    console.log("\n🩺 DOCTORS  (password: Doctor@1234)");
     DOCTORS.forEach((d) =>
-      console.log(`   ${d.email.padEnd(30)} — ${d.Specialization}`),
+      console.log(`   ${d.email.padEnd(32)} — ${d.Specialization}`),
     );
 
-    console.log("\n🔬 LABS  (all password: Lab@1234)");
+    console.log("\n🔬 LABS  (password: Lab@1234)");
     LABS.forEach((l) => console.log(`   ${l.email}`));
 
-    console.log("════════════════════════════════════════\n");
+    console.log("════════════════════════════════════════════\n");
   } catch (err) {
     console.error("❌ Seed failed:", err.message);
-    console.error(err);
+    if (err.errors) {
+      Object.entries(err.errors).forEach(([field, e]) =>
+        console.error(`   Field "${field}": ${e.message}`),
+      );
+    }
   } finally {
     await mongoose.disconnect();
     console.log("🔌 MongoDB disconnected");
