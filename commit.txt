@@ -1,5 +1,5 @@
 1- the user can add commit and rating doctor
-2- logging system --> history
+2- logging system --> history -- Done
 3- setting module
 4- full auth (otp an reset password)
 5- payment

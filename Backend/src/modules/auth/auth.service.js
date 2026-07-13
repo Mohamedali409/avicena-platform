@@ -8,11 +8,16 @@ import bcrypt from "bcryptjs";
 import ApiError from "../../shared/utils/ApiError.js";
 import validator from "validator";
 import * as authRepository from "./auth.repository.js";
-import { sendWelcomeEmail } from "../../infrastructure/mail/mail.service.js";
+import {
+  sendOtpEmail,
+  sendWelcomeEmail,
+} from "../../infrastructure/mail/mail.service.js";
 import { signToken } from "../../shared/utils/jwt.utlis.js";
 import * as doctorRepository from "../doctors/doctor.repository.js";
 import * as labRepository from "../labs/labs.repository.js";
 import * as userRepository from "../User/user.repository.js";
+import * as otpService from "../otp/otp.service.js";
+import * as otpRepository from "../otp/otp.repository.js";
 import {
   signRefreshToken,
   verifyRefreshToken,
@@ -23,6 +28,7 @@ import {
   deleteRefreshToken,
 } from "../../infrastructure/redis/session.service.js";
 import { authEventsTotal } from "../../infrastructure/monitoring/metrics.service.js";
+import { OTP_TYPES } from "../otp/otp.constants.js";
 
 // import User from "../User/user.model.js";
 // // auth.service.js
@@ -106,6 +112,90 @@ const loginPatient = async ({ email, password }) => {
       email: user.email,
       image: user.image,
     },
+  };
+};
+
+const forgotPassword = async (email) => {
+  if (!email) {
+    throw new ApiError("Email is required", 400);
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
+
+  const user = await authRepository.findUserByEmail(email);
+
+  // Prevent Email Enumeration
+  if (!user) {
+    return {
+      message: "If an account with that email exists, an OTP has been sent.",
+    };
+  }
+
+  const { otp } = await otpService.createOtp(
+    user._id,
+    OTP_TYPES.RESET_PASSWORD,
+  );
+
+  await sendOtpEmail(user.email, user.name, otp, OTP_TYPES.RESET_PASSWORD);
+
+  return {
+    message: "OTP sent successfully.",
+  };
+};
+
+const resetPassword = async ({ email, otp, newPassword }) => {
+  if (!email || !otp || !newPassword) {
+    throw new ApiError("All fields are required", 400);
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
+
+  if (newPassword.length < 8) {
+    throw new ApiError("Password must be at least 8 characters", 400);
+  }
+
+  const user = await authRepository.findUserByEmail(email);
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  // Prevent using the current password again
+  const isSamePassword = await comparePassword(newPassword, user.password);
+
+  if (isSamePassword) {
+    throw new ApiError(
+      "New password must be different from the current password",
+      400,
+    );
+  }
+
+  // Verify OTP
+  await otpService.verifyOtp(user._id, OTP_TYPES.RESET_PASSWORD, otp);
+
+  // Hash new password
+  const hashedPassword = await hashPassword(newPassword);
+
+  // Update password
+  await authRepository.updateUser(user._id, {
+    password: hashedPassword,
+  });
+
+  // Logout from all sessions
+  await deleteRefreshToken(user._id);
+
+  // Remove all reset password OTPs
+  await otpRepository.deleteMany({
+    user: user._id,
+    type: OTP_TYPES.RESET_PASSWORD,
+  });
+
+  return {
+    message: "Password reset successfully.",
   };
 };
 
@@ -221,6 +311,8 @@ const logout = async (userId) => {
 export {
   registerPatient,
   loginPatient,
+  forgotPassword,
+  resetPassword,
   loginDoctor,
   loginAdmin,
   loginLab,

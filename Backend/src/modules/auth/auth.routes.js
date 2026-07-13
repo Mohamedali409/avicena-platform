@@ -7,6 +7,8 @@ import {
   doctorLogin,
   refresh,
   logoutUser,
+  forgotPassword,
+  resetPassword,
 } from "./auth.controller.js";
 import { authGuard } from "../../shared/guards/auth.guard.js";
 import { authlimiter } from "../../shared/middleware/rate-limit.middleware.js";
@@ -23,6 +25,8 @@ authRouter.post("/login", authlimiter, login);
 // Refresh & Logout
 authRouter.post("/refresh", refresh);
 authRouter.post("/logout", authGuard, logoutUser);
+authRouter.post("/forgot-password", forgotPassword);
+authRouter.post("/reset-password", resetPassword);
 
 // Admin
 authRouter.post("/admin/login", authlimiter, adminLogin);
