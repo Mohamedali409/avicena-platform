@@ -4,6 +4,7 @@ import * as chatRepo from "./chat.repository.js";
 import * as notifService from "../notifications/notification.service.js";
 import { buildRoomId } from "./chat.service.js";
 import { emitNotification } from "../../infrastructure/socket/socket.server.js";
+import { chatRequestsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 
 // the patient send request to doctor to open chat
 // if do not have any last request create one
@@ -35,7 +36,7 @@ const sendChatRequest = async (userId, docId, initialMessage) => {
       );
     }
   }
-
+  chatRequestsTotal.inc({ status: "pending" });
   const request = await requestRepo.createRequest({
     userId,
     docId,

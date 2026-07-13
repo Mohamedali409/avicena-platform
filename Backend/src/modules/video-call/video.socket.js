@@ -1,3 +1,4 @@
+import { videoCallsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 import * as videoService from "./video.service.js";
 import * as notificationService from "../notifications/notification.service.js";
 import { emitNotification } from "../../infrastructure/socket/socket.server.js";
@@ -101,6 +102,7 @@ const registerVideoHandlers = (io, socket) => {
 
   // ── WebRTC signaling ───────────────────────────────────────────────────────
   socket.on("call:offer", ({ targetId, offer, roomId }) => {
+    videoCallsTotal.inc();
     io.to(`user:${targetId}`).emit("call-offer", {
       from: socket.userId,
       offer,

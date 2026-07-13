@@ -20,6 +20,8 @@ import medicalAiRouter from "./src/modules/medical-ai/medical.ai.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import { metricsMiddleware } from "./src/infrastructure/monitoring/metrics.middleware.js";
+import { register } from "./src/infrastructure/monitoring/metrics.service.js";
 
 const app = express();
 
@@ -28,8 +30,29 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.get("/", (req, res) => res.json({ status: "ok", app: "Avicana API " }));
+app.use(metricsMiddleware);
 
+app.get("/", (req, res) =>
+  res.json({
+    status: "ok",
+    app: "Avicena API",
+  }),
+);
+
+app.get("/api/health", (req, res) =>
+  res.json({
+    status: "healthy",
+    timestamp: Date.now(),
+  }),
+);
+
+// Prometheus Metrics
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
+  res.end(await register.metrics());
+});
+
+// ── API Routes ────────────────────────────────────────────
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
@@ -64,6 +87,7 @@ app.use("/api/subscriptions", subscriptionRouter);
 // medical AI (RAG)
 app.use("/api/medical-ai", medicalAiRouter);
 
+// ── Error Handler ─────────────────────────────────────────
 app.use(errorMiddleware);
 
 export default app;

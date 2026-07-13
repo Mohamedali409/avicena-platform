@@ -22,6 +22,7 @@ import {
   getRefreshToken,
   deleteRefreshToken,
 } from "../../infrastructure/redis/session.service.js";
+import { authEventsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 
 // import User from "../User/user.model.js";
 // // auth.service.js
@@ -65,7 +66,9 @@ const registerPatient = async ({ name, email, password }) => {
   });
 
   sendWelcomeEmail(email, name).catch(console.error);
+  authEventsTotal.inc({ event: "register", role: "patient" });
 
+  authEventsTotal.inc({ event: "login", role: "patient" });
   const token = signToken({ id: user._id, role: "patient" });
   return {
     token,
@@ -93,7 +96,7 @@ const loginPatient = async ({ email, password }) => {
   if (!match) throw new ApiError("Email or Password is required", 401);
 
   // if (!match) throw new ApiError("Invalid credentials", 401);
-
+  authEventsTotal.inc({ event: "login", role: "patient" });
   const token = signToken({ id: user._id, role: "patient" });
   return {
     token,

@@ -1,3 +1,4 @@
+import { errorsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 import ApiError from "../utils/ApiError.js";
 
 export const errorMiddleware = (err, req, res, next) => {
@@ -26,6 +27,10 @@ export const errorMiddleware = (err, req, res, next) => {
     message = "انتهت صلاحية التوكن";
     statusCode = 401;
   }
+  errorsTotal.inc({
+    type: err.name || "UnknownError",
+    status_code: statusCode.toString(),
+  });
 
   if (process.env.NODE_ENV === "development") console.error(" Error:", err);
 
