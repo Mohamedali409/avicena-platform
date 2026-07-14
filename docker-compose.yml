@@ -1,3 +1,93 @@
+# name: avicena
+
+# networks:
+#   avicena-net:
+#     driver: bridge
+
+# volumes:
+#   mongo-data:
+#   redis-data:
+#   qdrant-data:
+
+# services:
+#   # ── MongoDB ─────────────────────────────────────────
+#   mongo:
+#     image: mongo:7.0
+#     container_name: avicena-mongo
+#     restart: unless-stopped
+#     volumes:
+#       - mongo-data:/data/db
+#     ports:
+#       - "27017:27017"
+#     networks:
+#       - avicena-net
+#     healthcheck:
+#       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+#   # ── Redis ────────────────────────────────────────────
+#   redis:
+#     image: redis:7.2-alpine
+#     container_name: avicena-redis
+#     restart: unless-stopped
+#     command: redis-server --appendonly yes
+#     volumes:
+#       - redis-data:/data
+#     ports:
+#       - "6379:6379"
+#     networks:
+#       - avicena-net
+#     healthcheck:
+#       test: ["CMD", "redis-cli", "ping"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+#   # ── Backend ──────────────────────────────────────────
+#   backend:
+#     build:
+#       context: ./Backend
+#       dockerfile: Dockerfile
+#       target: dev
+#     container_name: avicena-backend
+#     restart: unless-stopped
+#     env_file:
+#       - ./Backend/.env
+#     environment:
+#       # override الـ 127.0.0.1 بأسماء الـ containers
+#       MONGODB_URL: mongodb://mongo:27017
+#       REDIS_URL: redis://redis:6379
+#     ports:
+#       - "4000:4000"
+#     volumes:
+#       - ./Backend:/app
+#       - /app/node_modules
+#     depends_on:
+#       mongo:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
+#     networks:
+#       - avicena-net
+
+#   qdrant:
+#     image: qdrant/qdrant:latest
+#     container_name: avicena-qdrant
+#     restart: unless-stopped
+#     volumes:
+#       - qdrant-data:/qdrant/storage
+#     ports:
+#       - "6333:6333"
+#     networks:
+#       - avicena-net
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
 name: avicena
 
 networks:
@@ -8,17 +98,19 @@ volumes:
   mongo-data:
   redis-data:
   qdrant-data:
+  prometheus-data:
+  grafana-data:
 
 services:
-  # ── MongoDB ─────────────────────────────────────────
+  # ---------------- MongoDB ----------------
   mongo:
     image: mongo:7.0
     container_name: avicena-mongo
     restart: unless-stopped
-    volumes:
-      - mongo-data:/data/db
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
     networks:
       - avicena-net
     healthcheck:
@@ -27,16 +119,16 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── Redis ────────────────────────────────────────────
+  # ---------------- Redis ----------------
   redis:
     image: redis:7.2-alpine
     container_name: avicena-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
-    volumes:
-      - redis-data:/data
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
     networks:
       - avicena-net
     healthcheck:
@@ -45,45 +137,102 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── Backend ──────────────────────────────────────────
+  # ---------------- Qdrant ----------------
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: avicena-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - avicena-net
+
+    # احذف الـ healthcheck القديم لأنه يستخدم curl
+    # أو استبدله بهذا
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+
+  # ---------------- Backend ----------------
   backend:
     build:
       context: ./Backend
       dockerfile: Dockerfile
       target: dev
+
     container_name: avicena-backend
     restart: unless-stopped
+
     env_file:
       - ./Backend/.env
+
     environment:
-      # override الـ 127.0.0.1 بأسماء الـ containers
+      NODE_ENV: development
       MONGODB_URL: mongodb://mongo:27017
       REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+
     ports:
       - "4000:4000"
+
     volumes:
       - ./Backend:/app
       - /app/node_modules
+
     depends_on:
       mongo:
         condition: service_healthy
       redis:
         condition: service_healthy
+      qdrant:
+        condition: service_started
+
     networks:
       - avicena-net
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: avicena-qdrant
+  # ---------------- Prometheus ----------------
+  # ---------------- Prometheus ----------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: avicena-prometheus
     restart: unless-stopped
-    volumes:
-      - qdrant-data:/qdrant/storage
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - "--storage.tsdb.path=/prometheus"
+
     ports:
-      - "6333:6333"
+      - "9090:9090"
+
+    volumes:
+      - ./monitoring/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+
+    depends_on:
+      - backend
+
     networks:
       - avicena-net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # ---------------- Grafana ----------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: avicena-grafana
+    restart: unless-stopped
+
+    ports:
+      - "3001:3000"
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - avicena-net

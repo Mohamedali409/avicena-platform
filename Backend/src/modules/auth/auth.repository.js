@@ -10,4 +10,8 @@ const findUserByEmail = (email) => {
   return User.findOne({ email }).select("+password");
 };
 
-export { createUser, findUserByEmail };
+const updateUser = (id, data) => {
+  return User.findByIdAndUpdate(id, data, { new: true });
+};
+
+export { createUser, findUserByEmail, updateUser };

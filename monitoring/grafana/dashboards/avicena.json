@@ -1,0 +1,201 @@
+{
+  "title": "Avicena Platform Dashboard",
+  "uid": "avicena-main",
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total Requests",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sum(avicena_http_requests_total)", "legendFormat": "Total" }
+      ],
+      "options": { "colorMode": "background" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Error Rate %",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(avicena_http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(avicena_http_requests_total[5m])) * 100",
+          "legendFormat": "Error %"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "thresholds": {
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 1 },
+            { "color": "red", "value": 5 }
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Active Socket Connections",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "avicena_socket_connections_active",
+          "legendFormat": "Connections"
+        }
+      ],
+      "options": { "colorMode": "background" }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Appointments Booked",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "avicena_appointments_booked_total",
+          "legendFormat": "Booked"
+        }
+      ],
+      "options": { "colorMode": "background" }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Cache Hit Rate %",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "avicena_cache_hits_total / (avicena_cache_hits_total + avicena_cache_misses_total) * 100",
+          "legendFormat": "Hit Rate"
+        }
+      ],
+      "options": { "colorMode": "background" }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Memory Usage MB",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "targets": [
+        {
+          "expr": "avicena_process_resident_memory_bytes / 1024 / 1024",
+          "legendFormat": "MB"
+        }
+      ],
+      "options": { "colorMode": "background" }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "HTTP Request Rate (req/s)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "sum(rate(avicena_http_requests_total[1m])) by (method)",
+          "legendFormat": "{{method}}"
+        },
+        {
+          "expr": "sum(rate(avicena_http_requests_total{status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5xx Errors"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Response Time P95 (ms)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(avicena_http_request_duration_ms_bucket[5m])) by (le, route))",
+          "legendFormat": "P95 {{route}}"
+        },
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(avicena_http_request_duration_ms_bucket[5m])) by (le))",
+          "legendFormat": "P50 (median)"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Business Metrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(avicena_appointments_booked_total[5m]) * 60",
+          "legendFormat": "Appointments/min"
+        },
+        {
+          "expr": "rate(avicena_chat_messages_total[5m]) * 60",
+          "legendFormat": "Messages/min"
+        },
+        {
+          "expr": "rate(avicena_video_calls_total[5m]) * 60",
+          "legendFormat": "Video Calls/min"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "RAG AI Response Time (ms)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(avicena_rag_response_duration_ms_bucket[5m])) by (le, operation))",
+          "legendFormat": "P95 {{operation}}"
+        },
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(avicena_rag_response_duration_ms_bucket[5m])) by (le, operation))",
+          "legendFormat": "P50 {{operation}}"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "piechart",
+      "title": "HTTP Status Codes",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 20 },
+      "targets": [
+        {
+          "expr": "sum(avicena_http_requests_total) by (status_code)",
+          "legendFormat": "{{status_code}}"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Auth Events",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 20 },
+      "targets": [
+        {
+          "expr": "sum(rate(avicena_auth_events_total[5m])) by (event)",
+          "legendFormat": "{{event}}"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Cache Hits vs Misses",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 20 },
+      "targets": [
+        {
+          "expr": "rate(avicena_cache_hits_total[5m])",
+          "legendFormat": "Hits"
+        },
+        {
+          "expr": "rate(avicena_cache_misses_total[5m])",
+          "legendFormat": "Misses"
+        }
+      ]
+    }
+  ]
+}

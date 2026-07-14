@@ -2,6 +2,7 @@ import * as chatService from "./chat.service.js";
 import * as requestService from "./chat.request.service.js";
 import * as notificationService from "../notifications/notification.service.js";
 import { emitNotification } from "../../infrastructure/socket/socket.server.js";
+import { chatMessagesTotal } from "../../infrastructure/monitoring/metrics.service.js";
 
 const registerChatHandlers = (io, socket) => {
   socket.on("chat:join", (roomId) => socket.join(roomId));
@@ -24,6 +25,7 @@ const registerChatHandlers = (io, socket) => {
 
       socket.to(roomId).emit("chat:message", saved);
       socket.emit("chat:message:sent", saved);
+      chatMessagesTotal.inc({ sender_type: socket.role || "user" });
 
       if (receiverId) {
         const recipientType = senderType === "doctor" ? "user" : "doctor";

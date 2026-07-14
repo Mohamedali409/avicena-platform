@@ -23,7 +23,7 @@ shell:
 
 seed:
 	docker compose exec backend npm run seed
-
+# docker compose logs backend --tail=200
 # ── Production ────────────────────────────
 prod-up:
 	docker compose -f docker-compose.prod.yml up -d
