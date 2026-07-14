@@ -63,21 +63,22 @@ const registerPatient = async ({ name, email, password }) => {
   if (exists) throw new ApiError("this email is used before", 409);
 
   const hashed = await hashPassword(password);
-  console.log("Password:", password);
-  console.log("Hash:", hashed);
+
   const user = await authRepository.createUser({
     name,
     email,
     password: hashed,
   });
 
-  sendWelcomeEmail(email, name).catch(console.error);
+  // sendWelcomeEmail(email, name).catch(console.error);
+  const { otp } = await otpService.createOtp(user._id, OTP_TYPES.VERIFY_EMAIL);
+
+  await sendOtpEmail(user.email, user.name, otp, OTP_TYPES.VERIFY_EMAIL);
   authEventsTotal.inc({ event: "register", role: "patient" });
 
-  authEventsTotal.inc({ event: "login", role: "patient" });
-  const token = signToken({ id: user._id, role: "patient" });
+  // authEventsTotal.inc({ event: "login", role: "patient" });
   return {
-    token,
+    message: "Account created successfully. Please verify your email.",
     user: {
       _id: user._id,
       name: user.name,
@@ -96,6 +97,9 @@ const loginPatient = async ({ email, password }) => {
 
   if (!user) throw new ApiError("User not found", 401);
   if (!user.isActive) throw new ApiError("This Account is Blocked", 403);
+  if (!user.isVerified) {
+    throw new ApiError("Please verify your email first.", 403);
+  }
 
   const match = await comparePassword(password, user.password);
 
@@ -196,6 +200,47 @@ const resetPassword = async ({ email, otp, newPassword }) => {
 
   return {
     message: "Password reset successfully.",
+  };
+};
+
+const verifyEmail = async ({ email, otp }) => {
+  if (!email || !otp) throw new ApiError("Email and OTP are required", 400);
+
+  if (!validator.isEmail(email)) throw new ApiError("Invalid email", 400);
+
+  const user = await authRepository.findUserByEmail(email);
+
+  if (!user) throw new ApiError("User not found", 404);
+  if (user.isVerified) throw new ApiError("Email is already verified", 400);
+
+  // Verify OTP
+  await otpService.verifyOtp(user._id, OTP_TYPES.VERIFY_EMAIL, otp);
+
+  // Update verification status
+  await authRepository.updateUser(user._id, {
+    isVerified: true,
+  });
+
+  // Delete verification OTPs
+  await otpRepository.deleteMany({
+    user: user._id,
+    type: OTP_TYPES.VERIFY_EMAIL,
+  });
+
+  // create token
+  const token = signToken({ id: user._id, role: "patient" });
+
+  // Send welcome email
+  await sendWelcomeEmail(user.email, user.name);
+
+  return {
+    token,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    },
   };
 };
 
@@ -319,4 +364,5 @@ export {
   issueTokens,
   refreshAccessToken,
   logout,
+  verifyEmail,
 };

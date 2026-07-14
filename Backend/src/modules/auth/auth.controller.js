@@ -30,6 +30,13 @@ const resetPassword = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "password reset successfully.", data);
 });
 
+// Verify Email
+const verifyEmail = catchAsync(async (req, res) => {
+  const data = await authService.verifyEmail(req.body);
+
+  messageResponse.successResponse(res, "Email verified successfully.", data);
+});
+
 // admin login
 
 const adminLogin = catchAsync(async (req, res) => {
@@ -72,4 +79,5 @@ export {
   logoutUser,
   resetPassword,
   forgotPassword,
+  verifyEmail,
 };
