@@ -1,0 +1,428 @@
+<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#bec8cd",
+                    "tertiary": "#515353",
+                    "on-secondary-container": "#626567",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-tertiary-container": "#ececec",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#213145",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#005a71",
+                    "on-primary-fixed": "#001f29",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "secondary": "#5c5f61",
+                    "primary-container": "#0e7490",
+                    "surface-dim": "#cbdbf5",
+                    "surface-tint": "#006781",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "inverse-on-surface": "#eaf1ff",
+                    "outline": "#6f787d",
+                    "on-surface": "#0b1c30",
+                    "inverse-primary": "#81d1f0",
+                    "on-surface-variant": "#3f484c",
+                    "tertiary-container": "#696b6b",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-primary-fixed-variant": "#004d62",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#444749",
+                    "primary-fixed-dim": "#81d1f0",
+                    "error-container": "#ffdad6",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#b9eaff",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#e0e3e5",
+                    "on-primary-container": "#d3f1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "section-gap": "64px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["IBM Plex Sans Arabic"],
+                    "caption": ["IBM Plex Sans Arabic"],
+                    "headline-lg": ["IBM Plex Sans Arabic"],
+                    "body-lg": ["IBM Plex Sans Arabic"],
+                    "headline-lg-mobile": ["IBM Plex Sans Arabic"],
+                    "body-md": ["IBM Plex Sans Arabic"],
+                    "label-md": ["IBM Plex Sans Arabic"],
+                    "display": ["IBM Plex Sans Arabic"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script></head><body class="text-on-background bg-background">
+    <!-- TopNavBar -->
+    <nav class="bg-surface-container-lowest dark:bg-inverse-surface shadow-sm sticky top-0 z-50">
+        <div class="flex flex-row-reverse justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+            <div class="flex items-center gap-8 flex-row-reverse">
+                <span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">Avicena</span>
+                <div class="hidden md:flex gap-6 flex-row-reverse">
+                    <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">المختبرات</a>
+                    <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">الأطباء</a>
+                    <a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">عن المنصة</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 flex-row-reverse">
+                <button class="px-6 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md active:scale-95 transition-transform shadow-sm">إنشاء حساب</button>
+                <button class="px-6 py-2 rounded-lg text-primary hover:bg-surface-container transition-colors font-label-md text-label-md active:scale-95 transition-transform">تسجيل الدخول</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-container-max mx-auto px-margin-desktop py-12">
+        <div class="flex flex-col lg:flex-row-reverse gap-gutter">
+            
+            <!-- Filter Sidebar -->
+            <aside class="hidden lg:block w-80 shrink-0">
+                <div class="bg-white rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="font-headline-md text-on-surface text-[20px]">الفلاتر</h2>
+                        <button class="text-primary text-label-md hover:underline">مسح الكل</button>
+                    </div>
+
+                    <!-- Map Filter -->
+                    <div class="mb-8">
+                        <p class="font-bold text-on-surface mb-4">الموقع (خريطة تفاعلية)</p>
+                        <div class="relative w-full h-48 rounded-xl overflow-hidden border border-outline-variant map-placeholder group">
+                            <div class="absolute inset-0 bg-black/5"></div>
+                            <div class="absolute top-2 left-2 flex flex-col gap-2">
+                                <button class="w-8 h-8 bg-white rounded shadow-md flex items-center justify-center text-on-surface hover:text-primary transition-colors border border-outline-variant/30" title="ارسم منطقة">
+                                    <span class="material-symbols-outlined text-[18px]">polyline</span>
+                                </button>
+                                <button class="w-8 h-8 bg-primary-container rounded shadow-md flex items-center justify-center text-white border border-primary-container" title="موقعي الحالي">
+                                    <span class="material-symbols-outlined text-[18px]">my_location</span>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-2 right-2 left-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 text-center shadow-sm">
+                                <p class="text-caption text-on-surface-variant font-medium">حدد منطقة البحث</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <select class="w-full bg-white border-outline-variant rounded-lg px-4 py-2 text-label-md focus:ring-primary focus:border-primary">
+                                <option>اختر المدينة</option>
+                                <option>الرياض</option>
+                                <option>جدة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Test Type Filter -->
+                    <div class="mb-8 border-t border-outline-variant/30 pt-6">
+                        <p class="font-bold text-on-surface mb-4">نوع التحليل</p>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox" checked="">
+                                <span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">تحاليل دم</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox">
+                                <span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">أشعة وتشخيص</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox">
+                                <span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">جينات ووراثة</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox">
+                                <span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">فحوصات دورية</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="mb-2 border-t border-outline-variant/30 pt-6">
+                        <p class="font-bold text-on-surface mb-4">التقييم</p>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 border-outline text-primary-container focus:ring-primary-container" name="rating" type="radio" checked="">
+                                <span class="flex items-center gap-1 text-body-md text-on-surface-variant group-hover:text-primary">
+                                    4 نجوم وأكثر
+                                    <span class="material-symbols-outlined text-amber-500 text-[18px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="w-5 h-5 border-outline text-primary-container focus:ring-primary-container" name="rating" type="radio">
+                                <span class="text-body-md text-on-surface-variant group-hover:text-primary">3 نجوم وأكثر</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="flex-1">
+                <!-- Header Section -->
+                <header class="mb-12 text-center md:text-right">
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface mb-6">المختبرات والتحاليل الطبية</h1>
+                    <div class="max-w-2xl ml-auto flex flex-col md:flex-row gap-4">
+                        <div class="relative group flex-1">
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+                            <input class="w-full pr-12 pl-6 py-3 rounded-xl border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md bg-white shadow-sm" placeholder="البحث عن اسم المختبر" type="text">
+                        </div>
+                        <button class="lg:hidden flex items-center justify-center gap-2 px-6 py-3 bg-primary-container text-white rounded-xl font-label-md shadow-md active:scale-95 transition-transform">
+                            <span class="material-symbols-outlined">tune</span>
+                            الفلاتر
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Labs Grid -->
+                <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Lab Card 1 -->
+                    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all flex flex-col border border-outline-variant/30 overflow-hidden group">
+                        <div class="relative w-full h-48 shrink-0 bg-surface-container-low overflow-hidden">
+                            <img alt="مختبرات البرج" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEPCLmBxS2xdqFW1uAdcO2EeUaH9FEqDShgP0zcXS-cyIHNRwPVPL9AySzfF45wgwHdCpAzLaqDgGZJE9Y8Emmc5QZnZLtPmquomeOA1mKgmWkZpeSNOQr4q0gJXHxTscezOixNx1Cidg_m4mCFEvkY0rlEA2BIMORW9eoquhM_DmpWpWxN9wW4ycOF1xqsWN8nnrhMhgufUZZz-PzfY9MjmZr5qsOtiLzTURx0bPjRhQ63lnC5VkfMUas1Ih1-Q3aNhkgMXuWSV0">
+                            <div class="absolute top-3 right-3 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[12px] flex items-center gap-1 shadow-sm backdrop-blur-sm bg-white/90">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+                                موثق
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-headline-md text-on-surface text-[20px] group-hover:text-primary transition-colors">مختبرات البرج</h3>
+                                    <div class="flex items-center text-amber-500">
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                        <span class="text-label-md mr-1 font-bold">4.9</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">location_on</span>
+                                        <span class="">الرياض، حي العليا</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        <span class="">مفتوح الآن (08:00 ص - 10:00 م)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-outline-variant/30">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-primary font-bold text-label-md">150+ تحليل متاح</span>
+                                </div>
+                                <button class="w-full bg-primary-container text-white py-2.5 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+                                    عرض التحاليل
+                                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Card 2 -->
+                    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all flex flex-col border border-outline-variant/30 overflow-hidden group">
+                        <div class="relative w-full h-48 shrink-0 bg-surface-container-low overflow-hidden">
+                            <img alt="مختبر أنيس الخير" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP1wlesz-_SUTRyhXdkAE4vPfuAHg1Hcq036EV_r4btJGJvSznsmYsDWs1flGTGSd2KFhSyRmjz3tVRwwnXdIBY8kaWVCBufI_jGRF-GI_uGxnmnWcHnDwHbwl3oBQpV-tKgPl7uOj1CsAa_HULmY_D8ZOe2OKrrMYD1IUcQR1L5yFcF7kocrxLMcS1PWQ3oiheYQt4tjuoU_ACfwiYkwYpBvnbDFu8u1jd5yKpGIcUNDbIH-SHgskhPYBwGkXrti6zslIASTDohM">
+                            <div class="absolute top-3 right-3 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[12px] flex items-center gap-1 shadow-sm backdrop-blur-sm bg-white/90">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+                                موثق
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-headline-md text-on-surface text-[20px] group-hover:text-primary transition-colors">مختبر أنيس الخير</h3>
+                                    <div class="flex items-center text-amber-500">
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                        <span class="text-label-md mr-1 font-bold">4.7</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">location_on</span>
+                                        <span class="">جدة، شارع فلسطين</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        <span class="">يغلق الساعة 09:00 م</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-outline-variant/30">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-primary font-bold text-label-md">120+ تحليل متاح</span>
+                                </div>
+                                <button class="w-full bg-primary-container text-white py-2.5 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+                                    عرض التحاليل
+                                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Card 3 -->
+                    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all flex flex-col border border-outline-variant/30 overflow-hidden group">
+                        <div class="relative w-full h-48 shrink-0 bg-surface-container-low overflow-hidden">
+                            <img alt="مختبرات طيبة" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaQ5kGGAqDfEKNrqMn_8oVkCJdjVOwi1oxVPMWqBf1USS8PNkrO6E4LjnyemRSC8mJlXxPDW4RsUI4_t38bZzlJh-5CiiRUN7HGjcfMeqj4oDkdoB3_amiEJdCRxjQIHKv2wqao6HhPiFe8B821S1v3VsxzhCcGz7YeEflkvNCzatDpoVPxoDho796GqVbnOyvcCykdQS4aZAdHnVd-nYDM2UUdr3Jc94x8AhaylbW3-MOP0mlfHWB-5QskkIKXVGm2etE3sFHh9Q">
+                            <div class="absolute top-3 right-3 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[12px] flex items-center gap-1 shadow-sm backdrop-blur-sm bg-white/90">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+                                موثق
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-headline-md text-on-surface text-[20px] group-hover:text-primary transition-colors">مختبرات طيبة</h3>
+                                    <div class="flex items-center text-amber-500">
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                        <span class="text-label-md mr-1 font-bold">4.8</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">location_on</span>
+                                        <span class="">الدمام، حي الشاطئ</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        <span class="">مفتوح 24 ساعة</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-outline-variant/30">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-primary font-bold text-label-md">200+ تحليل متاح</span>
+                                </div>
+                                <button class="w-full bg-primary-container text-white py-2.5 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+                                    عرض التحاليل
+                                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Card 4 -->
+                    <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all flex flex-col border border-outline-variant/30 overflow-hidden group">
+                        <div class="relative w-full h-48 shrink-0 bg-surface-container-low overflow-hidden">
+                            <img alt="مختبرات الفارابي" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD29Tfxz9rB0jDHlUuaxalDNQMAS4RaINw26UIaKLH4YNnju94n2l_A4NMdg9EMTIHkFIgO9u4oJmHpvbJIiDZXPg6GRpw5gQ2i5G6-BX-PMfCsXZHog7QuIIEW5Ccf3K5abeZBQdXlLEOOhAijAZBnAIFlFg3kgegOfcxtrJrFrxfG7KcNdAfAmvwChXSH1JUSoc4u4U1g2UQ8b89zws4i-EU5epMlZVqO2GOqoVSl0pxYFJWPqcQLrcIyA1mxCHUGKi9dj28XYBU">
+                            <div class="absolute top-3 right-3 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-[12px] flex items-center gap-1 shadow-sm backdrop-blur-sm bg-white/90">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: &quot;FILL&quot; 1;">verified</span>
+                                موثق
+                            </div>
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="font-headline-md text-on-surface text-[20px] group-hover:text-primary transition-colors">مختبرات الفارابي</h3>
+                                    <div class="flex items-center text-amber-500">
+                                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: &quot;FILL&quot; 1;">star</span>
+                                        <span class="text-label-md mr-1 font-bold">4.6</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">location_on</span>
+                                        <span class="">الرياض، حي السليمانية</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-caption">
+                                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        <span class="">09:00 ص - 11:00 م</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-outline-variant/30">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-primary font-bold text-label-md">180+ تحليل متاح</span>
+                                </div>
+                                <button class="w-full bg-primary-container text-white py-2.5 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm">
+                                    عرض التحاليل
+                                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA Section -->
+                <section class="mt-20 bg-primary-container rounded-xl p-8 md:p-12 text-on-primary flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative shadow-lg">
+                    <div class="relative z-10 text-center md:text-right">
+                        <h2 class="font-headline-lg text-white mb-4">هل تمتلك مختبراً طبياً؟</h2>
+                        <p class="font-body-lg text-on-primary-container max-w-xl opacity-90">انضم إلى منصة ابن سينا ووسع نطاق وصولك لآلاف المرضى. قدم تحاليلك الطبية وخدماتك المنزلية بسهولة.</p>
+                        <button class="mt-8 px-8 py-3 bg-white text-primary font-bold rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-2 mx-auto md:mr-0 shadow-sm">
+                            سجل مختبرك الآن
+                            <span class="material-symbols-outlined">add_business</span>
+                        </button>
+                    </div>
+                    <div class="w-full md:w-1/3 relative h-48 md:h-64 overflow-hidden rounded-xl border border-white/20">
+                        <img class="absolute inset-0 w-full h-full object-cover" data-alt="A clean, high-resolution interior of a modern medical laboratory with stainless steel surfaces, high-end diagnostic machines, and bright clinical lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4TpUL3jVd8WJbhHv5xw4tFKO0xhGobewpYa81Yvwi2G5RRzTCBMXyIHghdptV5-7xhzHyUxTE6KDgXr9pXlCLKXKb93fn_GoMBjhMVX1DmWmO82dCZnzxcOHsUEBqgW8FKcr8mQHyXDGdBiGBzHVkATLoVl-Jn6wQAJ3OKiy7dfwbb8VgBCT4Yuua9aUzmtOYP7TFdaFmxpd4_SA83-rEhx8PsR4i8CHiMqAkOcf2a2rGVhyMDKZAWzGC0-GUVhvvnnIS1GzU3-k">
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-low dark:bg-on-surface-variant border-t border-outline-variant mt-section-gap">
+        <div class="w-full py-section-gap px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row-reverse justify-between gap-gutter">
+            <div class="flex flex-col gap-6 md:w-1/3 text-right">
+                <span class="text-headline-sm font-headline-sm text-primary font-bold">Avicena</span>
+                <p class="font-body-md text-on-surface-variant leading-relaxed">منصتكم الموثوقة للرعاية الصحية والتحاليل الطبية. نسعى لتسهيل الوصول للخدمات الطبية بجودة واحترافية عالية.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-12 flex-row-reverse">
+                <div class="flex flex-col gap-4 items-end">
+                    <h4 class="font-bold text-on-surface">روابط سريعة</h4>
+                    <nav class="flex flex-col gap-2 items-end">
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">الشروط والأحكام</a>
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">سياسة الخصوصية</a>
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">الأسئلة الشائعة</a>
+                    </nav>
+                </div>
+                <div class="flex flex-col gap-4 items-end">
+                    <h4 class="font-bold text-on-surface">تواصل معنا</h4>
+                    <nav class="flex flex-col gap-2 items-end">
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">اتصل بنا</a>
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">الدعم الفني</a>
+                        <a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-colors" href="#">تويتر</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="w-full py-6 border-t border-outline-variant text-center">
+            <p class="font-caption text-caption text-on-surface-variant">© 2024 ابن سينا (Avicena). جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script class="">
+        // Micro-interaction for input glow and focus
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/2</script></body></html>

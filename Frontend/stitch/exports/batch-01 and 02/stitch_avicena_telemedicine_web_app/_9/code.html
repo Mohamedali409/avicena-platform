@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مختبرات ابن سينا - Avicena</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#bec8cd",
+                    "tertiary": "#515353",
+                    "on-secondary-container": "#626567",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-tertiary-container": "#ececec",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#213145",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#005a71",
+                    "on-primary-fixed": "#001f29",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "secondary": "#5c5f61",
+                    "primary-container": "#0e7490",
+                    "surface-dim": "#cbdbf5",
+                    "surface-tint": "#006781",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "inverse-on-surface": "#eaf1ff",
+                    "outline": "#6f787d",
+                    "on-surface": "#0b1c30",
+                    "inverse-primary": "#81d1f0",
+                    "on-surface-variant": "#3f484c",
+                    "tertiary-container": "#696b6b",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-primary-fixed-variant": "#004d62",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#444749",
+                    "primary-fixed-dim": "#81d1f0",
+                    "error-container": "#ffdad6",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#b9eaff",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#e0e3e5",
+                    "on-primary-container": "#d3f1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "section-gap": "64px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["IBM Plex Sans Arabic"],
+                    "caption": ["IBM Plex Sans Arabic"],
+                    "headline-lg": ["IBM Plex Sans Arabic"],
+                    "body-lg": ["IBM Plex Sans Arabic"],
+                    "headline-lg-mobile": ["IBM Plex Sans Arabic"],
+                    "body-md": ["IBM Plex Sans Arabic"],
+                    "label-md": ["IBM Plex Sans Arabic"],
+                    "display": ["IBM Plex Sans Arabic"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-shadow {
+            shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .lab-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="text-on-background">
+<!-- TopNavBar -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface shadow-sm dark:shadow-none sticky top-0 z-50">
+<div class="flex flex-row-reverse justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-8 flex-row-reverse">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">Avicena</span>
+<div class="hidden md:flex gap-6 flex-row-reverse">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">التخصصات</a>
+<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary-container transition-colors duration-200 font-body-md text-body-md" href="#">الأطباء</a>
+<a class="text-on-surface-variant dark:text-on-secondary-fixed-variant hover:text-primary-container transition-colors duration-200 font-body-md text-body-md" href="#">عن المنصة</a>
+</div>
+</div>
+<div class="flex items-center gap-4 flex-row-reverse">
+<button class="px-6 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md active:scale-95 transition-transform">إنشاء حساب</button>
+<button class="px-6 py-2 rounded-lg text-primary hover:bg-surface-container transition-colors font-label-md text-label-md active:scale-95 transition-transform">تسجيل الدخول</button>
+</div>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12">
+<!-- Header Section -->
+<header class="mb-12 text-center md:text-right">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-6">المختبرات والتحاليل الطبية</h1>
+<div class="max-w-2xl ml-auto">
+<div class="relative group">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pr-12 pl-6 py-4 rounded-xl border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all font-body-md text-body-md bg-white" placeholder="البحث عن اسم المختبر" type="text"/>
+</div>
+</div>
+</header>
+<!-- Labs Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Lab Card 1 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist logo for a medical laboratory featuring a stylized teal DNA helix and microscopic cross section. The design is modern, professional, and symmetrical, set against a sterile white and soft blue background consistent with high-end healthcare branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEPCLmBxS2xdqFW1uAdcO2EeUaH9FEqDShgP0zcXS-cyIHNRwPVPL9AySzfF45wgwHdCpAzLaqDgGZJE9Y8Emmc5QZnZLtPmquomeOA1mKgmWkZpeSNOQr4q0gJXHxTscezOixNx1Cidg_m4mCFEvkY0rlEA2BIMORW9eoquhM_DmpWpWxN9wW4ycOF1xqsWN8nnrhMhgufUZZz-PzfY9MjmZr5qsOtiLzTURx0bPjRhQ63lnC5VkfMUas1Ih1-Q3aNhkgMXuWSV0"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبرات البرج</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>الرياض، حي العليا، طريق الملك فهد</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>مفتوح الآن (08:00 ص - 10:00 م)</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 150+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 2 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A sophisticated medical laboratory emblem showcasing a minimalist beaker and test tube graphic within a teal circular frame. The aesthetic is hygienic, clinical, and high-trust, utilizing professional typography and a sanitized white background, reflecting a modern diagnostic center identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP1wlesz-_SUTRyhXdkAE4vPfuAHg1Hcq036EV_r4btJGJvSznsmYsDWs1flGTGSd2KFhSyRmjz3tVRwwnXdIBY8kaWVCBufI_jGRF-GI_uGxnmnWcHnDwHbwl3oBQpV-tKgPl7uOj1CsAa_HULmY_D8ZOe2OKrrMYD1IUcQR1L5yFcF7kocrxLMcS1PWQ3oiheYQt4tjuoU_ACfwiYkwYpBvnbDFu8u1jd5yKpGIcUNDbIH-SHgskhPYBwGkXrti6zslIASTDohM"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبر أنيس الخير</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>جدة، شارع فلسطين، مركز الأعمال</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>يغلق الساعة 09:00 م</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 120+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 3 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A modern medical diagnostic brand icon featuring a stylized microscopic view of a cell, rendered in shades of teal and navy. The graphic is sharp, precise, and clean, conveying high-tech laboratory excellence and professional reliability in a light-mode clinic environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaQ5kGGAqDfEKNrqMn_8oVkCJdjVOwi1oxVPMWqBf1USS8PNkrO6E4LjnyemRSC8mJlXxPDW4RsUI4_t38bZzlJh-5CiiRUN7HGjcfMeqj4oDkdoB3_amiEJdCRxjQIHKv2wqao6HhPiFe8B821S1v3VsxzhCcGz7YeEflkvNCzatDpoVPxoDho796GqVbnOyvcCykdQS4aZAdHnVd-nYDM2UUdr3Jc94x8AhaylbW3-MOP0mlfHWB-5QskkIKXVGm2etE3sFHh9Q"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبرات طيبة</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>الدمام، حي الشاطئ، المجمع الطبي</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>مفتوح 24 ساعة</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 200+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 4 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A minimal and professional medical laboratory logo using geometric teal shapes to represent clinical accuracy. The lighting is bright and airy, suggesting a sanitized and modern facility. The design is centered, high-contrast, and focused on medical professionalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD29Tfxz9rB0jDHlUuaxalDNQMAS4RaINw26UIaKLH4YNnju94n2l_A4NMdg9EMTIHkFIgO9u4oJmHpvbJIiDZXPg6GRpw5gQ2i5G6-BX-PMfCsXZHog7QuIIEW5Ccf3K5abeZBQdXlLEOOhAijAZBnAIFlFg3kgegOfcxtrJrFrxfG7KcNdAfAmvwChXSH1JUSoc4u4U1g2UQ8b89zws4i-EU5epMlZVqO2GOqoVSl0pxYFJWPqcQLrcIyA1mxCHUGKi9dj28XYBU"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبرات الفارابي</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>الرياض، حي السليمانية</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>09:00 ص - 11:00 م</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 180+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 5 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-trust clinical logo for a diagnostic lab, featuring a stylized molecule structure in teal and charcoal grey. The overall mood is sterile and modern, utilizing soft white lighting and a clean, high-legibility layout that emphasizes medical precision and professional care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0N0CtXEeNT31AUjf8Gz3ZpF8ADBlsti7TfZP5dlMZS-A3i5WohtcardcrJgLzryDlJohjzcK28gUNlOBUw0BevQv6fFbHYXWVsVKj8zWZRBufO36s-ZE4gUobqC5NBzzYNzrj1nRR7cq7A-Zwz3WtQ_n34bzkoyXwAQsm5UJtd-isYJEnXgJoaawjT5daNooFQHoffgULXjJmTEC31_iQDsfkJIMSaBFmz_jJoCLO0cedmFkKXTJLr_eeQZX5C65bcJFJnYKCqIs"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبر الرواد الطبي</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>المدينة المنورة، حي العزيزية</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>08:00 ص - 10:00 م</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 135+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 6 -->
+<div class="lab-card bg-white rounded-xl p-6 transition-all duration-300 flex flex-col h-full shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-start mb-6">
+<div class="w-20 h-20 rounded-xl bg-surface-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A modern minimalist logo for a pathology lab, depicting a simple blue microscope lens with an abstract blood drop icon. The background is a crisp clinic-white, with soft shadows and a professional teal primary color palette, evoking a feeling of safety and scientific accuracy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1B0fvjb993tiLpBzWsCFZoaK2mO46UP4ZC61JQHW1eWVBWfa_rQTClzuB0BHQ2O2Kpv4xLCgFBPk-HpsJr8bh-lfKye-JUnWpyaZ0TSuelnjGUxAxn7V-lh0L5SBiEjN-wnR282XrPcoaBpDA-lQZOm9oGHg6lZ3vEzZKdUl90AelFJzBdrmoUKv0QvLuOypgwKFg_Jg-TTqAwDkChYbeiMw22TKCqjaNzj-H5TaKwHIu-O4vYEFWNMXTQc1Mb35a3sr6NlJa2sI"/>
+</div>
+<span class="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        موثق
+                    </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">مختبرات تشخيص</h3>
+<div class="flex items-center gap-2 text-on-surface-variant mb-3 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>مكة المكرمة، العزيزية الجنوبية</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-6 font-body-md text-body-md">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span>مفتوح الآن</span>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-primary font-bold font-label-md text-label-md">عدد التحاليل المتاحة: 160+</span>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary-container/10 text-primary-container font-label-md text-label-md hover:bg-primary-container hover:text-white transition-colors flex items-center justify-center gap-2">
+                        عرض التحاليل
+                        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+</div>
+</div>
+</section>
+<!-- CTA for labs -->
+<section class="mt-20 bg-primary-container rounded-xl p-8 md:p-12 text-on-primary flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative">
+<div class="relative z-10 text-center md:text-right">
+<h2 class="font-headline-lg text-white mb-4">هل تمتلك مختبراً طبياً؟</h2>
+<p class="font-body-lg text-on-primary-container max-w-xl opacity-90">انضم إلى منصة ابن سينا ووسع نطاق وصولك لآلاف المرضى. قدم تحاليلك الطبية وخدماتك المنزلية بسهولة.</p>
+<button class="mt-8 px-8 py-3 bg-white text-primary font-bold rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-2 mx-auto md:mr-0">
+                    سجل مختبرك الآن
+                    <span class="material-symbols-outlined">add_business</span>
+</button>
+</div>
+<div class="w-full md:w-1/3 relative h-48 md:h-auto overflow-hidden rounded-xl">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A clean, high-resolution interior of a modern medical laboratory with stainless steel surfaces, high-end diagnostic machines, and bright clinical lighting. Scientists in white coats are working with professional focus. The scene is bathed in cool, hygienic light-mode tones of teal and white, reflecting professional trust and safety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4TpUL3jVd8WJbhHv5xw4tFKO0xhGobewpYa81Yvwi2G5RRzTCBMXyIHghdptV5-7xhzHyUxTE6KDgXr9pXlCLKXKb93fn_GoMBjhMVX1DmWmO82dCZnzxcOHsUEBqgW8FKcr8mQHyXDGdBiGBzHVkATLoVl-Jn6wQAJ3OKiy7dfwbb8VgBCT4Yuua9aUzmtOYP7TFdaFmxpd4_SA83-rEhx8PsR4i8CHiMqAkOcf2a2rGVhyMDKZAWzGC0-GUVhvvnnIS1GzU3-k"/>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-on-surface-variant border-t border-outline-variant">
+<div class="w-full py-section-gap px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row-reverse justify-between gap-gutter">
+<div class="flex flex-col gap-6 md:w-1/3 text-right">
+<span class="text-headline-sm font-headline-sm text-primary">Avicena</span>
+<p class="font-body-md text-on-surface-variant leading-relaxed">منصتكم الموثوقة للرعاية الصحية والتحاليل الطبية. نسعى لتسهيل الوصول للخدمات الطبية بجودة واحترافية عالية.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-12 flex-row-reverse">
+<div class="flex flex-col gap-4 items-end">
+<h4 class="font-bold text-on-surface">روابط سريعة</h4>
+<nav class="flex flex-col gap-2 items-end">
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">الشروط والأحكام</a>
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">سياسة الخصوصية</a>
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">الأسئلة الشائعة</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4 items-end">
+<h4 class="font-bold text-on-surface">تواصل معنا</h4>
+<nav class="flex flex-col gap-2 items-end">
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">اتصل بنا</a>
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">الدعم الفني</a>
+<a class="font-caption text-caption text-on-surface-variant hover:underline hover:text-primary transition-opacity duration-200" href="#">تويتر</a>
+</nav>
+</div>
+</div>
+</div>
+<div class="w-full py-6 border-t border-outline-variant text-center">
+<p class="font-caption text-caption text-on-surface-variant">© 2024 ابن سينا (Avicena). جميع الحقوق محفوظة.</p>
+</div>
+</footer>
+<script>
+        // Micro-interaction for input glow and focus
+        const searchInput = document.querySelector('input');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

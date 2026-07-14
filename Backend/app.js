@@ -20,8 +20,19 @@ import medicalAiRouter from "./src/modules/medical-ai/medical.ai.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
+
+// CORS — allow the web app to call the API from the browser.
+// In dev, reflect the request origin; in prod, restrict via CLIENT_ORIGIN (comma-separated).
+const allowedOrigins = process.env.CLIENT_ORIGIN?.split(",").map((o) => o.trim());
+app.use(
+  cors({
+    origin: allowedOrigins && allowedOrigins.length ? allowedOrigins : true,
+    credentials: true,
+  }),
+);
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json({ limit: "10mb" }));
