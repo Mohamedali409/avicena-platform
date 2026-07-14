@@ -17,6 +17,7 @@ import videoRouter from "./src/modules/video-call/video.routes.js";
 import notificationRouter from "./src/modules/notifications/notification.routes.js";
 import subscriptionRouter from "./src/modules/subscriptions/subscription.routes.js";
 import medicalAiRouter from "./src/modules/medical-ai/medical.ai.routes.js";
+import pharmacyApplicationRoutes from "./src/modules/pharmacy/application/application.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -28,7 +29,9 @@ const app = express();
 
 // CORS — allow the web app to call the API from the browser.
 // In dev, reflect the request origin; in prod, restrict via CLIENT_ORIGIN (comma-separated).
-const allowedOrigins = process.env.CLIENT_ORIGIN?.split(",").map((o) => o.trim());
+const allowedOrigins = process.env.CLIENT_ORIGIN?.split(",").map((o) =>
+  o.trim(),
+);
 app.use(
   cors({
     origin: allowedOrigins && allowedOrigins.length ? allowedOrigins : true,
@@ -97,6 +100,9 @@ app.use("/api/subscriptions", subscriptionRouter);
 
 // medical AI (RAG)
 app.use("/api/medical-ai", medicalAiRouter);
+
+// pharmacy
+app.use("/api/v1/pharmacy/applications", pharmacyApplicationRoutes);
 
 // ── Error Handler ─────────────────────────────────────────
 app.use(errorMiddleware);

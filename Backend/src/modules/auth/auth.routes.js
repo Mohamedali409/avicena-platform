@@ -10,9 +10,15 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  resendVerificationOtp,
+  resendResetPasswordOtp,
+  changePassword,
 } from "./auth.controller.js";
 import { authGuard } from "../../shared/guards/auth.guard.js";
-import { authlimiter } from "../../shared/middleware/rate-limit.middleware.js";
+import {
+  authlimiter,
+  otpLimiter,
+} from "../../shared/middleware/rate-limit.middleware.js";
 
 const authRouter = Router();
 
@@ -24,11 +30,14 @@ authRouter.post("/login", authlimiter, login);
 // TODO...
 
 // Refresh & Logout
-authRouter.post("/refresh", refresh);
+authRouter.post("/refresh", authlimiter, refresh);
 authRouter.post("/logout", authGuard, logoutUser);
-authRouter.post("/forgot-password", forgotPassword);
-authRouter.post("/reset-password", resetPassword);
-authRouter.post("/verify-email", verifyEmail);
+authRouter.post("/forgot-password", otpLimiter, forgotPassword);
+authRouter.post("/reset-password", authlimiter, resetPassword);
+authRouter.post("/verify-email", authlimiter, verifyEmail);
+authRouter.post("/resend-verification", otpLimiter, resendVerificationOtp);
+authRouter.post("/resend-reset-password", otpLimiter, resendResetPasswordOtp);
+authRouter.post("/change-password", authlimiter, changePassword);
 
 // Admin
 authRouter.post("/admin/login", authlimiter, adminLogin);

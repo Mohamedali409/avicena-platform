@@ -12,6 +12,7 @@ const register = catchAsync(async (req, res) => {
 // Unified login — detects role from the email (patient/admin/doctor/lab).
 const login = catchAsync(async (req, res) => {
   const data = await authService.loginUnified(req.body);
+
   messageResponse.successResponse(res, "Login success", data);
 });
 
@@ -21,14 +22,14 @@ const forgotPassword = catchAsync(async (req, res) => {
 
   const data = await authService.forgotPassword(email);
 
-  messageResponse.successResponse(res, "OTP send successfully.", data);
+  messageResponse.successResponse(res, "OTP sent successfully.", data);
 });
 
 //  Reset Password
 const resetPassword = catchAsync(async (req, res) => {
   const data = await authService.resetPassword(req.body);
 
-  messageResponse.successResponse(res, "password reset successfully.", data);
+  messageResponse.successResponse(res, "Password reset successfully.", data);
 });
 
 // Verify Email
@@ -38,6 +39,39 @@ const verifyEmail = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Email verified successfully.", data);
 });
 
+// resend verification otp
+const resendVerificationOtp = catchAsync(async (req, res) => {
+  const { email } = req.body;
+
+  const data = await authService.resendVerificationOtp(email);
+
+  messageResponse.successResponse(
+    res,
+    "Verification OTP sent successfully.",
+    data,
+  );
+});
+
+// resend reset password otp
+const resendResetPasswordOtp = catchAsync(async (req, res) => {
+  const { email } = req.body;
+
+  const data = await authService.resendResetPasswordOtp(email);
+
+  messageResponse.successResponse(
+    res,
+    "Reset password OTP sent successfully.",
+    data,
+  );
+});
+
+// change password
+const changePassword = catchAsync(async (req, res) => {
+  const data = await authService.changePassword(req.userId, req.body);
+
+  messageResponse.successResponse(res, "Password changed successfully", data);
+});
+
 // admin login
 
 const adminLogin = catchAsync(async (req, res) => {
@@ -45,6 +79,7 @@ const adminLogin = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Admin Login Successfully", data);
 });
 
+/*******************************************************************/
 // doctor login
 
 const doctorLogin = catchAsync(async (req, res) => {
@@ -81,4 +116,7 @@ export {
   resetPassword,
   forgotPassword,
   verifyEmail,
+  resendVerificationOtp,
+  resendResetPasswordOtp,
+  changePassword,
 };

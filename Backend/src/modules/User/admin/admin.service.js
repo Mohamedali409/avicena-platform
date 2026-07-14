@@ -41,12 +41,12 @@ const getDashboard = async () => {
 // ── Doctor CRUD ─────────────────────────────────────────
 const addDoctor = async (body, imageFile) => {
   const {
-    name,
+    doctorName,
     email,
     password,
-    speciality,
+    specialization,
     degree,
-    experience,
+    expertise,
     about,
     fees,
     address,
@@ -56,44 +56,57 @@ const addDoctor = async (body, imageFile) => {
   } = body;
 
   if (
-    !name ||
+    !doctorName ||
     !email ||
     !password ||
-    !speciality ||
+    !specialization ||
     !degree ||
-    !experience ||
+    !expertise ||
     !about ||
     !fees ||
     !address ||
     !phone ||
     !start_booked ||
     !consultation_fees
-  )
-    throw new ApiError("All Filed is required", 400);
+  ) {
+    throw new ApiError("All fields are required", 400);
+  }
 
-  if (!validator.isEmail(email)) throw new ApiError("The Email not valid", 400);
-  if (password.length < 8)
-    throw new ApiError("the password must be bagger than 8 words", 400);
-  if (!imageFile) throw new ApiError("the doctor image is required", 400);
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
+
+  if (password.length < 8) {
+    throw new ApiError("Password must be at least 8 characters", 400);
+  }
+
+  if (!imageFile) {
+    throw new ApiError("Doctor image is required", 400);
+  }
 
   const exists = await doctorRepository.findDoctorByEmail(email);
-  if (exists) throw new ApiError("The Email is user before", 409);
 
-  const slat = await bcrypt.genSalt(10);
-  const hashed = await bcrypt.hash(password, slat);
+  if (exists) {
+    throw new ApiError("Email already exists", 409);
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
   const imageUrl = await uploadImage(imageFile.path, "avicena/doctors");
 
   await doctorRepository.createDoctor({
-    name,
+    doctorName,
     email,
-    password: hashed,
+    password: hashedPassword,
     image: imageUrl,
-    speciality,
+    specialization,
     degree,
-    experience,
+    expertise,
     about,
     fees: Number(fees),
     consultation_fees: Number(consultation_fees),
+    phone,
     start_booked:
       typeof start_booked === "string"
         ? JSON.parse(start_booked)

@@ -33,25 +33,51 @@ const createOtp = async (userId, type) => {
 };
 
 const verifyOtp = async (userId, type, otp) => {
-  // get active OTP
+  // Get active OTP
   const otpRecord = await otpRepository.findActiveOtp(userId, type);
 
-  if (!otpRecord) throw new ApiError("Invalid OTP", 403);
+  if (!otpRecord) {
+    throw new ApiError("Invalid OTP", 403);
+  }
 
-  // check expiration
-  if (otpRecord.attempts >= 5) {
+  // Check max attempts
+  if (otpRecord.attempts >= otpRecord.maxAttempts) {
+    await otpRepository.deleteOne({ _id: otpRecord._id });
+
     throw new ApiError("OTP has been blocked. Please request a new OTP.", 403);
   }
 
-  if (otpRecord.expiresAt < new Date()) throw new ApiError("OTP has expired");
+  // Check expiration
+  if (otpRecord.expiresAt < new Date()) {
+    await otpRepository.deleteOne({ _id: otpRecord._id });
+
+    throw new ApiError("OTP has expired", 400);
+  }
 
   // Compare OTP
   const isValid = await bcrypt.compare(otp, otpRecord.code);
 
-  if (!isValid) throw new ApiError("Invalid OTP", 403);
+  if (!isValid) {
+    const updatedOtp = await otpRepository.incrementAttempts(otpRecord._id);
 
+    const remainingAttempts = updatedOtp.maxAttempts - updatedOtp.attempts;
+
+    if (updatedOtp.attempts >= updatedOtp.maxAttempts) {
+      await otpRepository.deleteOne({ _id: updatedOtp._id });
+
+      throw new ApiError(
+        "OTP has been blocked. Please request a new OTP.",
+        403,
+      );
+    }
+
+    throw new ApiError("Invalid OTP", 400);
+  }
+
+  // Success
   await otpRepository.markAsUsed(otpRecord._id);
 
   return otpRecord;
 };
+
 export { createOtp, verifyOtp };

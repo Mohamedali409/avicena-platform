@@ -41,6 +41,9 @@ const clearSlots = (docId) => {
 const countDocumentsWiteUserId = async (userId) => {
   return Doctor.countDocuments({ userId });
 };
+const updateDoctor = (doctorId, data) => {
+  return Doctor.findByIdAndUpdate(doctorId, data, { new: true });
+};
 
 export {
   createDoctor,
@@ -53,4 +56,5 @@ export {
   findDoctorActive,
   clearSlots,
   countDocumentsWiteUserId,
+  updateDoctor,
 };

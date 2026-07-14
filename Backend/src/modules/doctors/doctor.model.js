@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
 const doctorSchema = new mongoose.Schema(
   {
@@ -10,12 +9,23 @@ const doctorSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: [true, "Email must be unique"],
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
     password: {
       type: String,
       required: [true, "Password is required"],
       select: false,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
     },
     // confirmPassword: {
     //   type: String,
@@ -30,12 +40,15 @@ const doctorSchema = new mongoose.Schema(
     // },
     role: {
       type: String,
-      enum: ["doctor", "lab"],
+      enum: ["doctor"],
       default: "doctor",
     },
-    image: { type: String, required: [true, "image is required"] },
+    image: {
+      type: String,
+      default: "",
+    },
     phone: { type: String, default: "00000000000" },
-    Specialization: {
+    specialization: {
       type: String,
       required: [true, "Specialization is required"],
     },
@@ -47,14 +60,27 @@ const doctorSchema = new mongoose.Schema(
     about: { type: String, required: [true, "Doctor about is required"] },
     available: {
       type: Boolean,
-      default: [true, "doctor available is required "],
+      default: true,
     },
     fees: { type: Number, required: [true, "Doctor fees is required"] },
     consultation_fees: {
       type: Number,
       required: [true, "Doctor consultation fees is required"],
     },
-    address: { type: Object, required: [true, "Doctor address is required "] },
+    address: {
+      line1: {
+        type: String,
+        required: true,
+      },
+      line2: {
+        type: String,
+        default: "",
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+    },
     date: { type: Number, required: [true, "doctor date is required"] },
     slots_booked: { type: Object, default: {} },
     start_booked: {
@@ -77,16 +103,6 @@ const doctorSchema = new mongoose.Schema(
   },
   { minimize: false, timestamps: true },
 );
-
-// doctorSchema.pre("save", async function () {
-//   if (!this.isModified("password")) return;
-//   this.password = await bcrypt.hash(this.password, 10);
-//   this.confirmPassword = undefined;
-// });
-
-// doctorSchema.methods.comparePassword = async function (passwordDoctorEnter) {
-//   return await bcrypt.compare(this.password, passwordDoctorEnter);
-// };
 
 const Doctor = mongoose.models.Doctor || mongoose.model("Doctor", doctorSchema);
 

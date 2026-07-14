@@ -14,4 +14,8 @@ const updateUser = (id, data) => {
   return User.findByIdAndUpdate(id, data, { new: true });
 };
 
-export { createUser, findUserByEmail, updateUser };
+const findUserById = (id) => {
+  return User.findById(id).select("+password");
+};
+
+export { createUser, findUserByEmail, updateUser, findUserById };

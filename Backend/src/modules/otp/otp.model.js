@@ -33,6 +33,10 @@ const otpSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    maxAttempts: {
+      type: Number,
+      default: 5,
+    },
   },
   {
     timestamps: true,

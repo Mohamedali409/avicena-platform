@@ -18,7 +18,7 @@ export const adminGuard = catchAsync(async (req, res, next) => {
   ) {
     throw new ApiError("غير مصرح لك بالدخول", 403);
   }
-
+  req.admin = decoded;
   req.isAdmin = true;
   next();
 });

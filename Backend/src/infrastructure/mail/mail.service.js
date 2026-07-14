@@ -130,10 +130,66 @@ const sendOtpEmail = async (toEmail, name, otp, purpose) => {
   });
 };
 
+const sendPharmacyCredentialsEmail = async (toEmail, ownerName, password) => {
+  await transporter.sendMail({
+    from: FROM,
+    to: toEmail,
+    subject: "Your Pharmacy Account Has Been Approved",
+
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+
+        <h2>
+          Welcome to Avicena Platform
+        </h2>
+
+        <p>
+          Hello ${ownerName},
+        </p>
+
+        <p>
+          Your pharmacy application has been approved successfully.
+          Your pharmacy account has been created.
+        </p>
+
+        <h3>
+          Login Credentials:
+        </h3>
+
+        <p>
+          <strong>Email:</strong> ${toEmail}
+        </p>
+
+        <p>
+          <strong>Password:</strong> ${password}
+        </p>
+
+        <p>
+          You can login to your pharmacy dashboard and start managing
+          your products.
+        </p>
+
+        <p>
+          For security reasons, please change your password after your first login.
+        </p>
+
+        <br/>
+
+        <p>
+          Regards,<br/>
+          Avicena Team
+        </p>
+
+      </div>
+    `,
+  });
+};
+
 export {
   sendWelcomeEmail,
   sendAppointmentEmail,
   sendConsultationEmail,
   sendReportEmail,
   sendOtpEmail,
+  sendPharmacyCredentialsEmail,
 };

@@ -18,6 +18,7 @@ import * as labRepository from "../labs/labs.repository.js";
 import * as userRepository from "../User/user.repository.js";
 import * as otpService from "../otp/otp.service.js";
 import * as otpRepository from "../otp/otp.repository.js";
+import * as pharmacyRepository from "../pharmacy/pharmacy/pharmacy.repository.js";
 import {
   signRefreshToken,
   verifyRefreshToken,
@@ -29,6 +30,8 @@ import {
 } from "../../infrastructure/redis/session.service.js";
 import { authEventsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 import { OTP_TYPES } from "../otp/otp.constants.js";
+import { findAccountByEmail } from "./auth.helper.js";
+import { modelMap } from "./auth.map.js";
 
 // import User from "../User/user.model.js";
 // // auth.service.js
@@ -123,50 +126,51 @@ const loginPatient = async ({ email, password }) => {
 // Single entry point for the web app: detects the account type from the email
 // across Users (patient/admin), Doctors, and Labs — no role selection needed.
 const loginUnified = async ({ email, password }) => {
-  if (!email || !password) throw new ApiError("Email and password are required", 400);
-  if (!validator.isEmail(email)) throw new ApiError("Email is not valid", 400);
-
-  const invalid = () => new ApiError("Email or password is incorrect", 401);
-
-  // 1) User collection → patient or admin (role lives on the document)
-  const user = await authRepository.findUserByEmail(email);
-  if (user) {
-    if (user.isActive === false) throw new ApiError("This account is blocked", 403);
-    if (!(await comparePassword(password, user.password))) throw invalid();
-    const role = user.role || "patient";
-    const token = signToken({ id: user._id, role });
-    return {
-      token,
-      role,
-      user: { _id: user._id, name: user.name, email: user.email, image: user.image },
-    };
+  if (!email || !password) {
+    throw new ApiError("Email and password are required", 400);
   }
 
-  // 2) Doctor collection
-  const doctor = await doctorRepository.findDoctorByEmail(email);
-  if (doctor) {
-    if (!(await comparePassword(password, doctor.password))) throw invalid();
-    const token = signToken({ id: doctor._id, role: "doctor" });
-    return {
-      token,
-      role: "doctor",
-      user: { _id: doctor._id, name: doctor.doctorName, email: doctor.email, image: doctor.image },
-    };
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Email is not valid", 400);
   }
 
-  // 3) Lab collection
-  const lab = await labRepository.findLabByEmail(email);
-  if (lab) {
-    if (!(await comparePassword(password, lab.password))) throw invalid();
-    const token = signToken({ id: lab._id, role: "lab" });
-    return {
-      token,
-      role: "lab",
-      user: { _id: lab._id, name: lab.name, email: lab.email, image: lab.image },
-    };
+  const account = await findAccountByEmail(email);
+
+  if (!account) {
+    throw new ApiError("Email or password is incorrect", 401);
   }
 
-  throw invalid();
+  const { user, role, repo } = account;
+
+  if (user.isActive === false) {
+    throw new ApiError("This account is blocked", 403);
+  }
+
+  if (role === "patient" && !user.isVerified) {
+    throw new ApiError("Please verify your email first.", 403);
+  }
+
+  if (!(await comparePassword(password, user.password))) {
+    throw new ApiError("Email or password is incorrect", 401);
+  }
+
+  const token = signToken({
+    id: user._id,
+    role,
+  });
+
+  authEventsTotal.inc({ event: "login", role });
+
+  return {
+    token,
+    role,
+    user: {
+      _id: user._id,
+      name: user[repo.nameField],
+      email: user.email,
+      image: user.image,
+    },
+  };
 };
 
 const forgotPassword = async (email) => {
@@ -178,21 +182,28 @@ const forgotPassword = async (email) => {
     throw new ApiError("Invalid email", 400);
   }
 
-  const user = await authRepository.findUserByEmail(email);
+  const account = await findAccountByEmail(email);
 
   // Prevent Email Enumeration
-  if (!user) {
+  if (!account) {
     return {
       message: "If an account with that email exists, an OTP has been sent.",
     };
   }
+
+  const { user, repo } = account;
 
   const { otp } = await otpService.createOtp(
     user._id,
     OTP_TYPES.RESET_PASSWORD,
   );
 
-  await sendOtpEmail(user.email, user.name, otp, OTP_TYPES.RESET_PASSWORD);
+  await sendOtpEmail(
+    user.email,
+    user[repo.nameField],
+    otp,
+    OTP_TYPES.RESET_PASSWORD,
+  );
 
   return {
     message: "OTP sent successfully.",
@@ -212,13 +223,14 @@ const resetPassword = async ({ email, otp, newPassword }) => {
     throw new ApiError("Password must be at least 8 characters", 400);
   }
 
-  const user = await authRepository.findUserByEmail(email);
+  const account = await findAccountByEmail(email);
 
-  if (!user) {
+  if (!account) {
     throw new ApiError("User not found", 404);
   }
 
-  // Prevent using the current password again
+  const { user, repo } = account;
+
   const isSamePassword = await comparePassword(newPassword, user.password);
 
   if (isSamePassword) {
@@ -228,21 +240,16 @@ const resetPassword = async ({ email, otp, newPassword }) => {
     );
   }
 
-  // Verify OTP
   await otpService.verifyOtp(user._id, OTP_TYPES.RESET_PASSWORD, otp);
 
-  // Hash new password
   const hashedPassword = await hashPassword(newPassword);
 
-  // Update password
-  await authRepository.updateUser(user._id, {
+  await repo.update(user._id, {
     password: hashedPassword,
   });
 
-  // Logout from all sessions
   await deleteRefreshToken(user._id);
 
-  // Remove all reset password OTPs
   await otpRepository.deleteMany({
     user: user._id,
     type: OTP_TYPES.RESET_PASSWORD,
@@ -254,20 +261,31 @@ const resetPassword = async ({ email, otp, newPassword }) => {
 };
 
 const verifyEmail = async ({ email, otp }) => {
-  if (!email || !otp) throw new ApiError("Email and OTP are required", 400);
+  if (!email || !otp) {
+    throw new ApiError("Email and OTP are required", 400);
+  }
 
-  if (!validator.isEmail(email)) throw new ApiError("Invalid email", 400);
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
 
-  const user = await authRepository.findUserByEmail(email);
+  const account = await findAccountByEmail(email);
 
-  if (!user) throw new ApiError("User not found", 404);
-  if (user.isVerified) throw new ApiError("Email is already verified", 400);
+  if (!account) {
+    throw new ApiError("User not found", 404);
+  }
+
+  const { user, role, repo } = account;
+
+  if (user.isVerified) {
+    throw new ApiError("Email is already verified", 400);
+  }
 
   // Verify OTP
   await otpService.verifyOtp(user._id, OTP_TYPES.VERIFY_EMAIL, otp);
 
   // Update verification status
-  await authRepository.updateUser(user._id, {
+  await repo.update(user._id, {
     isVerified: true,
   });
 
@@ -277,20 +295,154 @@ const verifyEmail = async ({ email, otp }) => {
     type: OTP_TYPES.VERIFY_EMAIL,
   });
 
-  // create token
-  const token = signToken({ id: user._id, role: "patient" });
+  // Create JWT
+  const token = signToken({
+    id: user._id,
+    role,
+  });
 
   // Send welcome email
-  await sendWelcomeEmail(user.email, user.name);
+  await sendWelcomeEmail(user.email, user[repo.nameField]);
 
   return {
     token,
+    role,
     user: {
       _id: user._id,
-      name: user.name,
+      name: user[repo.nameField],
       email: user.email,
       image: user.image,
     },
+  };
+};
+
+const resendVerificationOtp = async (email) => {
+  if (!email) {
+    throw new ApiError("Email is required", 400);
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
+
+  const account = await findAccountByEmail(email);
+
+  // Prevent Email Enumeration
+  if (!account) {
+    return {
+      message:
+        "If an account with that email exists, a verification OTP has been sent.",
+    };
+  }
+
+  const { user, repo } = account;
+
+  if (user.isVerified) {
+    throw new ApiError("Email is already verified", 400);
+  }
+
+  const { otp } = await otpService.createOtp(user._id, OTP_TYPES.VERIFY_EMAIL);
+
+  await sendOtpEmail(
+    user.email,
+    user[repo.nameField],
+    otp,
+    OTP_TYPES.VERIFY_EMAIL,
+  );
+
+  return {
+    message: "Verification OTP sent successfully.",
+  };
+};
+
+const resendResetPasswordOtp = async (email) => {
+  if (!email) {
+    throw new ApiError("Email is required", 400);
+  }
+
+  if (!validator.isEmail(email)) {
+    throw new ApiError("Invalid email", 400);
+  }
+
+  const account = await findAccountByEmail(email);
+
+  // Prevent Email Enumeration
+  if (!account) {
+    return {
+      message:
+        "If an account with that email exists, a reset OTP has been sent.",
+    };
+  }
+
+  const { user, repo } = account;
+
+  const { otp } = await otpService.createOtp(
+    user._id,
+    OTP_TYPES.RESET_PASSWORD,
+  );
+
+  await sendOtpEmail(
+    user.email,
+    user[repo.nameField],
+    otp,
+    OTP_TYPES.RESET_PASSWORD,
+  );
+
+  return {
+    message: "Reset password OTP sent successfully.",
+  };
+};
+
+const changePassword = async (
+  userId,
+  role,
+  { currentPassword, newPassword },
+) => {
+  if (!currentPassword || !newPassword) {
+    throw new ApiError("Current password and new password are required", 400);
+  }
+
+  if (newPassword.length < 8) {
+    throw new ApiError("Password must be at least 8 characters", 400);
+  }
+
+  const repo = modelMap[role];
+
+  if (!repo) {
+    throw new ApiError("Invalid account type", 400);
+  }
+
+  const user = await repo.findById(userId);
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  const isMatch = await comparePassword(currentPassword, user.password);
+
+  if (!isMatch) {
+    throw new ApiError("Current password is incorrect", 401);
+  }
+
+  const isSamePassword = await comparePassword(newPassword, user.password);
+
+  if (isSamePassword) {
+    throw new ApiError(
+      "New password must be different from the current password",
+      400,
+    );
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await repo.update(userId, {
+    password: hashedPassword,
+  });
+
+  await deleteRefreshToken(userId);
+
+  return {
+    message: "Password changed successfully.",
   };
 };
 
@@ -416,4 +568,7 @@ export {
   refreshAccessToken,
   logout,
   verifyEmail,
+  resendVerificationOtp,
+  resendResetPasswordOtp,
+  changePassword,
 };
