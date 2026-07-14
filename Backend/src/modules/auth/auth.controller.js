@@ -9,8 +9,9 @@ const register = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Account created success", data, 201);
 });
 
+// Unified login — detects role from the email (patient/admin/doctor/lab).
 const login = catchAsync(async (req, res) => {
-  const data = await authService.loginPatient(req.body);
+  const data = await authService.loginUnified(req.body);
   messageResponse.successResponse(res, "Login success", data);
 });
 

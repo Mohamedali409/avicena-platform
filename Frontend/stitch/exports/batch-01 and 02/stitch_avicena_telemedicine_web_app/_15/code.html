@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ابن سينا (Avicena) | استشارتك الطبية عن بُعد</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#0b1c30",
+                    "inverse-surface": "#213145",
+                    "on-primary-fixed": "#001f29",
+                    "tertiary-container": "#696b6b",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#3f484c",
+                    "outline-variant": "#bec8cd",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#81d1f0",
+                    "error": "#ba1a1a",
+                    "surface": "#f8f9ff",
+                    "surface-bright": "#f8f9ff",
+                    "on-secondary-fixed-variant": "#444749",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-secondary-container": "#626567",
+                    "on-primary": "#ffffff",
+                    "on-background": "#0b1c30",
+                    "surface-tint": "#006781",
+                    "secondary-container": "#e0e3e5",
+                    "surface-container-low": "#eff4ff",
+                    "primary-fixed": "#b9eaff",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#cbdbf5",
+                    "on-primary-container": "#d3f1ff",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "primary": "#005a71",
+                    "surface-variant": "#d3e4fe",
+                    "primary-fixed-dim": "#81d1f0",
+                    "on-tertiary-container": "#ececec",
+                    "outline": "#6f787d",
+                    "secondary": "#5c5f61",
+                    "primary-container": "#0e7490",
+                    "secondary-fixed": "#e0e3e5",
+                    "tertiary-fixed": "#e2e2e2",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "surface-container-high": "#dce9ff",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "background": "#f8f9ff",
+                    "on-primary-fixed-variant": "#004d62",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary": "#515353"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "section-gap": "64px"
+            },
+            "fontFamily": {
+                    "body-md": ["IBM Plex Sans Arabic"],
+                    "headline-lg": ["IBM Plex Sans Arabic"],
+                    "display": ["IBM Plex Sans Arabic"],
+                    "caption": ["IBM Plex Sans Arabic"],
+                    "label-md": ["IBM Plex Sans Arabic"],
+                    "headline-lg-mobile": ["IBM Plex Sans Arabic"],
+                    "body-lg": ["IBM Plex Sans Arabic"],
+                    "headline-md": ["IBM Plex Sans Arabic"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: #f8fafc;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Entrance Animations */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-slide-up {
+            animation: fadeSlideUp 0.8s ease-out forwards;
+        }
+
+        .delay-200 { animation-delay: 200ms; }
+        .delay-400 { animation-delay: 400ms; }
+
+        /* Button Pulse */
+        @keyframes pulse-brightness {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
+            100% { filter: brightness(1); }
+        }
+        .hover-pulse:hover {
+            animation: pulse-brightness 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 z-50 w-full bg-surface-container-lowest/90 backdrop-blur-md shadow-sm transition-all duration-300">
+<div class="flex flex-row-reverse justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-20 transition-all duration-300" id="navbar-container">
+<!-- Brand Identity -->
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">Avicena</h1>
+</div>
+<!-- Desktop Navigation -->
+<nav class="hidden md:flex flex-row-reverse items-center gap-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md hover:text-primary-container transition-all duration-200 active:scale-95" href="#">الرئيسية</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary-container transition-all duration-200 active:scale-95" href="#">التخصصات</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary-container transition-all duration-200 active:scale-95" href="#">الأطباء</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary-container transition-all duration-200 active:scale-95" href="#">عن المنصة</a>
+</nav>
+<!-- CTA Actions -->
+<div class="flex flex-row-reverse items-center gap-4">
+<button class="bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all">إنشاء حساب</button>
+<button class="hidden sm:block text-primary font-label-md text-label-md hover:underline active:scale-95 transition-all">تسجيل الدخول</button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[700px] flex items-center overflow-hidden bg-surface-container-low">
+<div class="relative z-10 w-full px-margin-desktop max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-16">
+<!-- Content Column -->
+<div class="order-2 lg:order-1 text-right opacity-0 animate-fade-slide-up delay-200">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary rounded-full mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-md font-label-md">موثوق من قبل +10,000 مريض</span>
+</div>
+<h2 class="font-display text-display leading-tight mb-6">استشارتك الطبية <span class="text-primary-container">عن بُعد</span> بكل خصوصية وأمان</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">احصل على رعاية صحية متميزة من منزلك. ابن سينا يربطك بأفضل الأطباء والمتخصصين في العالم العربي.</p>
+<!-- Hero Search Component -->
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-xl flex flex-col md:flex-row-reverse items-center gap-3 max-w-2xl transition-all duration-300 hover:shadow-2xl">
+<div class="w-full relative">
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-outline material-symbols-outlined">search</span>
+<input class="w-full pr-12 pl-4 py-4 rounded-lg bg-surface border-none focus:ring-2 focus:ring-primary/20 font-body-md text-body-md transition-all" placeholder="ابحث عن تخصص، طبيب أو حالة طبية..." type="text"/>
+</div>
+<button class="w-full md:w-auto bg-primary-container text-on-primary px-8 py-4 rounded-lg font-headline-md font-bold hover:shadow-lg hover-pulse active:scale-95 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+<span>احجز الآن</span>
+<span class="material-symbols-outlined">calendar_month</span>
+</button>
+</div>
+<div class="mt-8 flex flex-row-reverse gap-6 items-center text-on-surface-variant">
+<div class="flex items-center gap-2 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-primary-container">timer</span>
+<span class="text-body-md font-body-md">رد خلال 15 دقيقة</span>
+</div>
+<div class="flex items-center gap-2 hover:text-primary transition-colors cursor-default">
+<span class="material-symbols-outlined text-primary-container">video_chat</span>
+<span class="text-body-md font-body-md">جودة HD فائقة</span>
+</div>
+</div>
+</div>
+<!-- Hero Image/Visual -->
+<div class="order-1 lg:order-2 relative opacity-0 animate-fade-slide-up">
+<div class="relative w-full aspect-square max-w-lg mx-auto rounded-xl overflow-hidden shadow-2xl transition-transform duration-700 hover:scale-[1.01]">
+<img alt="Professional Doctor" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-pOb0lBdcsn_Bau-fj5g751-t8Qo12tPll_H5Fht7esqMg2xNYF82iv_n-G6MjriKZ39UKy_y2SFz4585Sn5-vQiW_b1RRYd8B8tdBuC2WjjdcM_j2MRL2FU3q5lFLdX5JeXUopTEWQ85AMHV7scBWploEHa4OofyZ3QnEPprP4x7MxiJPC3vaE66K2PTyKfTqIZo3cbPUF-QiYciLI7FCDQvE_drEjIMf2HHeykv1DA5zZSyUtnRO7Y8AlmdCGKm8sEVuyH8DNc"/>
+<div class="absolute bottom-6 left-6 right-6 glass-effect p-4 rounded-xl border border-white/20 shadow-lg transition-all duration-300 hover:bg-white">
+<div class="flex flex-row-reverse items-center gap-3">
+<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center text-white transition-transform duration-300 hover:rotate-12">
+<span class="material-symbols-outlined">emergency</span>
+</div>
+<div class="text-right">
+<p class="text-primary font-bold text-label-md">استشارة طارئة</p>
+<p class="text-on-surface-variant text-caption">متاح الآن - د. أحمد سليم</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Medical Specialties Section -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-row-reverse justify-between items-end mb-10">
+<div class="text-right">
+<h3 class="font-headline-lg text-headline-lg mb-2">التخصصات الطبية</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">تصفح حسب التخصص للعثور على الطبيب المناسب</p>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">favorite</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">أمراض القلب</h4>
+</a>
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">child_care</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">طب الأطفال</h4>
+</a>
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">vaccines</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">الأمراض الجلدية</h4>
+</a>
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">stethoscope</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">الطب الباطني</h4>
+</a>
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">الطب النفسي</h4>
+</a>
+<a class="group bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 text-center hover:shadow-xl hover:-translate-y-2 transition-all active:scale-95 duration-300" href="#">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary-container mx-auto mb-4 group-hover:bg-primary-container group-hover:text-white transition-all duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-3xl">visibility</span>
+</div>
+<h4 class="font-label-md text-label-md font-bold text-on-surface">طب العيون</h4>
+</a>
+</div>
+</section>
+<!-- Feature Bento Grid -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto bg-surface-container-lowest rounded-3xl my-16 shadow-sm border border-outline-variant/20 overflow-hidden">
+<div class="text-center mb-16 pt-12">
+<h3 class="font-headline-lg text-headline-lg mb-4">لماذا تختار منصة ابن سينا؟</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto px-4">نحن نجمع بين التكنولوجيا المتطورة والخبرة الطبية لتقديم تجربة علاجية لا تضاهى.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter p-8">
+<!-- Feature 1 -->
+<div class="group bg-background p-8 rounded-xl border border-outline-variant/30 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+<div class="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center text-primary-container mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-4 text-primary">حجز فوري</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">لا مزيد من الانتظار في غرف الطوارئ. احصل على موعدك خلال ثوانٍ معدودة.</p>
+</div>
+<!-- Feature 2 -->
+<div class="group bg-primary-container p-8 rounded-xl shadow-lg flex flex-col items-center text-center text-on-primary transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+<div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-4">استشارة بالفيديو</h4>
+<p class="font-body-md text-body-md opacity-90">تواصل مباشر مع طبيبك وجهاً لوجه عبر اتصال مشفر وآمن يضمن خصوصيتك.</p>
+</div>
+<!-- Feature 3 -->
+<div class="group bg-background p-8 rounded-xl border border-outline-variant/30 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+<div class="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center text-primary-container mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-4 text-primary">ملف طبي ذكي</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">جميع تقاريرك، فحوصاتك، ووصفاتك الطبية في مكان واحد آمن.</p>
+</div>
+</div>
+</section>
+<!-- Doctors Preview Row (Slider) -->
+<section class="py-section-gap bg-surface-container-low overflow-hidden">
+<div class="px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-row-reverse justify-between items-end mb-12">
+<div class="text-right">
+<h3 class="font-headline-lg text-headline-lg mb-2">نخبة الأطباء المتخصصين</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">أفضل الرعاية من قبل خبراء معتمدين</p>
+</div>
+<div class="flex gap-2">
+<button class="slider-nav-prev w-10 h-10 rounded-full border border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-90" onclick="scrollSlider('doctors-slider', 'left')">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="slider-nav-next w-10 h-10 rounded-full border border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-90" onclick="scrollSlider('doctors-slider', 'right')">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+</div>
+</div>
+<div class="flex flex-row-reverse overflow-x-auto gap-gutter snap-x snap-mandatory scroll-smooth hide-scrollbar pb-8 pt-2 px-2" id="doctors-slider">
+<!-- Doctor Card 1 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-64 overflow-hidden">
+<img alt="Doctor 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYDDkUtGJlOmyHny6e6SVqEpfS3VYDowBZ0DnDIwRpHJWwlHTt0q4MJe8Qnf9CMZ1MlG5kHEDWSyGqwyzAq2Dj2aDrc2pfgLrc7hhATQ4cIuOA3UkggR3Rlqd4srr1dZiBjSHxoEjTip9zbraWK6TTZIZbpLOk6bw8FagXeKnI3Fwn0AaPT3VI_JqYESEgYHqR4L9Sz4B57F_xFFn2Bl9ICZU7NgF7HOTG6tGzV_UKKcI4ORjv-8QNcXDxuH_u15Su9WCnDbOtoKc"/>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.9</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">د. ليلى الماجد</h5>
+<p class="text-primary-container font-label-md mb-4">أخصائية القلب والأوعية الدموية</p>
+<div class="flex flex-row-reverse justify-between items-center">
+<span class="text-caption text-on-surface-variant">الخبرة: +15 عاماً</span>
+<button class="text-primary-container p-2 rounded-lg bg-primary/5 hover:bg-primary-container hover:text-white hover-pulse transition-all active:scale-90">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Doctor Card 2 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-64 overflow-hidden">
+<img alt="Doctor 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtc8UIze2fjlkbRSiwXGRKya7L3H0mGox1gjtC_2syADsGMxBZuHqaZjHkBdYFGI2e5A-xN1c1PLIoC6KH_hk6VfxTIHw64q0jMhMJtuPYb1nFHgY01LvYMjyU8Fa1cOkc01fF5-ZD5zdg9UTnA4DAMaO79T28Hbw956wchWmZJSvRxYuwD0UwOIfRy-IAexHZp8M2ppClpHXYjZA05Jc0kIrrR416bNfbMV76dHI2kx4kA9dZ-Q66N4h77C78eQvw58CivsYxNmU"/>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.8</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">د. عمر خالد</h5>
+<p class="text-primary-container font-label-md mb-4">استشاري طب الأطفال</p>
+<div class="flex flex-row-reverse justify-between items-center">
+<span class="text-caption text-on-surface-variant">الخبرة: +8 أعوام</span>
+<button class="text-primary-container p-2 rounded-lg bg-primary/5 hover:bg-primary-container hover:text-white hover-pulse transition-all active:scale-90">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Doctor Card 3 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-64 overflow-hidden">
+<img alt="Doctor 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjJa7UQQ0gpejg7UUcnVPWvQePyN22MU1rLDP5-3AubhaptrFWyAHWq5xCDnoLT6i3KRm2ZyOhxFq5W3LP_YXYNz-2S-y_HsD_lP5nQ_UowsBEoTOLIzT9Bju01jlOYMogr_ANTIeW7OMESGMpEhDOfNlU2cH71wqQAEq4p_GG6HwXme7g1yyFzgCMa5PwiNXz38TVmyEz8ateFzfDOMVtSc6vHSK0-9ZYRCngJiTOnzGPHx3h3HZjwu7f5N2CJQ42TlYu6FPeBOg"/>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">5.0</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">د. نورا العلي</h5>
+<p class="text-primary-container font-label-md mb-4">أخصائية الأمراض الجلدية</p>
+<div class="flex flex-row-reverse justify-between items-center">
+<span class="text-caption text-on-surface-variant">الخبرة: +12 عاماً</span>
+<button class="text-primary-container p-2 rounded-lg bg-primary/5 hover:bg-primary-container hover:text-white hover-pulse transition-all active:scale-90">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Doctor Card 4 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-64 overflow-hidden">
+<img alt="Doctor 4" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF7SE81u0f3Q-0n0iVC2-DXBGruLqFsvr1JQlvKQsEYmMS03gnAlUQ0DSKS7nr6G_zY6vvzQKKUkM7ci3FqWRpD-lqIiW42zECud6ScTMYgbzzGUpt-SXNo_DGMRHB2XYrVCD3YB3PoyiMXoTHrPJayyISvxCd9egXH5os-IDZ3NOggFfYP-6YAYQU25TJ8Fg2W7URTez-yNpEac53Jfp8RNfoG7IychcDfRqd9TD2SO6jkwP8yzqK431ydxG8HRwsFTNgyqWnrn4"/>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.7</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">د. باسم حكيم</h5>
+<p class="text-primary-container font-label-md mb-4">استشاري الطب النفسي</p>
+<div class="flex flex-row-reverse justify-between items-center">
+<span class="text-caption text-on-surface-variant">الخبرة: +20 عاماً</span>
+<button class="text-primary-container p-2 rounded-lg bg-primary/5 hover:bg-primary-container hover:text-white hover-pulse transition-all active:scale-90">
+<span class="material-symbols-outlined">calendar_add_on</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Laboratories Section (Slider) -->
+<section class="py-section-gap px-margin-desktop max-w-container-max mx-auto overflow-hidden">
+<div class="flex flex-row-reverse justify-between items-end mb-12">
+<div class="text-right">
+<h3 class="font-headline-lg text-headline-lg mb-2">المختبرات المتميزة</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">احجز تحاليلك الطبية من أفضل المختبرات المعتمدة</p>
+</div>
+<div class="flex gap-2">
+<button class="slider-nav-prev w-10 h-10 rounded-full border border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-90" onclick="scrollSlider('labs-slider', 'left')">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="slider-nav-next w-10 h-10 rounded-full border border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-90" onclick="scrollSlider('labs-slider', 'right')">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+</div>
+</div>
+<div class="flex flex-row-reverse overflow-x-auto gap-gutter snap-x snap-mandatory scroll-smooth hide-scrollbar pb-8 pt-2 px-2" id="labs-slider">
+<!-- Lab Card 1 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-48 bg-surface-variant flex items-center justify-center p-8 transition-colors group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-primary text-6xl opacity-20 group-hover:opacity-40 transition-opacity">biotech</span>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.9</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">مختبرات البرج</h5>
+<p class="text-on-surface-variant font-label-md mb-4 flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                الرياض، شارع التخصصي
+            </p>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md hover:brightness-110 hover-pulse transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>احجز فحصاً</span>
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 2 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-48 bg-surface-variant flex items-center justify-center p-8 transition-colors group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-primary text-6xl opacity-20 group-hover:opacity-40 transition-opacity">science</span>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.8</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">مختبرات ألفا</h5>
+<p class="text-on-surface-variant font-label-md mb-4 flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                جدة، حي الروضة
+            </p>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md hover:brightness-110 hover-pulse transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>احجز فحصاً</span>
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 3 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-48 bg-surface-variant flex items-center justify-center p-8 transition-colors group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-primary text-6xl opacity-20 group-hover:opacity-40 transition-opacity">experiment</span>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">5.0</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">المختبر الحديث</h5>
+<p class="text-on-surface-variant font-label-md mb-4 flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                الدمام، حي الزهور
+            </p>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md hover:brightness-110 hover-pulse transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>احجز فحصاً</span>
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+</div>
+</div>
+<!-- Lab Card 4 -->
+<div class="min-w-[280px] sm:min-w-[320px] snap-end bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/30 hover:shadow-xl hover:scale-[1.02] hover:ring-2 hover:ring-primary/20 transition-all duration-300 group">
+<div class="relative h-48 bg-surface-variant flex items-center justify-center p-8 transition-colors group-hover:bg-primary/5">
+<span class="material-symbols-outlined text-primary text-6xl opacity-20 group-hover:opacity-40 transition-opacity">medication</span>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+<div class="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-amber-500 text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md font-bold">4.7</span>
+</div>
+</div>
+<div class="p-6 text-right">
+<h5 class="font-headline-md text-headline-md text-on-surface mb-1 transition-colors group-hover:text-primary">مختبر العناية</h5>
+<p class="text-on-surface-variant font-label-md mb-4 flex items-center justify-end gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                دبي، البرشاء
+            </p>
+<button class="w-full bg-primary-container text-on-primary py-3 rounded-lg font-label-md hover:brightness-110 hover-pulse transition-all active:scale-95 flex items-center justify-center gap-2">
+<span>احجز فحصاً</span>
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Banner -->
+<section class="py-section-gap px-margin-desktop">
+<div class="max-w-container-max mx-auto bg-primary-container rounded-xl p-12 relative overflow-hidden text-on-primary transition-all duration-500 hover:shadow-2xl">
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 transition-transform duration-700 group-hover:scale-150"></div>
+<div class="relative z-10 flex flex-col md:flex-row-reverse items-center justify-between gap-8">
+<div class="text-right max-w-xl">
+<h3 class="font-headline-lg text-headline-lg mb-4">هل أنت طبيب متميز؟</h3>
+<p class="font-body-lg text-body-lg opacity-90">انضم إلى شبكة ابن سينا وساهم في تحويل مستقبل الرعاية الصحية في المنطقة. ابدأ عيادتك الرقمية اليوم.</p>
+</div>
+<button class="bg-white text-primary px-10 py-4 rounded-lg font-headline-md font-bold shadow-xl hover:bg-surface hover:scale-105 active:scale-95 transition-all">سجل كطبيب الآن</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant">
+<div class="w-full py-section-gap px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row-reverse justify-between gap-gutter">
+<div class="md:w-1/3 text-right">
+<div class="flex items-center justify-end gap-2 mb-6 group cursor-default">
+<span class="material-symbols-outlined text-primary text-2xl transition-transform duration-300 group-hover:rotate-12" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<h4 class="text-headline-sm font-headline-sm text-primary">ابن سينا (Avicena)</h4>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md mb-6 leading-relaxed">
+    منصة رائدة في تقديم حلول الرعاية الصحية الرقمية، نهدف إلى جعل العلاج في متناول الجميع، في أي وقت ومن أي مكان.
+</p>
+<div class="flex flex-row-reverse gap-4">
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary-container hover:text-white hover:scale-110 active:scale-90 transition-all" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary-container hover:text-white hover:scale-110 active:scale-90 transition-all" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8 text-right">
+<div>
+<h5 class="text-on-surface font-bold mb-6">الروابط السريعة</h5>
+<ul class="space-y-4 font-caption text-caption">
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">الرئيسية</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">الأطباء</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">التخصصات</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">المدونة</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-on-surface font-bold mb-6">الدعم والقانونية</h5>
+<ul class="space-y-4 font-caption text-caption">
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">الشروط والأحكام</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">سياسة الخصوصية</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">اتصل بنا</a></li>
+<li><a class="text-on-surface-variant hover:underline hover:text-primary transition-all duration-200 inline-block hover:-translate-x-1" href="#">الأسئلة الشائعة</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant py-8">
+<div class="max-w-container-max mx-auto px-margin-desktop flex flex-col md:flex-row-reverse justify-between items-center gap-4 text-caption font-caption text-on-surface-variant">
+<p>© 2024 ابن سينا (Avicena). جميع الحقوق محفوظة.</p>
+<div class="flex gap-4">
+<span class="hover:text-primary transition-colors cursor-default">اللغة: العربية</span>
+<span class="hover:text-primary transition-colors cursor-default">المنطقة: الشرق الأوسط</span>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    function scrollSlider(id, direction) {
+        const slider = document.getElementById(id);
+        const scrollAmount = 350;
+        if (direction === 'left') {
+            slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        } else {
+            slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const header = document.querySelector('header');
+        const navContainer = document.getElementById('navbar-container');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+                header.classList.add('bg-surface-container-lowest/95');
+                navContainer.classList.remove('h-20');
+                navContainer.classList.add('h-16');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.remove('bg-surface-container-lowest/95');
+                navContainer.classList.remove('h-16');
+                navContainer.classList.add('h-20');
+            }
+        });
+    });
+</script>
+</body></html>

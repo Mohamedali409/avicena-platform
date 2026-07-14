@@ -119,6 +119,56 @@ const loginPatient = async ({ email, password }) => {
   };
 };
 
+// ── Unified login ────────────────────────────────────────────
+// Single entry point for the web app: detects the account type from the email
+// across Users (patient/admin), Doctors, and Labs — no role selection needed.
+const loginUnified = async ({ email, password }) => {
+  if (!email || !password) throw new ApiError("Email and password are required", 400);
+  if (!validator.isEmail(email)) throw new ApiError("Email is not valid", 400);
+
+  const invalid = () => new ApiError("Email or password is incorrect", 401);
+
+  // 1) User collection → patient or admin (role lives on the document)
+  const user = await authRepository.findUserByEmail(email);
+  if (user) {
+    if (user.isActive === false) throw new ApiError("This account is blocked", 403);
+    if (!(await comparePassword(password, user.password))) throw invalid();
+    const role = user.role || "patient";
+    const token = signToken({ id: user._id, role });
+    return {
+      token,
+      role,
+      user: { _id: user._id, name: user.name, email: user.email, image: user.image },
+    };
+  }
+
+  // 2) Doctor collection
+  const doctor = await doctorRepository.findDoctorByEmail(email);
+  if (doctor) {
+    if (!(await comparePassword(password, doctor.password))) throw invalid();
+    const token = signToken({ id: doctor._id, role: "doctor" });
+    return {
+      token,
+      role: "doctor",
+      user: { _id: doctor._id, name: doctor.doctorName, email: doctor.email, image: doctor.image },
+    };
+  }
+
+  // 3) Lab collection
+  const lab = await labRepository.findLabByEmail(email);
+  if (lab) {
+    if (!(await comparePassword(password, lab.password))) throw invalid();
+    const token = signToken({ id: lab._id, role: "lab" });
+    return {
+      token,
+      role: "lab",
+      user: { _id: lab._id, name: lab.name, email: lab.email, image: lab.image },
+    };
+  }
+
+  throw invalid();
+};
+
 const forgotPassword = async (email) => {
   if (!email) {
     throw new ApiError("Email is required", 400);
@@ -356,6 +406,7 @@ const logout = async (userId) => {
 export {
   registerPatient,
   loginPatient,
+  loginUnified,
   forgotPassword,
   resetPassword,
   loginDoctor,

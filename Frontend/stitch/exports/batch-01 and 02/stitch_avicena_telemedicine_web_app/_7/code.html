@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>أطباء ابن سينا - Avicena Doctors</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline-variant": "#bec8cd",
+                    "tertiary": "#515353",
+                    "on-secondary-container": "#626567",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-tertiary-container": "#ececec",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#213145",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#005a71",
+                    "on-primary-fixed": "#001f29",
+                    "tertiary-fixed": "#e2e2e2",
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "secondary": "#5c5f61",
+                    "primary-container": "#0e7490",
+                    "surface-dim": "#cbdbf5",
+                    "surface-tint": "#006781",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "inverse-on-surface": "#eaf1ff",
+                    "outline": "#6f787d",
+                    "on-surface": "#0b1c30",
+                    "inverse-primary": "#81d1f0",
+                    "on-surface-variant": "#3f484c",
+                    "tertiary-container": "#696b6b",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-primary-fixed-variant": "#004d62",
+                    "surface-container": "#e5eeff",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#444749",
+                    "primary-fixed-dim": "#81d1f0",
+                    "error-container": "#ffdad6",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#b9eaff",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#e0e3e5",
+                    "on-primary-container": "#d3f1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "container-max": "1280px",
+                    "section-gap": "64px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["IBM Plex Sans Arabic"],
+                    "caption": ["IBM Plex Sans Arabic"],
+                    "headline-lg": ["IBM Plex Sans Arabic"],
+                    "body-lg": ["IBM Plex Sans Arabic"],
+                    "headline-lg-mobile": ["IBM Plex Sans Arabic"],
+                    "body-md": ["IBM Plex Sans Arabic"],
+                    "label-md": ["IBM Plex Sans Arabic"],
+                    "display": ["IBM Plex Sans Arabic"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: #f8fafc;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        input[type="range"] {
+            accent-color: #0e7490;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container-lowest sticky top-0 z-50 shadow-sm h-20">
+<div class="max-w-container-max mx-auto px-margin-desktop h-full flex flex-row-reverse justify-between items-center">
+<!-- Brand Identity -->
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-primary">Avicena</span>
+</div>
+<!-- Search Bar -->
+<div class="hidden md:flex flex-1 max-w-xl mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-3 pr-12 pl-4 focus:ring-2 focus:ring-primary-container text-body-md transition-all" placeholder="ابحث عن تخصص، دكتور، أو مستشفى..." type="text"/>
+</div>
+</div>
+<!-- Navigation Links & Actions -->
+<nav class="flex items-center gap-6">
+<div class="hidden lg:flex flex-row-reverse items-center gap-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md transition-colors" href="#">الأطباء</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">التخصصات</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">عن المنصة</a>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2 rounded-lg font-label-md text-primary hover:bg-primary-container hover:text-white transition-all active:scale-95 border border-primary">تسجيل الدخول</button>
+<button class="px-6 py-2 bg-primary-container text-white rounded-lg font-label-md hover:opacity-90 transition-all active:scale-95 shadow-md">إنشاء حساب</button>
+</div>
+</nav>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12">
+<div class="flex flex-col lg:flex-row-reverse gap-gutter">
+<!-- Right Content Area -->
+<div class="flex-1">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">نخبة الأطباء المتخصصين</h1>
+<p class="text-on-surface-variant text-body-md">اكتشف أفضل الرعاية الصحية مع أكثر من 500 طبيب معتمد.</p>
+</div>
+<div class="hidden md:block">
+<select class="bg-white border-outline-variant rounded-lg px-4 py-2 text-label-md focus:ring-primary focus:border-primary">
+<option>الأكثر صلة</option>
+<option>الأعلى تقييماً</option>
+<option>السعر من الأقل للأعلى</option>
+</select>
+</div>
+</div>
+<!-- Doctor Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+<!-- Doctor Card 1 -->
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all p-6 flex flex-col md:flex-row gap-6 border border-transparent hover:border-outline-variant/30 group">
+<div class="relative w-full md:w-32 h-40 md:h-32 shrink-0 overflow-hidden rounded-xl bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a friendly female Middle Eastern doctor in a clean white medical coat and a professional teal-colored hijab. She is smiling warmly against a soft-focus clinical background with professional studio lighting. The aesthetic is clean, trustworthy, and high-quality, matching the teal and white brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAx6WS6u500_RotCFRd2VT9ZH3sHSSwBEMlRbvFck2n9YHHcpjwO7lNx2bp1kO21rp1CW9a8SO1LXLJOOE59JYk5gQIwzqh9NfHj7rh7PVTfCw2hXOowJWw6iRMsunuebzpY5yyQFOx8BlLeuB8JTzNipyHEPzUVfsTC8NkolHJx-YVT1Tv5DXKkf92Z_PTba_K1lUg0f_1mnAYdwuRIbZwqZikcJ8tNIrwZAXF-a062UjqMrdGAZF5D5RIhmF0b-Zqs-Yyr8ARmc"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-green-100 text-green-700 text-caption rounded-lg flex items-center gap-1 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                متاح اليوم
+                            </div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">د. ليلى الماجد</h3>
+<p class="text-primary font-medium text-body-md">أخصائية أمراض القلب</p>
+</div>
+<div class="flex items-center text-amber-500">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md mr-1">4.9</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-label-md mb-3">دكتوراه في جراحة القلب والأوعية الدموية - جامعة هارفارد</p>
+<div class="flex flex-wrap gap-4 mt-auto">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">work_history</span>
+<span class="text-label-md">15+ عاماً خبرة</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="text-label-md">250 ر.س</span>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary-container text-white py-3 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                احجز موعد الآن
+                            </button>
+</div>
+</div>
+<!-- Doctor Card 2 -->
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all p-6 flex flex-col md:flex-row gap-6 border border-transparent hover:border-outline-variant/30 group">
+<div class="relative w-full md:w-32 h-40 md:h-32 shrink-0 overflow-hidden rounded-xl bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="A professional medical headshot of a male Arab doctor with short dark hair and a neatly groomed beard. He is wearing a modern stethoscope around his neck over a crisp white lab coat. The background is a clean, bright minimalist hospital interior with cool-toned lighting. The image conveys clinical precision, authority, and medical excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE0XcNfaMHSzD2gwq8dJIIoz0eb51-TIR3OlQ5ecDIcglRTqQ0p_lZc9e9gBY6LKtvQdsoKFxQgsgNRy8d186gTnsM4mgUYxVzsp-Oo5p1O-0PL7rRIIvKo2a8tNDQE1LFXWN0c9d1BTCcE3yXIUbZqYwiXzY1qiKR-k9q4XD994Wd6-b-e2sTW-avwOnGL3qWs1Gq9-Jp3xTewKQQQzZJtAHONoLe6_2ZIOh-yarCJANmbnuXg59zBEfwLis5NS__dK-c-_fFLBk"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-amber-100 text-amber-700 text-caption rounded-lg flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                متاح غداً
+                            </div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">د. فيصل العتيبي</h3>
+<p class="text-primary font-medium text-body-md">استشاري جراحة العظام</p>
+</div>
+<div class="flex items-center text-amber-500">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md mr-1">4.8</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-label-md mb-3">الزمالة البريطانية في جراحة الركبة والمفاصل الصناعية</p>
+<div class="flex flex-wrap gap-4 mt-auto">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">work_history</span>
+<span class="text-label-md">12 عاماً خبرة</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="text-label-md">300 ر.س</span>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary-container text-white py-3 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                احجز موعد الآن
+                            </button>
+</div>
+</div>
+<!-- Doctor Card 3 -->
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all p-6 flex flex-col md:flex-row gap-6 border border-transparent hover:border-outline-variant/30 group">
+<div class="relative w-full md:w-32 h-40 md:h-32 shrink-0 overflow-hidden rounded-xl bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="A portrait of an experienced female doctor specializing in pediatrics. She has a kind expression and is wearing professional medical attire including a white coat and a light grey headscarf. The lighting is warm and reassuring. The surrounding environment is a clean, modern medical office with subtle touches of healthcare technology in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbJNLcNePzq-b1yf7OSiIYQwYXiXlvg37NVloxyR382TLf27UcOIt2c54sb-d-Du3aOE4c2TqrOYmj-64ktlqj6-V80Ywf2pE5fMBjw-TV2xYf1DOtKDTdBiNmSyJAtB5hkYRJcuqqn2IEepzfRl5piwfEeD0VsPZfNm9FdGwpF_GxJFtNvPFQlIHI_TpvDzNlGsQDws5tCMaORGdqXr60v2L7Y39ENnnidfGQcICm57s2HtxZuiWzCWmyn7ALHRMS474yipaZ4kM"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-green-100 text-green-700 text-caption rounded-lg flex items-center gap-1 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                متاح اليوم
+                            </div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">د. سارة المنصور</h3>
+<p class="text-primary font-medium text-body-md">أخصائية طب الأطفال</p>
+</div>
+<div class="flex items-center text-amber-500">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md mr-1">5.0</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-label-md mb-3">ماجستير طب الأطفال وحديثي الولادة - جامعة الملك سعود</p>
+<div class="flex flex-wrap gap-4 mt-auto">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">work_history</span>
+<span class="text-label-md">8 أعوام خبرة</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="text-label-md">200 ر.س</span>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary-container text-white py-3 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                احجز موعد الآن
+                            </button>
+</div>
+</div>
+<!-- Doctor Card 4 -->
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all p-6 flex flex-col md:flex-row gap-6 border border-transparent hover:border-outline-variant/30 group">
+<div class="relative w-full md:w-32 h-40 md:h-32 shrink-0 overflow-hidden rounded-xl bg-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="Close-up professional headshot of a senior male doctor with greyish hair and glasses, projecting wisdom and experience. He is wearing a stethoscope and a premium white lab coat. The image style is clinical, bright, and focused, using high-key lighting to emphasize cleanliness and professional hygiene in a top-tier medical facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkWkj2ytnBr4GoE3vb6lJdbH_bvyiHyU9UK5ciCueuZ3-mPSpx7ZSM4OlJXqLwsnZ0L-XiADLPyYfPJ0iyVeiBFll2MmRaZd5IqN1v9JjTr25rZaITXcTGaEp6Vzp2mbODMxxyOcO1sT45c4FROMhAddouHIeodegfXte_ionSoL53kYU7PVMryyM63aftsfYvdV60Umb7wmW_XDfshRRtjjfLUzlOUxIX1qlYjI6DonrpX-iLDxMegx9MXZWI20-UOdobcXifT9E"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-green-100 text-green-700 text-caption rounded-lg flex items-center gap-1 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                متاح اليوم
+                            </div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-1">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">د. كمال الزهراني</h3>
+<p class="text-primary font-medium text-body-md">استشاري الأمراض الباطنية</p>
+</div>
+<div class="flex items-center text-amber-500">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-md mr-1">4.7</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-label-md mb-3">البورد الكندي في الأمراض الباطنية والغدد الصماء</p>
+<div class="flex flex-wrap gap-4 mt-auto">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">work_history</span>
+<span class="text-label-md">20+ عاماً خبرة</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="text-label-md">400 ر.س</span>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary-container text-white py-3 rounded-lg font-label-md hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                احجز موعد الآن
+                            </button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-container text-white font-medium">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-white transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-white transition-colors">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-white transition-colors">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+</div>
+</div>
+<!-- Left Sidebar (Filters) -->
+<aside class="w-full lg:w-80 shrink-0">
+<div class="bg-white rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] sticky top-24">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">الفلاتر</h2>
+<button class="text-primary text-label-md hover:underline">مسح الكل</button>
+</div>
+<!-- Specialization Filter -->
+<div class="mb-8">
+<p class="font-bold text-on-surface mb-4">التخصص</p>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">القلب والأوعية الدموية</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">العظام والمفاصل</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">طب الأطفال</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">الباطنية والغدد</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline text-primary-container focus:ring-primary-container" type="checkbox"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">الجلدية والتجميل</span>
+</label>
+</div>
+</div>
+<!-- Availability Toggle -->
+<div class="mb-8 border-t border-outline-variant/30 pt-6">
+<div class="flex items-center justify-between">
+<span class="font-bold text-on-surface">متاح الآن</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full rtl:peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- Fee Range -->
+<div class="mb-8 border-t border-outline-variant/30 pt-6">
+<p class="font-bold text-on-surface mb-4">سعر الكشف (ر.س)</p>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer" max="1000" min="100" step="50" type="range" value="500"/>
+<div class="flex justify-between mt-2 text-caption text-on-surface-variant">
+<span>100</span>
+<span class="font-bold text-primary">500</span>
+<span>1000</span>
+</div>
+</div>
+<!-- Gender Radio -->
+<div class="mb-2 border-t border-outline-variant/30 pt-6">
+<p class="font-bold text-on-surface mb-4">الجنس</p>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 border-outline text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">الكل</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 border-outline text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">ذكر</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 border-outline text-primary-container focus:ring-primary-container" name="gender" type="radio"/>
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">أنثى</span>
+</label>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant mt-section-gap">
+<div class="w-full py-section-gap px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row-reverse justify-between gap-gutter">
+<div class="flex flex-col gap-4">
+<span class="text-headline-sm font-headline-sm text-primary font-bold">Avicena</span>
+<p class="text-on-surface-variant max-w-xs text-body-md">نحن هنا لتمكين المرضى وتسهيل وصولهم إلى أفضل الكوادر الطبية في أي وقت ومن أي مكان.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary-container hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-12">
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-on-surface">الخدمات</h4>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">حجز موعد</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">استشارات عن بعد</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">السجلات الطبية</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-on-surface">المنصة</h4>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">عن ابن سينا</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">انضم كطبيب</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">الأسئلة الشائعة</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-on-surface">قانوني</h4>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">الشروط والأحكام</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">سياسة الخصوصية</a>
+<a class="text-on-surface-variant hover:text-primary hover:underline transition-colors text-caption" href="#">اتصل بنا</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-8 border-t border-outline-variant/30">
+<p class="text-caption text-on-surface-variant text-center md:text-right">© 2024 ابن سينا (Avicena). جميع الحقوق محفوظة.</p>
+</div>
+</footer>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Placeholder for simple interactivity like tab switching or filter logic
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const valueDisplay = e.target.nextElementSibling.querySelector('span.font-bold');
+                if(valueDisplay) valueDisplay.textContent = e.target.value;
+            });
+        });
+
+        // Simple button active state visual feedback handler if needed
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>
