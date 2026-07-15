@@ -4,11 +4,26 @@ import * as appointmentRepository from "../../appointments/appointment.repositor
 import * as consultationRepository from "../../consultations/consultation.repository.js";
 import * as reportRepository from "../../report/report.repository.js";
 import * as labRepository from "../../labs/labs.repository.js";
+import * as pharmaciesRepository from "../../pharmacy/pharmacy/pharmacy.repository.js";
 import ApiError from "../../../shared/utils/ApiError.js";
 import { uploadImage } from "../../../infrastructure/storage/cloudinary.service.js";
 import { removeSlot } from "../../../shared/utils/slots.utils.js";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+const hashPassword = async (plain) => {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(plain, salt);
+};
+
+const parseMaybeJson = (value, fallback) => {
+  if (value == null) return fallback;
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
 // ── Dashboard ─────────────────────────────────────────
 const getDashboard = async () => {
   const [doctors, users, appointments, consultations, reports, labs] =
@@ -282,6 +297,44 @@ const toggleUserStatus = async (userId) => {
   return await userRepository.toggleUserStatus(userId, user.isActive);
 };
 
+// ── Pharmacy ──────────────────────────────────────
+const addPharmacy = async (body, imageFile) => {
+  const {
+    pharmacyName,
+    email,
+    password,
+    phone,
+    licenseNumber,
+    address,
+    workingHours,
+    delivery,
+  } = body;
+
+  if (!pharmacyName || !email || !password || !phone || !address)
+    throw new ApiError("All filed is required.", 400);
+
+  if (!validator.isEmail(email))
+    throw new ApiError("The email is not valid", 400);
+
+  if (password.length < 8)
+    throw new ApiError("The password must be bigger than 8 char.", 400);
+
+  const exists = await pharmaciesRepository.findPharmacyByEmail(email);
+  if (exists) throw new ApiError("this email user before.", 409);
+
+  const hashed = await hashPassword(password);
+  const imageUrl = imageFile
+    ? await uploadImage(imageFile.path, "avicena/pharmacies")
+    : undefined;
+
+  const pharmacy = await pharmaciesRepository.createPharmacy({
+    pharmacyName,
+    email,
+    password: hashPassword,
+  });
+
+  // TODO
+};
 export {
   getDashboard,
   addDoctor,

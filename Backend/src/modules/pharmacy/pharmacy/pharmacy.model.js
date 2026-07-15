@@ -50,7 +50,6 @@ const pharmacySchema = new mongoose.Schema(
         required: true,
       },
     },
-
     licenseNumber: {
       type: String,
       required: true,
@@ -77,6 +76,30 @@ const pharmacySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // GeoJSON point for "nearest pharmacy" queries. [longitude, latitude]
+    location: {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: { type: [Number], default: [0, 0] },
+    },
+    workingHours: {
+      from: { type: String, default: "09:00" },
+      to: { type: String, default: "23:00" },
+    },
+    // Delivery configuration used by the order module.
+    delivery: {
+      available: { type: Boolean, default: true },
+      fee: { type: Number, default: 0 },
+      radiusKm: { type: Number, default: 10 },
+      minOrder: { type: Number, default: 0 },
+      etaMinutes: { type: Number, default: 45 },
+    },
+    pickup: {
+      available: { type: Boolean, default: true },
+    },
+    rating: {
+      average: { type: Number, default: 0 },
+      count: { type: Number, default: 0 },
+    },
 
     coupons: [
       {
@@ -89,6 +112,7 @@ const pharmacySchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+pharmacySchema.index({ location: "2dsphere" });
 
 const Pharmacy =
   mongoose.models.Pharmacy || mongoose.model("Pharmacy", pharmacySchema);

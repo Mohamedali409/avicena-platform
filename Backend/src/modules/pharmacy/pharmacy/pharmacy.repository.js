@@ -5,7 +5,7 @@ const createPharmacy = (data) => {
 };
 
 const findPharmacyByEmail = (email) => {
-  return Pharmacy.findOne({ email }).select("+password");
+  return Pharmacy.findOne({ email: email?.toLowerCase() }).select("+password");
 };
 
 const findPharmacyById = (id) => {
@@ -23,6 +23,18 @@ const getAllPharmacies = () => {
     isActive: true,
   }).select("-password");
 };
+// Find pharmacies near a [lng, lat] point, within maxDistance meters.
+const findNearby = (lng, lat, maxDistanceMeters = 10000) =>
+  Pharmacy.find({
+    isActive: true,
+    isVerified: true,
+    location: {
+      $near: {
+        $geometry: { type: "Point", coordinates: [lng, lat] },
+        $maxDistance: maxDistanceMeters,
+      },
+    },
+  }).select("-password");
 
 export {
   createPharmacy,

@@ -49,6 +49,14 @@ const queueConsultationEmail = (
 const queueReportEmail = (email, report) =>
   emailQueue.add("report", { email, report });
 
+const queuePharmacyWelcomeEmail = (email, name) =>
+  emailQueue.add("pharmacy-welcome", { email, name });
+
+const queueOrderEmail = (email, name, order) =>
+  emailQueue.add("order", { email, name, order });
+
+const queueMedicationEmail = (email, name, reminder) =>
+  emailQueue.add("medication", { email, name, reminder });
 // ── Worker  ─────────────────────────────────────
 
 const startEmailWorker = () => {
@@ -107,4 +115,7 @@ export {
   queueConsultationEmail,
   queueReportEmail,
   startEmailWorker,
+  queuePharmacyWelcomeEmail,
+  queueOrderEmail,
+  queueMedicationEmail,
 };

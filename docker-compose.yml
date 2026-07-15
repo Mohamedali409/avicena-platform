@@ -171,6 +171,7 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_URL: mongodb://mongo:27017
+      
       REDIS_URL: redis://redis:6379
       QDRANT_URL: http://qdrant:6333
 

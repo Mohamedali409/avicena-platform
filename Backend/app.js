@@ -18,6 +18,11 @@ import notificationRouter from "./src/modules/notifications/notification.routes.
 import subscriptionRouter from "./src/modules/subscriptions/subscription.routes.js";
 import medicalAiRouter from "./src/modules/medical-ai/medical.ai.routes.js";
 import pharmacyApplicationRoutes from "./src/modules/pharmacy/application/application.routes.js";
+import pharmacyRoutes from "./src/modules/pharmacy/pharmacy/pharmacy.route.js";
+import productRoutes from "./src/modules/pharmacy/products/product.route.js";
+import orderRoutes from "./src/modules/pharmacy/order/order.route.js";
+import inventoryRoutes from "./src/modules/pharmacy/inventory/inventory.routes.js";
+import medicationRoutes from "./src/modules/pharmacy/medicine/medication.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -103,6 +108,11 @@ app.use("/api/medical-ai", medicalAiRouter);
 
 // pharmacy
 app.use("/api/v1/pharmacy/applications", pharmacyApplicationRoutes);
+app.use("/api/v1/pharmacy", pharmacyRoutes);
+app.use("/api/v1/pharmacy/product", productRoutes);
+app.use("/api/v1/pharmacy/order", orderRoutes);
+app.use("/api/v1/pharmacy/inventory", inventoryRoutes);
+app.use("/api/v1/pharmacy/medication", medicationRoutes);
 
 // ── Error Handler ─────────────────────────────────────────
 app.use(errorMiddleware);
