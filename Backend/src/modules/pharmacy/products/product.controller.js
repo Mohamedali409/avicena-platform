@@ -1,4 +1,4 @@
-import { successResponse } from "../../../shared/utils/ApiResponse";
+import { successResponse } from "../../../shared/utils/ApiResponse.js";
 import catchAsync from "../../../shared/utils/catchAsync.js";
 import { parsePagination } from "../../../shared/utils/pagination.js";
 import * as productService from "./product.service.js";

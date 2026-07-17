@@ -1,5 +1,12 @@
 1- the user can add commit and rating doctor
 2- logging system --> history -- Done
 3- setting module
-4- full auth (otp an reset password)
+4- full auth (otp an reset password) -- Done
 5- payment
+6-توثيق كل Endpoint.
+7- Testing
+8- CI/CD
+9- Kubernetes
+10- Session Storage -- caching
+11- Audit Logs
+12 - Deployment

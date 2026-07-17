@@ -1,9 +1,9 @@
-import ApiError from "../../shared/utils/ApiError.js";
+import ApiError from "../../../shared/utils/ApiError.js";
 import * as orderRepository from "./order.repository.js";
 import * as inventoryRepository from "../inventory/inventory.repository.js";
 import * as productRepository from "../products/product.repository.js";
 import * as pharmacyRepository from "../pharmacy/pharmacy.repository.js";
-import * as couponService from "../coupons/coupon.service.js";
+import * as couponService from "../coupon/coupon.service.js";
 import { getUserById } from "../../User/user.repository.js";
 import { createNotification } from "../../notifications/notification.service.js";
 import { queueOrderEmail } from "../../../infrastructure/queue/email.queue.js";
