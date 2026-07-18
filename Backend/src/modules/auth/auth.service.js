@@ -32,6 +32,7 @@ import { authEventsTotal } from "../../infrastructure/monitoring/metrics.service
 import { OTP_TYPES } from "../otp/otp.constants.js";
 import { findAccountByEmail } from "./auth.helper.js";
 import { modelMap } from "./auth.map.js";
+import { issueTokens } from "./auth.tokens.js";
 
 // import User from "../User/user.model.js";
 // // auth.service.js
@@ -110,8 +111,14 @@ const loginPatient = async ({ email, password }) => {
   // if (!match) throw new ApiError("Invalid credentials", 401);
   authEventsTotal.inc({ event: "login", role: "patient" });
   const token = signToken({ id: user._id, role: "patient" });
+  const { accessToken, refreshToken } = await issueTokens({
+    _id: user._id,
+    role: "patient",
+  });
   return {
-    token,
+    // token,
+    accessToken,
+    refreshToken,
     user: {
       _id: user._id,
       name: user.name,
@@ -122,8 +129,7 @@ const loginPatient = async ({ email, password }) => {
 };
 
 // ── Unified login ────────────────────────────────────────────
-// Single entry point for the web app: detects the account type from the email
-// across Users (patient/admin), Doctors, and Labs — no role selection needed.
+
 const loginUnified = async ({ email, password }) => {
   if (!email || !password) {
     throw new ApiError("Email and password are required", 400);
@@ -153,7 +159,12 @@ const loginUnified = async ({ email, password }) => {
     throw new ApiError("Email or password is incorrect", 401);
   }
 
-  const token = signToken({
+  // const token = signToken({
+  //   id: user._id,
+  //   role,
+  // });
+
+  const { accessToken, refreshToken } = await issueTokens({
     id: user._id,
     role,
   });
@@ -161,7 +172,9 @@ const loginUnified = async ({ email, password }) => {
   authEventsTotal.inc({ event: "login", role });
 
   return {
-    token,
+    // token,
+    accessToken,
+    refreshToken,
     role,
     user: {
       _id: user._id,
@@ -300,11 +313,18 @@ const verifyEmail = async ({ email, otp }) => {
     role,
   });
 
+  const { accessToken, refreshToken } = await issueTokens({
+    _id: user._id,
+    role,
+  });
+
   // Send welcome email
   await sendWelcomeEmail(user.email, user[repo.nameField]);
 
   return {
-    token,
+    // token,
+    accessToken,
+    refreshToken,
     role,
     user: {
       _id: user._id,
@@ -525,29 +545,40 @@ const loginAdmin = async ({ email, password }) => {
   };
 };
 
-const issueTokens = async (payload) => {
-  const accessToken = signToken(payload);
-  const refreshToken = signRefreshToken(payload);
-  await saveRefreshToken(payload.id, refreshToken);
-  return { accessToken, refreshToken };
-};
+// const issueTokens = async (payload) => {
+//   const accessToken = signToken(payload);
+//   const refreshToken = signRefreshToken(payload);
+//   await saveRefreshToken(payload.id, refreshToken);
+//   return { accessToken, refreshToken };
+// };
 
 const refreshAccessToken = async (refreshToken) => {
-  if (!refreshToken) throw new ApiError("Refresh Token is required ", 400);
+  if (!refreshToken) {
+    throw new ApiError("Refresh token is required", 400);
+  }
 
   let decoded;
+
   try {
     decoded = verifyRefreshToken(refreshToken);
-  } catch (error) {
-    throw new ApiError("The Refresh Token Is Ended ", 401);
+  } catch {
+    throw new ApiError("Invalid refresh token", 401);
   }
 
   const stored = await getRefreshToken(decoded.id);
-  if (!stored || stored !== refreshToken)
-    throw new ApiError("The Refresh Token Is Ended ", 401);
 
-  const accessToken = signToken({ id: decoded.id, role: decoded.role });
-  return { accessToken };
+  if (!stored || stored !== refreshToken) {
+    throw new ApiError("Invalid refresh token", 401);
+  }
+
+  const accessToken = signToken({
+    id: decoded.id,
+    role: decoded.role,
+  });
+
+  return {
+    accessToken,
+  };
 };
 
 const logout = async (userId) => {
@@ -563,7 +594,6 @@ export {
   loginDoctor,
   loginAdmin,
   loginLab,
-  issueTokens,
   refreshAccessToken,
   logout,
   verifyEmail,

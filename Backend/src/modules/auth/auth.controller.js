@@ -2,6 +2,7 @@ import * as authService from "./auth.service.js";
 import * as messageResponse from "../../shared/utils/ApiResponse.js";
 import catchAsync from "../../shared/utils/catchAsync.js";
 import { refreshAccessToken, logout } from "./auth.service.js";
+import { clearAuthCookies, setAuthCookies } from "./auth.cookies.js";
 
 const register = catchAsync(async (req, res) => {
   console.log("BODY => ", req.body);
@@ -12,6 +13,11 @@ const register = catchAsync(async (req, res) => {
 // Unified login — detects role from the email (patient/admin/doctor/lab).
 const login = catchAsync(async (req, res) => {
   const data = await authService.loginUnified(req.body);
+
+  setAuthCookies(res, data.accessToken, data.refreshToken);
+
+  delete data.accessToken;
+  delete data.refreshToken;
 
   messageResponse.successResponse(res, "Login success", data);
 });
@@ -35,6 +41,10 @@ const resetPassword = catchAsync(async (req, res) => {
 // Verify Email
 const verifyEmail = catchAsync(async (req, res) => {
   const data = await authService.verifyEmail(req.body);
+  setAuthCookies(res, data.accessToken, data.refreshToken);
+
+  delete data.accessToken;
+  delete data.refreshToken;
 
   messageResponse.successResponse(res, "Email verified successfully.", data);
 });
@@ -95,14 +105,26 @@ const labLogin = catchAsync(async (req, res) => {
 });
 
 const refresh = catchAsync(async (req, res) => {
-  const { refreshToken } = req.body;
-  const data = await refreshAccessToken(refreshToken);
-  messageResponse.successResponse(res, "token is refreshed", data);
+  const refreshToken = req.cookies.refreshToken;
+
+  const { accessToken } = await authService.refreshAccessToken(refreshToken);
+
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 15 * 60 * 1000,
+  });
+
+  messageResponse.successResponse(res, "Token refreshed");
 });
 
 const logoutUser = catchAsync(async (req, res) => {
   await logout(req.userId);
-  messageResponse.successResponse(res, "logout successfully");
+
+  clearAuthCookies(res);
+
+  messageResponse.successResponse(res, "Logout successfully");
 });
 
 export {
