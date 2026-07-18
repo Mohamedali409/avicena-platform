@@ -62,10 +62,15 @@ const registerPatient = async ({ name, email, password }) => {
     throw new ApiError("password must be 8 char ", 400);
   }
 
+  console.log("1 - validation");
+
   const exists = await authRepository.findUserByEmail(email);
-  if (exists) throw new ApiError("this email is used before", 409);
+
+  console.log("2 - email checked");
 
   const hashed = await hashPassword(password);
+
+  console.log("3 - password hashed");
 
   const user = await authRepository.createUser({
     name,
@@ -73,10 +78,15 @@ const registerPatient = async ({ name, email, password }) => {
     password: hashed,
   });
 
-  // sendWelcomeEmail(email, name).catch(console.error);
+  console.log("4 - user created");
+
   const { otp } = await otpService.createOtp(user._id, OTP_TYPES.VERIFY_EMAIL);
 
+  console.log("5 - otp created");
+
   await sendOtpEmail(user.email, user.name, otp, OTP_TYPES.VERIFY_EMAIL);
+
+  console.log("6 - email sent");
   authEventsTotal.inc({ event: "register", role: "patient" });
 
   // authEventsTotal.inc({ event: "login", role: "patient" });
