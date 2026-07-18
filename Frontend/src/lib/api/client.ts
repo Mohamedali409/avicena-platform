@@ -7,7 +7,9 @@ import { getSession, patchToken, clearSession } from "@/lib/auth/session";
 // (Authorization: Bearer for patients, dtoken/atoken/ltoken for the others),
 // so feature code never has to know which scheme a role uses.
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+const baseURL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  "https://avicena-platform-production.up.railway.app/";
 
 export const api = axios.create({ baseURL, timeout: 20000 });
 
@@ -16,7 +18,10 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const session = getSession();
   if (session?.token) {
     const { authHeader, bearer } = ROLES[session.role];
-    config.headers.set(authHeader, bearer ? `Bearer ${session.token}` : session.token);
+    config.headers.set(
+      authHeader,
+      bearer ? `Bearer ${session.token}` : session.token,
+    );
   }
   return config;
 });
@@ -27,7 +32,9 @@ let refreshing: Promise<string> | null = null;
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const original = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
     const session = getSession();
 
     const canRefresh =
@@ -40,13 +47,17 @@ api.interceptors.response.use(
       original._retry = true;
       try {
         refreshing ??= axios
-          .post(`${baseURL}/api/auth/refresh`, { refreshToken: session!.refreshToken })
+          .post(`${baseURL}/api/auth/refresh`, {
+            refreshToken: session!.refreshToken,
+          })
           .then((r) => {
             const token = r.data?.accessToken as string; // backend returns top-level accessToken
             patchToken(token);
             return token;
           })
-          .finally(() => { refreshing = null; });
+          .finally(() => {
+            refreshing = null;
+          });
 
         const newToken = await refreshing;
         original.headers.set("Authorization", `Bearer ${newToken}`);
