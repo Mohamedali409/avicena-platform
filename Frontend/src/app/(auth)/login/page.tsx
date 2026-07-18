@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, homeFor } from "@/store/auth.store";
+import { getErrorMessage, isUnverifiedError } from "@/lib/api/errors";
 
 const SIDE_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuC-pOb0lBdcsn_Bau-fj5g751-t8Qo12tPll_H5Fht7esqMg2xNYF82iv_n-G6MjriKZ39UKy_y2SFz4585Sn5-vQiW_b1RRYd8B8tdBuC2WjjdcM_j2MRL2FU3q5lFLdX5JeXUopTEWQ85AMHV7scBWploEHa4OofyZ3QnEPprP4x7MxiJPC3vaE66K2PTyKfTqIZo3cbPUF-QiYciLI7FCDQvE_drEjIMf2HHeykv1DA5zZSyUtnRO7Y8AlmdCGKm8sEVuyH8DNc";
@@ -24,10 +25,12 @@ export default function LoginPage() {
       const s = await login(email, password);
       router.replace(homeFor(s.role));
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
-        "تعذّر تسجيل الدخول، تأكد من البيانات";
-      setError(msg);
+      // Account exists but email not verified → send them to verify instead of dead-ending.
+      if (isUnverifiedError(err)) {
+        router.push(`/verify-email?email=${encodeURIComponent(email.trim())}`);
+        return;
+      }
+      setError(getErrorMessage(err, "تعذّر تسجيل الدخول، تأكد من البيانات"));
     }
   };
 

@@ -1,4 +1,8 @@
 import { modelMap } from "./auth.map.js";
+import * as authRepository from "./auth.repository.js";
+import * as doctorRepository from "../doctors/doctor.repository.js";
+import * as labRepository from "../labs/labs.repository.js";
+import * as pharmacyRepository from "../pharmacy/pharmacy/pharmacy.repository.js";
 
 export const findAccountByEmail = async (email) => {
   // Users (Patient/Admin)
