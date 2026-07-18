@@ -83,7 +83,8 @@ const registerPatient = async ({ name, email, password }) => {
   const { otp } = await otpService.createOtp(user._id, OTP_TYPES.VERIFY_EMAIL);
 
   console.log("5 - otp created");
-
+  console.log(process.env.EMAIL_USER);
+  console.log(process.env.EMAIL_PASS ? "PASS OK" : "NO PASS");
   await sendOtpEmail(user.email, user.name, otp, OTP_TYPES.VERIFY_EMAIL);
 
   console.log("6 - email sent");
