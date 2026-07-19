@@ -1,0 +1,449 @@
+{
+  "info": {
+    "name": "Avicena Platform API v4",
+    "_postman_id": "avicena-v4",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Avicena Healthcare SaaS Platform — Full API Collection\nUpdated: Unified cookie-based login (all roles), OTP email verification, forgot/reset password, Pharmacy module (products, inventory, medication schedules, orders, applications), Health & Metrics endpoints.\n\n⚠️ Login now sets httpOnly cookies (accessToken/refreshToken) instead of returning tokens in the body for /api/auth/login and /api/auth/verify-email. Enable Postman's cookie jar (default) so requests to {{baseUrl}} automatically carry the session — no need to manually attach a Bearer token after unified login.\n\nLegacy role logins (/admin/login, /doctor/login, /lab/login) still return a token in the response body and do NOT set cookies — use the Bearer header for those."
+  },
+  "variable": [
+    { "key": "baseUrl",        "value": "http://localhost:4000" },
+    { "key": "patientToken",   "value": "" },
+    { "key": "doctorToken",    "value": "" },
+    { "key": "adminToken",     "value": "" },
+    { "key": "labToken",       "value": "" },
+    { "key": "doctorId",       "value": "" },
+    { "key": "userId",         "value": "" },
+    { "key": "appointmentId",  "value": "" },
+    { "key": "consultationId", "value": "" },
+    { "key": "reportId",       "value": "" },
+    { "key": "roomId",         "value": "" },
+    { "key": "registerOtp",    "value": "" },
+    { "key": "resetOtp",       "value": "" },
+    { "key": "pharmacyId",     "value": "" },
+    { "key": "productId",      "value": "" },
+    { "key": "orderId",        "value": "" },
+    { "key": "applicationId",  "value": "" },
+    { "key": "scheduleId",     "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🩺 Health & Monitoring ✨",
+      "item": [
+        { "name": "Root Status", "request": { "method": "GET", "url": "{{baseUrl}}/" } },
+        { "name": "Health Check", "request": { "method": "GET", "url": "{{baseUrl}}/api/health" } },
+        { "name": "Prometheus Metrics", "request": { "method": "GET", "url": "{{baseUrl}}/metrics" } }
+      ]
+    },
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Patient Register (sends OTP) ✨",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ahmed Mohamed\",\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}" },
+            "description": "No longer logs the user in directly. Creates the account, emails an OTP, and returns { message, user }. Complete the flow with 'Verify Email (OTP)' below."
+          }
+        },
+        {
+          "name": "Verify Email (OTP) ✨",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.user?._id) pm.collectionVariables.set('userId', r.data.user._id);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/verify-email",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"otp\": \"{{registerOtp}}\"\n}" },
+            "description": "Sets httpOnly accessToken/refreshToken cookies (Postman's cookie jar stores these automatically for {{baseUrl}}). Paste the OTP received by email into {{registerOtp}}."
+          }
+        },
+        {
+          "name": "Resend Verification OTP",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/resend-verification", "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\"\n}" } }
+        },
+        {
+          "name": "Unified Login (Patient/Admin/Doctor/Lab/Pharmacy) ✨",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}" },
+            "description": "Auto-detects the role from the email across all 5 account types. Sets httpOnly cookies (accessToken/refreshToken); the response body no longer contains the tokens. Rely on Postman's cookie jar for subsequent requests instead of a Bearer header."
+          }
+        },
+        {
+          "name": "Refresh Token (cookie-based) ✨",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "description": "Reads the refreshToken httpOnly cookie automatically — no request body needed anymore. Re-issues the accessToken cookie."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/auth/logout" }
+        },
+        {
+          "name": "Forgot Password (sends OTP) ✨",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\"\n}" },
+            "description": "Works across all roles. Always returns a generic success message to prevent email enumeration."
+          }
+        },
+        {
+          "name": "Reset Password (with OTP) ✨",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"otp\": \"{{resetOtp}}\",\n  \"newPassword\": \"newPassword123\"\n}" }
+          }
+        },
+        {
+          "name": "Resend Reset-Password OTP",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/resend-reset-password", "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\"\n}" } }
+        },
+        {
+          "name": "Change Password (logged-in)",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/auth/change-password",
+            "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newPassword123\"\n}" }
+          }
+        },
+        {
+          "name": "Admin Login (legacy, body token)",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('adminToken', r.data.token);"] } }],
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/admin/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@avicena.com\",\n  \"password\": \"StrongAdminPass123\"\n}" } }
+        },
+        {
+          "name": "Doctor Login (legacy, body token)",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('doctorToken', r.data.token);"] } }],
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/doctor/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"doctor@test.com\",\n  \"password\": \"password123\"\n}" } }
+        },
+        {
+          "name": "Lab Login (legacy, body token)",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('labToken', r.data.token);"] } }],
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/lab/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"lab@test.com\",\n  \"password\": \"password123\"\n}" } }
+        }
+      ]
+    },
+    {
+      "name": "👤 Patient",
+      "item": [
+        { "name": "Get Profile", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/profile" } },
+        { "name": "Update Profile", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/profile", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Ahmed Mohamed","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"gender","value":"ذكر","type":"text"},{"key":"dob","value":"1995-01-01","type":"text"},{"key":"nationality","value":"Egypt","type":"text"},{"key":"nationalId","value":"29501011234567","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}","type":"text"}] } } },
+        { "name": "Get User Stats", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/stats" } },
+        {
+          "name": "Book Appointment",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.appointment?._id) pm.collectionVariables.set('appointmentId', r.data.appointment._id);"] } }],
+          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/appointments", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"slotDate\": \"20_1_2026\",\n  \"slotTime\": \"10:00 am\"\n}" } }
+        },
+        { "name": "List My Appointments (with Pagination)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/user/appointments?page=1&limit=10", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"}] } } },
+        { "name": "Cancel Appointment", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/appointments/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        { "name": "Get My Reports", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/reports" } },
+        { "name": "Get All Consultations", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/consultations" } },
+        { "name": "Get Single Consultation", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/single", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } } },
+        { "name": "Update Consultation Time", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/time", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"consultTime\": \"02:00 pm\"\n}" } } },
+        { "name": "Cancel Consultation", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } } }
+      ]
+    },
+    {
+      "name": "👨‍⚕️ Doctor",
+      "item": [
+        { "name": "Get Doctor List (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/doctor/list" } },
+        { "name": "Get Profile", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/profile" } },
+        { "name": "Update Profile", "request": { "method": "PUT", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/profile", "body": { "mode": "raw", "raw": "{\n  \"fees\": 200,\n  \"consultation_fees\": 100,\n  \"available\": true,\n  \"phone\": \"01012345678\",\n  \"address\": {\"line1\": \"Cairo\", \"line2\": \"Nasr City\"},\n  \"start_booked\": {\"from\": 9, \"to\": 17, \"booking_period\": 30}\n}" } } },
+        { "name": "Get Dashboard", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/dashboard" } },
+        { "name": "Get Appointments", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/appointments" } },
+        { "name": "Complete Appointment", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/appointments/complete", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        { "name": "Cancel Appointment", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/appointments/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        {
+          "name": "Add Report",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.report?._id) pm.collectionVariables.set('reportId', r.data.report._id);"] } }],
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"complaint\": \"صداع وارتفاع في الحرارة\",\n  \"examination\": \"حرارة 38.5، ضغط طبيعي\",\n  \"diagnosis\": \"التهاب في الحلق\",\n  \"treatment\": [\n    {\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"},\n    {\"name\": \"Paracetamol\", \"dosage\": \"1g\", \"duration\": \"عند الحاجة\"}\n  ],\n  \"notes\": \"راحة تامة وشرب سوائل\",\n  \"nextVisit\": \"2026-02-01\"\n}" } }
+        },
+        { "name": "Get All Reports", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/reports" } },
+        { "name": "Get Patient Reports", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports/patient", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Edit Report", "request": { "method": "PUT", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع شديد\",\n  \"examination\": \"حرارة 39\",\n  \"diagnosis\": \"التهاب حاد\",\n  \"treatment\": [{\"name\": \"Augmentin\", \"dosage\": \"625mg\", \"duration\": \"10 أيام\"}]\n}" } } },
+        { "name": "Delete Report", "request": { "method": "DELETE", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}" } } },
+        {
+          "name": "Create Consultation",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.consultation?._id) pm.collectionVariables.set('consultationId', r.data.consultation._id);"] } }],
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"consultDay\": \"25_1_2026\",\n  \"amount\": 100,\n  \"notes\": \"متابعة بعد أسبوع\"\n}" } }
+        },
+        { "name": "Get Consultations", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/consultations" } },
+        { "name": "Complete Consultation", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations/complete", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Cancel Consultation", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Search Patients", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/search", "body": { "mode": "raw", "raw": "{\n  \"q\": \"ahmed\"\n}" } } },
+        { "name": "Get Patient Stats", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/patient-stats", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Clear Slots", "request": { "method": "DELETE", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/slots" } }
+      ]
+    },
+    {
+      "name": "🛡️ Admin",
+      "item": [
+        { "name": "Get Dashboard", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/dashboard" } },
+        { "name": "Add Doctor", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/doctors", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Dr. Mohamed Ali","type":"text"},{"key":"email","value":"doctor@test.com","type":"text"},{"key":"password","value":"password123","type":"text"},{"key":"speciality","value":"General Physician","type":"text"},{"key":"degree","value":"MBBS","type":"text"},{"key":"experience","value":"5 Years","type":"text"},{"key":"about","value":"Experienced doctor","type":"text"},{"key":"fees","value":"150","type":"text"},{"key":"consultation_fees","value":"100","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}","type":"text"},{"key":"start_booked","value":"{\"from\":9,\"to\":17,\"booking_period\":30}","type":"text"},{"key":"image","type":"file","src":[]}] } } },
+        { "name": "Get All Doctors", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/doctors" } },
+        { "name": "Remove Doctor", "request": { "method": "DELETE", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/doctors", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}" } } },
+        { "name": "Toggle Doctor Availability", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/doctors/availability", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}" } } },
+        { "name": "Get All Appointments", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/appointment" } },
+        { "name": "Cancel Appointment", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/appointment/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        { "name": "Complete Appointment ✨", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/appointment/complete", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        { "name": "Get All Consultations", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/consultations" } },
+        { "name": "Get User Consultations", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/consultations/user", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Cancel Consultation", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/consultation/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } } },
+        { "name": "Complete Consultation ✨", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/consultation/complete", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Get All Reports", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/reports" } },
+        { "name": "Get User Reports", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/reports/user", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
+        { "name": "Delete Report", "request": { "method": "DELETE", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/report", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}" } } },
+        { "name": "Edit Report", "request": { "method": "PUT", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/report", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع\",\n  \"examination\": \"طبيعي\",\n  \"diagnosis\": \"إجهاد\",\n  \"treatment\": [{\"name\": \"Rest\"}]\n}" } } },
+        { "name": "Get All Users", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/users" } },
+        { "name": "Search Users", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": { "raw": "{{baseUrl}}/api/admin/users/search?q=ahmed", "query": [{"key":"q","value":"ahmed"}] } } },
+        { "name": "Toggle User Status", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/users/status", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } }
+      ]
+    },
+    {
+      "name": "🏥 Labs",
+      "item": [
+        { "name": "Get All Labs (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/lab" } },
+        { "name": "Get Lab by ID (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/lab/LAB_MONGO_ID" } },
+        { "name": "Get My Lab Profile", "request": { "method": "GET", "header": [{"key":"ltoken","value":"{{labToken}}"}], "url": "{{baseUrl}}/api/lab/me/profile" } },
+        { "name": "Update Lab Profile", "request": { "method": "PUT", "header": [{"key":"ltoken","value":"{{labToken}}"}], "url": "{{baseUrl}}/api/lab/me/profile", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Cairo Medical Lab","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"city\":\"Cairo\"}","type":"text"},{"key":"workingHours","value":"{\"from\":\"08:00\",\"to\":\"20:00\"}","type":"text"}] } } },
+        { "name": "Add Lab (Admin)", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/lab", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Cairo Lab","type":"text"},{"key":"email","value":"lab@test.com","type":"text"},{"key":"password","value":"password123","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Heliopolis\"}","type":"text"},{"key":"tests","value":"[{\"name\":\"CBC\",\"price\":50},{\"name\":\"Blood Sugar\",\"price\":30}]","type":"text"}] } } }
+      ]
+    },
+    {
+      "name": "💊 Pharmacy ✨ (NEW)",
+      "item": [
+        {
+          "name": "Applications",
+          "item": [
+            {
+              "name": "Submit Pharmacy Application (Public)",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/pharmacy/applications",
+                "body": { "mode": "formdata", "formdata": [
+                  {"key":"pharmacyName","value":"Cairo Central Pharmacy","type":"text"},
+                  {"key":"ownerName","value":"Mohamed Ali","type":"text"},
+                  {"key":"email","value":"pharmacy@test.com","type":"text"},
+                  {"key":"phone","value":"01098765432","type":"text"},
+                  {"key":"address","value":"{\"line1\":\"Nasr City\",\"city\":\"Cairo\"}","type":"text"},
+                  {"key":"licenseNumber","value":"PH-2026-00123","type":"text"},
+                  {"key":"description","value":"24-hour pharmacy serving Nasr City","type":"text"},
+                  {"key":"documents","type":"file","src":[]}
+                ] },
+                "description": "On approval, the backend auto-generates a pharmacy account + password and emails it. The pharmacy then logs in via the unified /api/auth/login endpoint (role auto-detected)."
+              }
+            },
+            { "name": "Get Application Statistics (Admin)", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications/statistics" } },
+            { "name": "Get All Applications (Admin)", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications" } },
+            { "name": "Get Application By ID (Admin)", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications/{{applicationId}}" } },
+            { "name": "Approve Application (Admin) ✨", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications/{{applicationId}}/approve" } },
+            { "name": "Reject Application (Admin)", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications/{{applicationId}}/reject", "body": { "mode": "raw", "raw": "{\n  \"reason\": \"License number could not be verified\"\n}" } } },
+            { "name": "Delete Application (Admin)", "request": { "method": "DELETE", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/applications/{{applicationId}}" } }
+          ]
+        },
+        {
+          "name": "Pharmacies & Profile",
+          "item": [
+            { "name": "Get All Pharmacies (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/pharmacy" } },
+            { "name": "Get Pharmacy By ID (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/pharmacy/{{pharmacyId}}" } },
+            { "name": "Get My Pharmacy Profile", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/me/profile" } },
+            { "name": "Update My Pharmacy Profile", "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/me/profile", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Cairo Central Pharmacy","type":"text"},{"key":"phone","value":"01098765432","type":"text"},{"key":"image","type":"file","src":[]}] } } }
+          ]
+        },
+        {
+          "name": "Products",
+          "item": [
+            { "name": "Search Products (Public)", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/pharmacy/product?q=paracetamol", "query": [{"key":"q","value":"paracetamol"}] } } },
+            { "name": "Get Product By Barcode (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/pharmacy/product/barcode/6223001234567" } },
+            { "name": "Get Product Alternatives (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/pharmacy/product/{{productId}}/alternatives" } },
+            { "name": "Get Product By ID (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/pharmacy/product/{{productId}}" } },
+            {
+              "name": "Create Product (Pharmacy)",
+              "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.product?._id) pm.collectionVariables.set('productId', r.data.product._id);"] } }],
+              "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/product", "body": { "mode": "formdata", "formdata": [
+                {"key":"name","value":"Panadol Extra","type":"text"},
+                {"key":"activeIngredient","value":"Paracetamol + Caffeine","type":"text"},
+                {"key":"strength","value":"500mg","type":"text"},
+                {"key":"manufacturer","value":"GSK","type":"text"},
+                {"key":"referencePrice","value":"35","type":"text"},
+                {"key":"requiresPrescription","value":"false","type":"text"},
+                {"key":"image","type":"file","src":[]}
+              ] } }
+            },
+            { "name": "Update Product (Pharmacy)", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/product/{{productId}}", "body": { "mode": "formdata", "formdata": [{"key":"referencePrice","value":"40","type":"text"}] } } }
+          ]
+        },
+        {
+          "name": "Inventory",
+          "item": [
+            { "name": "Search By Medicine (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/pharmacy/inventory/search?medicine=Amoxicillin", "query": [{"key":"medicine","value":"Amoxicillin"}] } } },
+            { "name": "Search By Report (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/report/{{reportId}}" } },
+            { "name": "List My Inventory (Pharmacy)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me" } },
+            { "name": "Add/Update Inventory Item (Pharmacy)", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me/items", "body": { "mode": "raw", "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 100,\n  \"price\": 35,\n  \"expiryDate\": \"2027-06-01\"\n}" } } },
+            { "name": "Remove Inventory Item (Pharmacy)", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me/items/{{productId}}" } },
+            { "name": "Preview Excel Import (Pharmacy)", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me/import/preview", "body": { "mode": "formdata", "formdata": [{"key":"mode","value":"merge","type":"text"},{"key":"file","type":"file","src":[]}] } } },
+            { "name": "Apply Excel Import (Pharmacy)", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me/import/apply", "body": { "mode": "formdata", "formdata": [{"key":"mode","value":"merge","type":"text"},{"key":"file","type":"file","src":[]}] } } },
+            { "name": "List Import Batches (Pharmacy)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/inventory/me/import/batches" } }
+          ]
+        },
+        {
+          "name": "Medication Schedules & Reminders",
+          "item": [
+            {
+              "name": "Create Medication Schedule",
+              "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.schedule?._id) pm.collectionVariables.set('scheduleId', r.data.schedule._id);"] } }],
+              "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/medication", "body": { "mode": "raw", "raw": "{\n  \"medications\": [\n    { \"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"dosesPerDay\": 3, \"days\": 7 }\n  ],\n  \"channels\": { \"inApp\": true, \"email\": true }\n}" } }
+            },
+            { "name": "Create Schedule From Report", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/medication/from-report/{{reportId}}", "body": { "mode": "raw", "raw": "{\n  \"channels\": { \"inApp\": true, \"email\": true }\n}" } } },
+            { "name": "List My Schedules", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/medication" } },
+            { "name": "Stop Schedule", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/medication/{{scheduleId}}/stop" } }
+          ]
+        },
+        {
+          "name": "Orders",
+          "item": [
+            {
+              "name": "Create Order (Patient)",
+              "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.order?._id) pm.collectionVariables.set('orderId', r.data.order._id);"] } }],
+              "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/order", "body": { "mode": "raw", "raw": "{\n  \"pharmacyId\": \"{{pharmacyId}}\",\n  \"items\": [\n    { \"productId\": \"{{productId}}\", \"quantity\": 2 }\n  ],\n  \"fulfillment\": { \"method\": \"delivery\", \"address\": \"Nasr City, Cairo\" },\n  \"reportId\": \"{{reportId}}\"\n}" } }
+            },
+            { "name": "Get My Orders (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/pharmacy/order/my?limit=10&skip=0", "query": [{"key":"limit","value":"10"},{"key":"skip","value":"0"}] } } },
+            { "name": "Get My Order By ID (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/order/my/{{orderId}}" } },
+            { "name": "Cancel My Order (Patient)", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/order/my/{{orderId}}/cancel" } },
+            { "name": "Confirm Payment (demo/manual)", "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/order/payment/confirm", "body": { "mode": "raw", "raw": "{\n  \"reference\": \"ORDER_PAYMENT_REFERENCE\"\n}" }, "description": "Manual/demo confirmation endpoint. A real gateway webhook (Stripe/Paymob) would call this in production — note: the payment.webhook.js and stripe/paymob service files in the repo are currently placeholders (empty), so gateway-driven confirmation isn't wired up yet." } },
+            { "name": "Get Pharmacy Orders (Pharmacy)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": { "raw": "{{baseUrl}}/api/v1/pharmacy/order/pharmacy?status=pending", "query": [{"key":"status","value":"pending"}] } } },
+            { "name": "Get Pharmacy Order By ID (Pharmacy)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"}], "url": "{{baseUrl}}/api/v1/pharmacy/order/pharmacy/{{orderId}}" } },
+            { "name": "Update Order Status (Pharmacy)", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{pharmacyToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/v1/pharmacy/order/pharmacy/{{orderId}}/status", "body": { "mode": "raw", "raw": "{\n  \"status\": \"preparing\"\n}" } } }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "💬 Chat + Request Flow ✨",
+      "item": [
+        {
+          "name": "1. Patient — Send Chat Request",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/chat/request",
+            "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"initialMessage\": \"دكتور عندي سؤال عن الدواء اللي كتبته\"\n}" },
+            "description": "⚠️ Known bug in the current codebase: sendRequest destructures 'doct' from the body but references an undefined 'docId' variable when building the request, which will throw a ReferenceError server-side. Send this exactly as shown; if it 500s, that's the underlying bug, not a client issue."
+          }
+        },
+        {
+          "name": "2. Patient — Get My Requests",
+          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/my-requests", "description": "Now POST, not GET." }
+        },
+        {
+          "name": "3. Doctor — Get Pending Requests",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{doctorToken}}"}],
+            "url": { "raw": "{{baseUrl}}/api/chat/doctor/requests?status=pending", "query": [{"key":"status","value":"pending"}] },
+            "description": "Now POST, not GET. Also note this route is protected by the generic authGuard (not doctorGuard) — use 'Authorization: Bearer' with the doctor's token rather than the 'dtoken' header, or it won't authenticate."
+          }
+        },
+        {
+          "name": "4. Doctor — Accept Request ✅",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/chat/doctor/request/accept",
+            "body": { "mode": "raw", "raw": "{\n  \"roomId\": \"{{roomId}}\"\n}" },
+            "description": "Path changed from /doctor/requests/accept to /doctor/request/accept (singular)."
+          }
+        },
+        {
+          "name": "4b. Doctor — Reject Request ❌",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/chat/doctor/request/reject",
+            "body": { "mode": "raw", "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"rejectReason\": \"أنا غير متخصص في هذه الحالة\"\n}" }
+          }
+        },
+        {
+          "name": "5. Get Room Messages",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/chat/room/{{roomId}}?page=1&limit=30", "query": [{"key":"page","value":"1"},{"key":"limit","value":"30"}] } }
+        },
+        { "name": "Get My Conversations (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/conversations" } },
+        { "name": "Get My Conversations (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/chat/conversations" } },
+        { "name": "Get Room ID with Doctor", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{doctorId}}/id" } },
+        { "name": "Get Unread Count", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{roomId}}/unread" } },
+        { "name": "Mark Room as Read", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{roomId}}/read", "description": "Route is defined as GET in the current router (not PATCH)." } }
+      ]
+    },
+    {
+      "name": "🤖 Medical AI (RAG)",
+      "item": [
+        {
+          "name": "1. Get Patient Summary (Auto on chat open)",
+          "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/medical-ai/summary/{{userId}}", "description": "الدكتور يفتح المحادثة مع مريض → الـ AI يولّد ملخص تلقائي عن حالته بناءً على كل تقاريره" }
+        },
+        {
+          "name": "2. Ask Question About Patient",
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/medical-ai/ask", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه الأدوية اللي الدكتور كتبها للمريض ده قبل كده؟\",\n  \"chatHistory\": []\n}" }, "description": "الدكتور يسأل سؤال عن المريض — الـ AI يجاوب من التقارير الحقيقية بس" }
+        },
+        {
+          "name": "3. Ask — Drug Check",
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/medical-ai/ask", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"هل المريض عنده حساسية من أي دواء أو كان فيه تفاعل دوائي سابق؟\",\n  \"chatHistory\": []\n}" } }
+        },
+        {
+          "name": "4. Ask — Diagnosis History",
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/medical-ai/ask", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه أهم التشخيصات السابقة للمريض؟\",\n  \"chatHistory\": [\n    {\"role\": \"user\", \"content\": \"ايه الأدوية اللي اتكتبتله؟\"},\n    {\"role\": \"assistant\", \"content\": \"تم وصف Amoxicillin 500mg لمدة 7 أيام\"}\n  ]\n}" } }
+        },
+        {
+          "name": "5. Index New Report Manually",
+          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/medical-ai/index-report", "body": { "mode": "raw", "raw": "{\n  \"report\": {\n    \"_id\": \"{{reportId}}\",\n    \"userId\": \"{{userId}}\",\n    \"docId\": \"{{doctorId}}\",\n    \"userData\": {\"name\": \"Ahmed Mohamed\"},\n    \"complaint\": \"صداع وحرارة\",\n    \"examination\": \"حرارة 38.5\",\n    \"diagnosis\": \"التهاب في الحلق\",\n    \"treatment\": [{\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"}],\n    \"notes\": \"راحة تامة\",\n    \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n  }\n}" } }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications",
+      "item": [
+        { "name": "Get Notifications (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/notifications?page=1&limit=20", "query": [{"key":"page","value":"1"},{"key":"limit","value":"20"}] } } },
+        { "name": "Get Notifications (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": { "raw": "{{baseUrl}}/api/notifications?page=1&limit=20", "query": [{"key":"page","value":"1"},{"key":"limit","value":"20"}] } } },
+        { "name": "Get Unread Count", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/unread" } },
+        { "name": "Mark One as Read", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/NOTIFICATION_ID/read" } },
+        { "name": "Mark All as Read", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/read-all" } }
+      ]
+    },
+    {
+      "name": "💳 Subscriptions",
+      "item": [
+        { "name": "Get Available Plans (Public) ✨", "request": { "method": "GET", "url": "{{baseUrl}}/api/subscriptions/plans" } },
+        { "name": "Subscribe to Plan", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/subscriptions", "body": { "mode": "raw", "raw": "{\n  \"plan\": \"basic\",\n  \"paymentId\": \"\"\n}" } } },
+        { "name": "Get Active Subscription", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/subscriptions/active" } },
+        { "name": "Get Subscription History ✨", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/subscriptions/history" } },
+        { "name": "Cancel Subscription", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/subscriptions/cancel" } }
+      ]
+    },
+    {
+      "name": "🎥 Video Call",
+      "item": [
+        { "name": "Get Call History (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/video-call/history" } },
+        { "name": "Get Call History (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/video-call/history" } },
+        { "name": "Get Call By ID ✨", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/video-call/CALL_MONGO_ID" } }
+      ]
+    },
+    {
+      "name": "📋 Shared Lookups",
+      "item": [
+        { "name": "Get Appointment by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/appointment/{{appointmentId}}" } },
+        { "name": "Get Report by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/report/{{reportId}}" } },
+        { "name": "Get Consultation by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/consultation/{{consultationId}}" } }
+      ]
+    }
+  ]
+}
