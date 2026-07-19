@@ -1,39 +1,34 @@
 import { create } from "zustand";
 import type { Role } from "@/config/roles";
 import { ROLES } from "@/config/roles";
-import { api } from "@/lib/api/client";
-import { clearSession, getSession, saveSession, type Session, type SessionUser } from "@/lib/auth/session";
+import { clearSession, getSession, saveSession, type Session } from "@/lib/auth/session";
 import { disconnectSocket } from "@/lib/socket/socket";
+import {
+  loginRequest,
+  registerRequest,
+  verifyEmailRequest,
+  type AuthResult,
+} from "@/features/auth/api";
+import { api } from "@/lib/api/client";
 
 interface AuthState {
   session: Session | null;
   loading: boolean;
   hydrate: () => void;
-  /** Unified login — the backend detects the role from the email. */
+  /** Unified login — the backend detects the role from the email. May throw 403 if unverified. */
   login: (email: string, password: string) => Promise<Session>;
-  register: (name: string, email: string, password: string) => Promise<Session>;
+  /** Register a patient. Returns nothing usable — the account must verify its email first. */
+  register: (name: string, email: string, password: string) => Promise<{ email: string }>;
+  /** Verify the email OTP → returns a token and logs the user in. */
+  verifyEmail: (email: string, otp: string) => Promise<Session>;
   logout: () => Promise<void>;
 }
 
-// The backend spreads the payload at the TOP LEVEL and names the profile object
-// per role: user | doctor | admin | lab. It returns `token` (not accessToken),
-// and does NOT issue a refreshToken at login yet.
-const profileKey: Record<Role, "user" | "doctor" | "admin" | "lab"> = {
-  patient: "user",
-  doctor: "doctor",
-  admin: "admin",
-  lab: "lab",
-};
-
-const toSession = (role: Role, body: Record<string, unknown>): Session => {
-  const profile = (body[profileKey[role]] ?? {}) as SessionUser;
-  return {
-    role,
-    token: body.token as string,
-    refreshToken: body.refreshToken as string | undefined,
-    user: profile,
-  };
-};
+const toSession = (r: AuthResult): Session => ({
+  role: r.role,
+  token: r.token,
+  user: r.user,
+});
 
 export const useAuth = create<AuthState>((set) => ({
   session: null,
@@ -44,15 +39,7 @@ export const useAuth = create<AuthState>((set) => ({
   login: async (email, password) => {
     set({ loading: true });
     try {
-      // Unified endpoint returns { token, role, user } — role decided server-side.
-      const { data } = await api.post("/api/auth/login", { email, password });
-      const role = data.role as Role;
-      const session: Session = {
-        role,
-        token: data.token as string,
-        refreshToken: data.refreshToken as string | undefined,
-        user: (data.user ?? {}) as SessionUser,
-      };
+      const session = toSession(await loginRequest(email, password));
       saveSession(session);
       set({ session });
       return session;
@@ -64,8 +51,17 @@ export const useAuth = create<AuthState>((set) => ({
   register: async (name, email, password) => {
     set({ loading: true });
     try {
-      const { data } = await api.post("/api/auth/register", { name, email, password });
-      const session = toSession("patient", data);
+      await registerRequest(name, email, password); // no token yet — must verify email
+      return { email };
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  verifyEmail: async (email, otp) => {
+    set({ loading: true });
+    try {
+      const session = toSession(await verifyEmailRequest(email, otp));
       saveSession(session);
       set({ session });
       return session;

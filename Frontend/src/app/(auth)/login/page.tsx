@@ -1,42 +1,50 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth, homeFor } from "@/store/auth.store";
-
-const SIDE_IMG =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuC-pOb0lBdcsn_Bau-fj5g751-t8Qo12tPll_H5Fht7esqMg2xNYF82iv_n-G6MjriKZ39UKy_y2SFz4585Sn5-vQiW_b1RRYd8B8tdBuC2WjjdcM_j2MRL2FU3q5lFLdX5JeXUopTEWQ85AMHV7scBWploEHa4OofyZ3QnEPprP4x7MxiJPC3vaE66K2PTyKfTqIZo3cbPUF-QiYciLI7FCDQvE_drEjIMf2HHeykv1DA5zZSyUtnRO7Y8AlmdCGKm8sEVuyH8DNc";
+import { getErrorMessage, isUnverifiedError } from "@/lib/api/errors";
+import { loginSchema, type LoginValues } from "@/features/auth/schemas";
+import { AuthSidePanel } from "@/components/auth/AuthSidePanel";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, loading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema), mode: "onTouched" });
+
+  const onValid = async (v: LoginValues) => {
+    setApiError("");
     try {
-      const s = await login(email, password);
+      const s = await login(v.email.trim(), v.password);
       router.replace(homeFor(s.role));
-    } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
-        "تعذّر تسجيل الدخول، تأكد من البيانات";
-      setError(msg);
+    } catch (err) {
+      if (isUnverifiedError(err)) {
+        router.push(`/verify-email?email=${encodeURIComponent(v.email.trim())}`);
+        return;
+      }
+      setApiError(getErrorMessage(err, "تعذّر تسجيل الدخول، تأكد من البيانات"));
     }
   };
 
+  const fieldCls = (err?: unknown, extra = "pr-12 pl-4") =>
+    `w-full rounded-xl border bg-surface-container-low/40 py-3.5 text-[15px] outline-none transition-all placeholder:text-outline focus:border-primary-container focus:bg-white focus:ring-4 focus:ring-primary-container/10 ${extra} ${err ? "border-error" : "border-outline-variant/70"}`;
+  const iconCls =
+    "material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline transition-colors group-focus-within:text-primary-container";
+
   return (
     <main className="flex min-h-screen">
-      {/* Form side (right in RTL) */}
       <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16">
         <div className="mx-auto w-full max-w-md">
-          {/* Branding */}
           <Link href="/" className="mb-8 flex items-center gap-2 text-primary">
             <span className="material-symbols-outlined text-[30px]" style={{ fontVariationSettings: "'FILL' 1" }}>medical_services</span>
             <span className="text-[24px] font-bold tracking-tight">Avicena</span>
@@ -45,29 +53,23 @@ export default function LoginPage() {
           <h1 className="mb-2 text-headline-lg text-on-surface">مرحباً بعودتك 👋</h1>
           <p className="mb-8 text-body-md text-on-surface-variant">أدخل بياناتك للوصول إلى حسابك الطبي</p>
 
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-on-surface-variant" htmlFor="email">البريد الإلكتروني</label>
+          <form onSubmit={handleSubmit(onValid)} className="space-y-5" noValidate>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-on-surface-variant">البريد الإلكتروني</label>
               <div className="group relative">
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline transition-colors group-focus-within:text-primary-container">mail</span>
-                <input id="email" type="email" required dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@avicena.com"
-                  className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest py-3 pr-12 pl-4 outline-none transition-all focus:border-primary-container focus:ring-2 focus:ring-primary-container/20" />
+                <span className={iconCls}>mail</span>
+                <input type="email" dir="ltr" placeholder="example@avicena.com" className={fieldCls(errors.email)} {...register("email")} />
               </div>
+              {errors.email && <p className="mt-1 text-xs text-error">{errors.email.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-on-surface-variant" htmlFor="password">كلمة المرور</label>
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <label className="block text-sm font-medium text-on-surface-variant">كلمة المرور</label>
                 <Link href="/forgot-password" className="text-xs text-primary-container hover:underline">نسيت كلمة المرور؟</Link>
               </div>
-              <div className="group relative">
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline transition-colors group-focus-within:text-primary-container">lock</span>
-                <input id="password" type={showPass ? "text" : "password"} required dir="ltr" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
-                  className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest py-3 pr-12 pl-12 outline-none transition-all focus:border-primary-container focus:ring-2 focus:ring-primary-container/20" />
-                <button type="button" onClick={() => setShowPass((v) => !v)} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline transition-colors hover:text-on-surface">
-                  <span className="material-symbols-outlined">{showPass ? "visibility_off" : "visibility"}</span>
-                </button>
-              </div>
+              <PasswordInput field={register("password")} error={!!errors.password} />
+              {errors.password && <p className="mt-1 text-xs text-error">{errors.password.message}</p>}
             </div>
 
             <label className="flex cursor-pointer select-none items-center gap-2 text-on-surface-variant">
@@ -75,7 +77,7 @@ export default function LoginPage() {
               تذكرني على هذا الجهاز
             </label>
 
-            {error && <p className="rounded-lg bg-error-container p-3 text-sm text-on-error-container">{error}</p>}
+            {apiError && <p className="rounded-lg bg-error-container p-3 text-sm text-on-error-container">{apiError}</p>}
 
             <button type="submit" disabled={loading}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-container py-3.5 text-lg font-semibold text-white shadow-lg shadow-primary-container/20 transition-all hover:bg-primary-container/90 active:scale-[0.98] disabled:opacity-50">
@@ -83,7 +85,7 @@ export default function LoginPage() {
               {!loading && <span className="material-symbols-outlined">login</span>}
             </button>
 
-            <button type="button" onClick={() => setError("تسجيل الدخول عبر جوجل غير مفعّل حالياً")}
+            <button type="button" onClick={() => setApiError("تسجيل الدخول عبر جوجل غير مفعّل حالياً")}
               className="flex w-full items-center justify-center gap-3 rounded-lg border border-outline-variant bg-white py-3.5 text-lg font-semibold text-on-surface transition-all hover:bg-surface-container-low active:scale-[0.98]">
               <svg className="h-6 w-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -102,23 +104,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Image side (left in RTL) */}
-      <div className="relative hidden w-1/2 lg:block">
-        <img src={SIDE_IMG} alt="رعاية صحية" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary-container/70 to-primary-container/30" />
-        <div className="relative z-10 flex h-full flex-col justify-end p-12 text-white">
-          <h2 className="mb-4 text-4xl font-bold leading-tight">رعايتك الصحية<br />في متناول يدك</h2>
-          <p className="mb-8 max-w-md text-lg text-white/90">احجز، استشر، وتابع تقاريرك الطبية مع نخبة الأطباء والمعامل — في أي وقت ومن أي مكان.</p>
-          <ul className="space-y-3">
-            {[["bolt", "حجز فوري خلال دقائق"], ["videocam", "استشارات بالفيديو عالية الجودة"], ["shield", "بياناتك الطبية آمنة ومشفّرة"]].map(([icon, text]) => (
-              <li key={text} className="flex items-center gap-3 text-white/95">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20"><span className="material-symbols-outlined text-[20px]">{icon}</span></span>
-                <span className="text-body-md">{text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <AuthSidePanel />
     </main>
   );
 }
