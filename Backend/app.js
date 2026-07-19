@@ -32,6 +32,8 @@ import { register } from "./src/infrastructure/monitoring/metrics.service.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 // CORS — allow the web app to call the API from the browser.
 // In dev, reflect the request origin; in prod, restrict via CLIENT_ORIGIN (comma-separated).
 const allowedOrigins = process.env.CLIENT_ORIGIN?.split(",").map((o) =>
