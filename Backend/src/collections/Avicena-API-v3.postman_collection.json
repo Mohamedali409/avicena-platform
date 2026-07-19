@@ -6,18 +6,18 @@
     "description": "Avicena Healthcare SaaS Platform — Full API Collection\nUpdated: Refresh Token, Pagination, Chat Request Flow, Medical AI (RAG)"
   },
   "variable": [
-    { "key": "baseUrl",        "value": "http://localhost:4000" },
-    { "key": "patientToken",   "value": "" },
-    { "key": "refreshToken",   "value": "" },
-    { "key": "doctorToken",    "value": "" },
-    { "key": "adminToken",     "value": "" },
-    { "key": "labToken",       "value": "" },
-    { "key": "doctorId",       "value": "" },
-    { "key": "userId",         "value": "" },
-    { "key": "appointmentId",  "value": "" },
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "patientToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "doctorToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "labToken", "value": "" },
+    { "key": "doctorId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "appointmentId", "value": "" },
     { "key": "consultationId", "value": "" },
-    { "key": "reportId",       "value": "" },
-    { "key": "roomId",         "value": "" }
+    { "key": "reportId", "value": "" },
+    { "key": "roomId", "value": "" }
   ],
   "item": [
     {
@@ -25,37 +25,154 @@
       "item": [
         {
           "name": "Patient Register",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);", "if(r.data?.refreshToken) pm.collectionVariables.set('refreshToken', r.data.refreshToken);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/register", "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ahmed Mohamed\",\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);",
+                  "if(r.data?.refreshToken) pm.collectionVariables.set('refreshToken', r.data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Mohamed\",\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
         },
         {
           "name": "Patient Login",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);", "if(r.data?.refreshToken) pm.collectionVariables.set('refreshToken', r.data.refreshToken);", "if(r.data?.user?._id) pm.collectionVariables.set('userId', r.data.user._id);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);",
+                  "if(r.data?.refreshToken) pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "if(r.data?.user?._id) pm.collectionVariables.set('userId', r.data.user._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmed@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
         },
         {
           "name": "Refresh Token ✨",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/refresh", "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.accessToken) pm.collectionVariables.set('patientToken', r.data.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
         },
         {
           "name": "Logout",
-          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/auth/logout" }
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
         },
         {
           "name": "Admin Login",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('adminToken', r.data.token);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/admin/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@avicena.com\",\n  \"password\": \"StrongAdminPass123\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.token) pm.collectionVariables.set('adminToken', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/admin/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@avicena.com\",\n  \"password\": \"StrongAdminPass123\"\n}"
+            }
+          }
         },
         {
           "name": "Doctor Login",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('doctorToken', r.data.token);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/doctor/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"doctor@test.com\",\n  \"password\": \"password123\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.token) pm.collectionVariables.set('doctorToken', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/doctor/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"doctor@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
         },
         {
           "name": "Lab Login",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.token) pm.collectionVariables.set('labToken', r.data.token);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/auth/lab/login", "body": { "mode": "raw", "raw": "{\n  \"email\": \"lab@test.com\",\n  \"password\": \"password123\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.token) pm.collectionVariables.set('labToken', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/lab/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"lab@test.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
         }
       ]
     },
@@ -64,113 +181,749 @@
       "item": [
         {
           "name": "Get Profile",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/profile" }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/user/profile"
+          }
         },
         {
           "name": "Update Profile",
-          "request": { "method": "PUT", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/profile", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Ahmed Mohamed","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"gender","value":"ذكر","type":"text"},{"key":"dob","value":"1995-01-01","type":"text"},{"key":"nationality","value":"Egypt","type":"text"},{"key":"nationalId","value":"29501011234567","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}","type":"text"}] } }
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/user/profile",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Ahmed Mohamed", "type": "text" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                { "key": "gender", "value": "ذكر", "type": "text" },
+                { "key": "dob", "value": "1995-01-01", "type": "text" },
+                { "key": "nationality", "value": "Egypt", "type": "text" },
+                {
+                  "key": "nationalId",
+                  "value": "29501011234567",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}",
+                  "type": "text"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "Get User Stats",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/stats" }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/user/stats"
+          }
         },
         {
           "name": "Book Appointment",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.appointment?._id) pm.collectionVariables.set('appointmentId', r.data.appointment._id);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/appointments", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"slotDate\": \"20_1_2026\",\n  \"slotTime\": \"10:00 am\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.appointment?._id) pm.collectionVariables.set('appointmentId', r.data.appointment._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/appointments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"slotDate\": \"20_1_2026\",\n  \"slotTime\": \"10:00 am\"\n}"
+            }
+          }
         },
         {
           "name": "List My Appointments (with Pagination) ✨",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/user/appointments?page=1&limit=10", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"}] } }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/appointments?page=1&limit=10",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
         },
         {
           "name": "Cancel Appointment",
-          "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/appointments/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } }
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/appointments/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
+            }
+          }
         },
         {
           "name": "Get My Reports",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/reports" }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/user/reports"
+          }
         },
         {
           "name": "Get All Consultations",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/user/consultations" }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/user/consultations"
+          }
         },
         {
           "name": "Get Single Consultation",
-          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/single", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } }
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/consultations/single",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"docId\": \"{{doctorId}}\"\n}"
+            }
+          }
         },
         {
           "name": "Update Consultation Time",
-          "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/time", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"consultTime\": \"02:00 pm\"\n}" } }
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/consultations/time",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"consultTime\": \"02:00 pm\"\n}"
+            }
+          }
         },
         {
           "name": "Cancel Consultation",
-          "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/user/consultations/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } }
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/consultations/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"docId\": \"{{doctorId}}\"\n}"
+            }
+          }
         }
       ]
     },
     {
       "name": "👨‍⚕️ Doctor",
       "item": [
-        { "name": "Get Doctor List (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/doctor/list" } },
-        { "name": "Get Profile", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/profile" } },
-        { "name": "Update Profile", "request": { "method": "PUT", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/profile", "body": { "mode": "raw", "raw": "{\n  \"fees\": 200,\n  \"consultation_fees\": 100,\n  \"available\": true,\n  \"phone\": \"01012345678\",\n  \"address\": {\"line1\": \"Cairo\", \"line2\": \"Nasr City\"},\n  \"start_booked\": {\"from\": 9, \"to\": 17, \"booking_period\": 30}\n}" } } },
-        { "name": "Get Dashboard", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/dashboard" } },
-        { "name": "Get Appointments", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/appointments" } },
-        { "name": "Complete Appointment", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/appointments/complete", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
-        { "name": "Cancel Appointment", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/appointments/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
+        {
+          "name": "Get Doctor List (Public)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/doctor/list" }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/profile",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fees\": 200,\n  \"consultation_fees\": 100,\n  \"available\": true,\n  \"phone\": \"01012345678\",\n  \"address\": {\"line1\": \"Cairo\", \"line2\": \"Nasr City\"},\n  \"start_booked\": {\"from\": 9, \"to\": 17, \"booking_period\": 30}\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/dashboard"
+          }
+        },
+        {
+          "name": "Get Appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/appointments"
+          }
+        },
+        {
+          "name": "Complete Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/appointments/complete",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/appointments/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
+            }
+          }
+        },
         {
           "name": "Add Report",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.report?._id) pm.collectionVariables.set('reportId', r.data.report._id);"] } }],
-          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"complaint\": \"صداع وارتفاع في الحرارة\",\n  \"examination\": \"حرارة 38.5، ضغط طبيعي\",\n  \"diagnosis\": \"التهاب في الحلق\",\n  \"treatment\": [\n    {\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"},\n    {\"name\": \"Paracetamol\", \"dosage\": \"1g\", \"duration\": \"عند الحاجة\"}\n  ],\n  \"notes\": \"راحة تامة وشرب سوائل\",\n  \"nextVisit\": \"2026-02-01\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.report?._id) pm.collectionVariables.set('reportId', r.data.report._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/reports",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"complaint\": \"صداع وارتفاع في الحرارة\",\n  \"examination\": \"حرارة 38.5، ضغط طبيعي\",\n  \"diagnosis\": \"التهاب في الحلق\",\n  \"treatment\": [\n    {\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"},\n    {\"name\": \"Paracetamol\", \"dosage\": \"1g\", \"duration\": \"عند الحاجة\"}\n  ],\n  \"notes\": \"راحة تامة وشرب سوائل\",\n  \"nextVisit\": \"2026-02-01\"\n}"
+            }
+          }
         },
-        { "name": "Get All Reports", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/reports" } },
-        { "name": "Get Patient Reports", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports/patient", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Edit Report", "request": { "method": "PUT", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع شديد\",\n  \"examination\": \"حرارة 39\",\n  \"diagnosis\": \"التهاب حاد\",\n  \"treatment\": [{\"name\": \"Augmentin\", \"dosage\": \"625mg\", \"duration\": \"10 أيام\"}]\n}" } } },
-        { "name": "Delete Report", "request": { "method": "DELETE", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/reports", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}" } } },
+        {
+          "name": "Get All Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/reports"
+          }
+        },
+        {
+          "name": "Get Patient Reports",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/reports/patient",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Report",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/reports",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع شديد\",\n  \"examination\": \"حرارة 39\",\n  \"diagnosis\": \"التهاب حاد\",\n  \"treatment\": [{\"name\": \"Augmentin\", \"dosage\": \"625mg\", \"duration\": \"10 أيام\"}]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Report",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/reports",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}"
+            }
+          }
+        },
         {
           "name": "Create Consultation",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.consultation?._id) pm.collectionVariables.set('consultationId', r.data.consultation._id);"] } }],
-          "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"consultDay\": \"25_1_2026\",\n  \"amount\": 100,\n  \"notes\": \"متابعة بعد أسبوع\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.consultation?._id) pm.collectionVariables.set('consultationId', r.data.consultation._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/consultations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"consultDay\": \"25_1_2026\",\n  \"amount\": 100,\n  \"notes\": \"متابعة بعد أسبوع\"\n}"
+            }
+          }
         },
-        { "name": "Get Consultations", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/consultations" } },
-        { "name": "Complete Consultation", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations/complete", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Cancel Consultation", "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/consultations/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Search Patients", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/search", "body": { "mode": "raw", "raw": "{\n  \"q\": \"ahmed\"\n}" } } },
-        { "name": "Get Patient Stats", "request": { "method": "POST", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/doctor/patient-stats", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Clear Slots", "request": { "method": "DELETE", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/doctor/slots" } }
+        {
+          "name": "Get Consultations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/consultations"
+          }
+        },
+        {
+          "name": "Complete Consultation",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/consultations/complete",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Consultation",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/consultations/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Search Patients",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/search",
+            "body": { "mode": "raw", "raw": "{\n  \"q\": \"ahmed\"\n}" }
+          }
+        },
+        {
+          "name": "Get Patient Stats",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/doctor/patient-stats",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Clear Slots",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/doctor/slots"
+          }
+        }
       ]
     },
     {
       "name": "🛡️ Admin",
       "item": [
-        { "name": "Get Dashboard", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/dashboard" } },
-        { "name": "Add Doctor", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/doctors", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Dr. Mohamed Ali","type":"text"},{"key":"email","value":"doctor@test.com","type":"text"},{"key":"password","value":"password123","type":"text"},{"key":"speciality","value":"General Physician","type":"text"},{"key":"degree","value":"MBBS","type":"text"},{"key":"experience","value":"5 Years","type":"text"},{"key":"about","value":"Experienced doctor","type":"text"},{"key":"fees","value":"150","type":"text"},{"key":"consultation_fees","value":"100","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}","type":"text"},{"key":"start_booked","value":"{\"from\":9,\"to\":17,\"booking_period\":30}","type":"text"},{"key":"image","type":"file","src":[]}] } } },
-        { "name": "Get All Doctors", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/doctors" } },
-        { "name": "Remove Doctor", "request": { "method": "DELETE", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/doctors", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}" } } },
-        { "name": "Toggle Doctor Availability", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/doctors/availability", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}" } } },
-        { "name": "Get All Appointments", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/appointment" } },
-        { "name": "Cancel Appointment", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/appointment/cancel", "body": { "mode": "raw", "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}" } } },
-        { "name": "Get All Consultations", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/consultations" } },
-        { "name": "Get User Consultations", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/consultations/user", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Cancel Consultation", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/consultation/cancel", "body": { "mode": "raw", "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\",\n  \"docId\": \"{{doctorId}}\"\n}" } } },
-        { "name": "Get All Reports", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/reports" } },
-        { "name": "Get User Reports", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/reports/user", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } },
-        { "name": "Delete Report", "request": { "method": "DELETE", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/report", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}" } } },
-        { "name": "Edit Report", "request": { "method": "PUT", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/report", "body": { "mode": "raw", "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع\",\n  \"examination\": \"طبيعي\",\n  \"diagnosis\": \"إجهاد\",\n  \"treatment\": [{\"name\": \"Rest\"}]\n}" } } },
-        { "name": "Get All Users", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/admin/users" } },
-        { "name": "Search Users", "request": { "method": "GET", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": { "raw": "{{baseUrl}}/api/admin/users/search?q=ahmed", "query": [{"key":"q","value":"ahmed"}] } } },
-        { "name": "Toggle User Status", "request": { "method": "PATCH", "header": [{"key":"atoken","value":"{{adminToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/admin/users/status", "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" } } }
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/dashboard"
+          }
+        },
+        {
+          "name": "Add Doctor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/doctors",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Dr. Mohamed Ali", "type": "text" },
+                { "key": "email", "value": "doctor@test.com", "type": "text" },
+                { "key": "password", "value": "password123", "type": "text" },
+                {
+                  "key": "speciality",
+                  "value": "General Physician",
+                  "type": "text"
+                },
+                { "key": "degree", "value": "MBBS", "type": "text" },
+                { "key": "experience", "value": "5 Years", "type": "text" },
+                {
+                  "key": "about",
+                  "value": "Experienced doctor",
+                  "type": "text"
+                },
+                { "key": "fees", "value": "150", "type": "text" },
+                { "key": "consultation_fees", "value": "100", "type": "text" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                {
+                  "key": "address",
+                  "value": "{\"line1\":\"Cairo\",\"line2\":\"Nasr City\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_booked",
+                  "value": "{\"from\":9,\"to\":17,\"booking_period\":30}",
+                  "type": "text"
+                },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Doctors",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/doctors"
+          }
+        },
+        {
+          "name": "Remove Doctor",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/doctors",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Toggle Doctor Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/doctors/availability",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"{{doctorId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/appointment"
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/appointment/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Consultations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/consultations"
+          }
+        },
+        {
+          "name": "Get User Consultations",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/consultations/user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel Consultation",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/consultation/cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"userId\": \"{{userId}}\",\n  \"docId\": \"{{doctorId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/reports"
+          }
+        },
+        {
+          "name": "Get User Reports",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/reports/user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Report",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/report",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"{{reportId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Report",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/report",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reportId\": \"{{reportId}}\",\n  \"complaint\": \"صداع\",\n  \"examination\": \"طبيعي\",\n  \"diagnosis\": \"إجهاد\",\n  \"treatment\": [{\"name\": \"Rest\"}]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/admin/users"
+          }
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/search?q=ahmed",
+              "query": [{ "key": "q", "value": "ahmed" }]
+            }
+          }
+        },
+        {
+          "name": "Toggle User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "atoken", "value": "{{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/admin/users/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            }
+          }
+        }
       ]
     },
     {
       "name": "🏥 Labs",
       "item": [
-        { "name": "Get All Labs (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/lab" } },
-        { "name": "Get Lab by ID (Public)", "request": { "method": "GET", "url": "{{baseUrl}}/api/lab/LAB_MONGO_ID" } },
-        { "name": "Get My Lab Profile", "request": { "method": "GET", "header": [{"key":"ltoken","value":"{{labToken}}"}], "url": "{{baseUrl}}/api/lab/me/profile" } },
-        { "name": "Update Lab Profile", "request": { "method": "PUT", "header": [{"key":"ltoken","value":"{{labToken}}"}], "url": "{{baseUrl}}/api/lab/me/profile", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Cairo Medical Lab","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"city\":\"Cairo\"}","type":"text"},{"key":"workingHours","value":"{\"from\":\"08:00\",\"to\":\"20:00\"}","type":"text"}] } } },
-        { "name": "Add Lab (Admin)", "request": { "method": "POST", "header": [{"key":"atoken","value":"{{adminToken}}"}], "url": "{{baseUrl}}/api/lab", "body": { "mode": "formdata", "formdata": [{"key":"name","value":"Cairo Lab","type":"text"},{"key":"email","value":"lab@test.com","type":"text"},{"key":"password","value":"password123","type":"text"},{"key":"phone","value":"01012345678","type":"text"},{"key":"address","value":"{\"line1\":\"Cairo\",\"line2\":\"Heliopolis\"}","type":"text"},{"key":"tests","value":"[{\"name\":\"CBC\",\"price\":50},{\"name\":\"Blood Sugar\",\"price\":30}]","type":"text"}] } } }
+        {
+          "name": "Get All Labs (Public)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/lab" }
+        },
+        {
+          "name": "Get Lab by ID (Public)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/lab/LAB_MONGO_ID"
+          }
+        },
+        {
+          "name": "Get My Lab Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "ltoken", "value": "{{labToken}}" }],
+            "url": "{{baseUrl}}/api/lab/me/profile"
+          }
+        },
+        {
+          "name": "Update Lab Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "ltoken", "value": "{{labToken}}" }],
+            "url": "{{baseUrl}}/api/lab/me/profile",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Cairo Medical Lab", "type": "text" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                {
+                  "key": "address",
+                  "value": "{\"line1\":\"Cairo\",\"city\":\"Cairo\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "workingHours",
+                  "value": "{\"from\":\"08:00\",\"to\":\"20:00\"}",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Lab (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "atoken", "value": "{{adminToken}}" }],
+            "url": "{{baseUrl}}/api/lab",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Cairo Lab", "type": "text" },
+                { "key": "email", "value": "lab@test.com", "type": "text" },
+                { "key": "password", "value": "password123", "type": "text" },
+                { "key": "phone", "value": "01012345678", "type": "text" },
+                {
+                  "key": "address",
+                  "value": "{\"line1\":\"Cairo\",\"line2\":\"Heliopolis\"}",
+                  "type": "text"
+                },
+                {
+                  "key": "tests",
+                  "value": "[{\"name\":\"CBC\",\"price\":50},{\"name\":\"Blood Sugar\",\"price\":30}]",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        }
       ]
     },
     {
@@ -178,34 +931,145 @@
       "item": [
         {
           "name": "1. Patient — Send Chat Request",
-          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json();", "if(r.data?.request?.roomId) pm.collectionVariables.set('roomId', r.data.request.roomId);"] } }],
-          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/chat/request", "body": { "mode": "raw", "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"initialMessage\": \"دكتور عندي سؤال عن الدواء اللي كتبته\"\n}" } }
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if(r.data?.request?.roomId) pm.collectionVariables.set('roomId', r.data.request.roomId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/chat/request",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docId\": \"{{doctorId}}\",\n  \"initialMessage\": \"دكتور عندي سؤال عن الدواء اللي كتبته\"\n}"
+            }
+          }
         },
         {
           "name": "2. Patient — Get My Requests",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/my-requests" }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/chat/my-requests"
+          }
         },
         {
           "name": "3. Doctor — Get Pending Requests",
-          "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": { "raw": "{{baseUrl}}/api/chat/doctor/requests?status=pending", "query": [{"key":"status","value":"pending"}] } }
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/doctor/requests?status=pending",
+              "query": [{ "key": "status", "value": "pending" }]
+            }
+          }
         },
         {
           "name": "4. Doctor — Accept Request ✅",
-          "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/chat/doctor/requests/accept", "body": { "mode": "raw", "raw": "{\n  \"roomId\": \"{{roomId}}\"\n}" } }
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/chat/doctor/requests/accept",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{roomId}}\"\n}"
+            }
+          }
         },
         {
           "name": "4b. Doctor — Reject Request ❌",
-          "request": { "method": "PATCH", "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/chat/doctor/requests/reject", "body": { "mode": "raw", "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"rejectReason\": \"أنا غير متخصص في هذه الحالة\"\n}" } }
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/chat/doctor/requests/reject",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"rejectReason\": \"أنا غير متخصص في هذه الحالة\"\n}"
+            }
+          }
         },
         {
           "name": "5. Get Room Messages",
-          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/chat/room/{{roomId}}?page=1&limit=30", "query": [{"key":"page","value":"1"},{"key":"limit","value":"30"}] } }
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/room/{{roomId}}?page=1&limit=30",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "30" }
+              ]
+            }
+          }
         },
-        { "name": "Get My Conversations (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/conversations" } },
-        { "name": "Get My Conversations (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/chat/conversations" } },
-        { "name": "Get Room ID with Doctor", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{doctorId}}/id" } },
-        { "name": "Get Unread Count", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{roomId}}/unread" } },
-        { "name": "Mark Room as Read", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/chat/room/{{roomId}}/read" } }
+        {
+          "name": "Get My Conversations (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/chat/conversations"
+          }
+        },
+        {
+          "name": "Get My Conversations (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/chat/conversations"
+          }
+        },
+        {
+          "name": "Get Room ID with Doctor",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/chat/room/{{doctorId}}/id"
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/chat/room/{{roomId}}/unread"
+          }
+        },
+        {
+          "name": "Mark Room as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/chat/room/{{roomId}}/read"
+          }
+        }
       ]
     },
     {
@@ -215,7 +1079,7 @@
           "name": "1. Get Patient Summary (Auto on chat open)",
           "request": {
             "method": "GET",
-            "header": [{"key":"dtoken","value":"{{doctorToken}}"}],
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
             "url": "{{baseUrl}}/api/medical-ai/summary/{{userId}}",
             "description": "الدكتور يفتح المحادثة مع مريض → الـ AI يولّد ملخص تلقائي عن حالته بناءً على كل تقاريره"
           }
@@ -224,9 +1088,15 @@
           "name": "2. Ask Question About Patient",
           "request": {
             "method": "POST",
-            "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
             "url": "{{baseUrl}}/api/medical-ai/ask",
-            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه الأدوية اللي الدكتور كتبها للمريض ده قبل كده؟\",\n  \"chatHistory\": []\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه الأدوية اللي الدكتور كتبها للمريض ده قبل كده؟\",\n  \"chatHistory\": []\n}"
+            },
             "description": "الدكتور يسأل سؤال عن المريض — الـ AI يجاوب من التقارير الحقيقية بس"
           }
         },
@@ -234,27 +1104,45 @@
           "name": "3. Ask — Drug Check",
           "request": {
             "method": "POST",
-            "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
             "url": "{{baseUrl}}/api/medical-ai/ask",
-            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"هل المريض عنده حساسية من أي دواء أو كان فيه تفاعل دوائي سابق؟\",\n  \"chatHistory\": []\n}" }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"هل المريض عنده حساسية من أي دواء أو كان فيه تفاعل دوائي سابق؟\",\n  \"chatHistory\": []\n}"
+            }
           }
         },
         {
           "name": "4. Ask — Diagnosis History",
           "request": {
             "method": "POST",
-            "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
             "url": "{{baseUrl}}/api/medical-ai/ask",
-            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه أهم التشخيصات السابقة للمريض؟\",\n  \"chatHistory\": [\n    {\"role\": \"user\", \"content\": \"ايه الأدوية اللي اتكتبتله؟\"},\n    {\"role\": \"assistant\", \"content\": \"تم وصف Amoxicillin 500mg لمدة 7 أيام\"}\n  ]\n}" }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"question\": \"ايه أهم التشخيصات السابقة للمريض؟\",\n  \"chatHistory\": [\n    {\"role\": \"user\", \"content\": \"ايه الأدوية اللي اتكتبتله؟\"},\n    {\"role\": \"assistant\", \"content\": \"تم وصف Amoxicillin 500mg لمدة 7 أيام\"}\n  ]\n}"
+            }
           }
         },
         {
           "name": "5. Index New Report Manually",
           "request": {
             "method": "POST",
-            "header": [{"key":"dtoken","value":"{{doctorToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "header": [
+              { "key": "dtoken", "value": "{{doctorToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
             "url": "{{baseUrl}}/api/medical-ai/index-report",
-            "body": { "mode": "raw", "raw": "{\n  \"report\": {\n    \"_id\": \"{{reportId}}\",\n    \"userId\": \"{{userId}}\",\n    \"docId\": \"{{doctorId}}\",\n    \"userData\": {\"name\": \"Ahmed Mohamed\"},\n    \"complaint\": \"صداع وحرارة\",\n    \"examination\": \"حرارة 38.5\",\n    \"diagnosis\": \"التهاب في الحلق\",\n    \"treatment\": [{\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"}],\n    \"notes\": \"راحة تامة\",\n    \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n  }\n}" }
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report\": {\n    \"_id\": \"{{reportId}}\",\n    \"userId\": \"{{userId}}\",\n    \"docId\": \"{{doctorId}}\",\n    \"userData\": {\"name\": \"Ahmed Mohamed\"},\n    \"complaint\": \"صداع وحرارة\",\n    \"examination\": \"حرارة 38.5\",\n    \"diagnosis\": \"التهاب في الحلق\",\n    \"treatment\": [{\"name\": \"Amoxicillin\", \"dosage\": \"500mg\", \"duration\": \"7 أيام\"}],\n    \"notes\": \"راحة تامة\",\n    \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n  }\n}"
+            }
           }
         }
       ]
@@ -262,34 +1150,161 @@
     {
       "name": "🔔 Notifications",
       "item": [
-        { "name": "Get Notifications (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": { "raw": "{{baseUrl}}/api/notifications?page=1&limit=20", "query": [{"key":"page","value":"1"},{"key":"limit","value":"20"}] } } },
-        { "name": "Get Notifications (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": { "raw": "{{baseUrl}}/api/notifications?page=1&limit=20", "query": [{"key":"page","value":"1"},{"key":"limit","value":"20"}] } } },
-        { "name": "Get Unread Count", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/unread" } },
-        { "name": "Mark One as Read", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/NOTIFICATION_ID/read" } },
-        { "name": "Mark All as Read", "request": { "method": "PATCH", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/notifications/read-all" } }
+        {
+          "name": "Get Notifications (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?page=1&limit=20",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Notifications (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?page=1&limit=20",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/notifications/unread"
+          }
+        },
+        {
+          "name": "Mark One as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/notifications/NOTIFICATION_ID/read"
+          }
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/notifications/read-all"
+          }
+        }
       ]
     },
     {
       "name": "💳 Subscriptions",
       "item": [
-        { "name": "Subscribe to Plan", "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"},{"key":"Content-Type","value":"application/json"}], "url": "{{baseUrl}}/api/subscriptions", "body": { "mode": "raw", "raw": "{\n  \"plan\": \"basic\"\n}" } } },
-        { "name": "Get Active Subscription", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/subscriptions/active" } },
-        { "name": "Cancel Subscription", "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/subscriptions/cancel" } }
+        {
+          "name": "Subscribe to Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/subscriptions",
+            "body": { "mode": "raw", "raw": "{\n  \"plan\": \"basic\"\n}" }
+          }
+        },
+        {
+          "name": "Get Active Subscription",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/subscriptions/active"
+          }
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/subscriptions/cancel"
+          }
+        }
       ]
     },
     {
       "name": "🎥 Video Call",
       "item": [
-        { "name": "Get Call History (Patient)", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/video-call/history" } },
-        { "name": "Get Call History (Doctor)", "request": { "method": "GET", "header": [{"key":"dtoken","value":"{{doctorToken}}"}], "url": "{{baseUrl}}/api/video-call/history" } }
+        {
+          "name": "Get Call History (Patient)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/video-call/history"
+          }
+        },
+        {
+          "name": "Get Call History (Doctor)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "dtoken", "value": "{{doctorToken}}" }],
+            "url": "{{baseUrl}}/api/video-call/history"
+          }
+        }
       ]
     },
     {
       "name": "📋 Shared Lookups",
       "item": [
-        { "name": "Get Appointment by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/appointment/{{appointmentId}}" } },
-        { "name": "Get Report by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/report/{{reportId}}" } },
-        { "name": "Get Consultation by ID", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{patientToken}}"}], "url": "{{baseUrl}}/api/consultation/{{consultationId}}" } }
+        {
+          "name": "Get Appointment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/appointment/{{appointmentId}}"
+          }
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/report/{{reportId}}"
+          }
+        },
+        {
+          "name": "Get Consultation by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/consultation/{{consultationId}}"
+          }
+        }
       ]
     }
   ]
