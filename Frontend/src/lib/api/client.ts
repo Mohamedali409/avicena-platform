@@ -9,11 +9,14 @@ import { getSession, clearSession } from "@/lib/auth/session";
 // with an explicit origin — already configured.)
 
 const baseURL = (
-  process.env.NEXT_PUBLIC_API_URL ??
-  "https://avicena-platform-production.up.railway.app"
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
 ).replace(/\/+$/, ""); // strip any trailing slash to avoid `//api/...`
 
-export const api = axios.create({ baseURL, timeout: 20000, withCredentials: true });
+export const api = axios.create({
+  baseURL,
+  timeout: 20000,
+  withCredentials: true,
+});
 
 // ---- Response: silent refresh on 401 ----
 // The accessToken cookie lives 15 minutes. On the first 401 for a logged-in
@@ -25,7 +28,9 @@ let refreshing: Promise<void> | null = null;
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const original = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
     const isAuthCall = (original?.url ?? "").includes("/api/auth/");
 
     const canRefresh =

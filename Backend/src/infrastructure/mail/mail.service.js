@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import { generateReportPDF } from "../pdf/pdf.service.js";
+import { buildOtpTemplate } from "./templates/otp.template.js";
+import { buildWelcomeTemplate } from "./templates/welcome.template.js";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -20,13 +22,8 @@ const sendWelcomeEmail = async (toEmail, name) => {
   await transporter.sendMail({
     from: FROM,
     to: toEmail,
-    subject: "مرحباً بك في  Avicena 🎉",
-    html: `
-      <div style="font-family:Arial,sans-serif;padding:20px;color:#333">
-        <h2 style="color:#2c7be5">أهلاً ${name} 👋</h2>
-        <p>شكراً لانضمامك إلى منصة سلامتك. نحن هنا لنوفر لك أفضل الخدمات الطبية.</p>
-        <p>نتمنى لك تجربة رائعة وصحة دائمة 🌿</p>
-      </div>`,
+    subject: "🩺 Welcome to Avicena",
+    html: buildWelcomeTemplate({ name }),
   });
 };
 
@@ -96,42 +93,20 @@ const sendReportEmail = async (toEmail, report) => {
 };
 
 const sendOtpEmail = async (toEmail, name, otp, purpose) => {
+  const subjects = {
+    VERIFY_EMAIL: "Verify your Avicena account",
+    RESET_PASSWORD: "Reset your Avicena password",
+  };
+
   await transporter.sendMail({
     from: FROM,
     to: toEmail,
-    subject: `${purpose} - OTP Code`,
-    html: `
-      <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:auto;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1)">
-        <h2 style="color:#2c7be5">مرحباً ${name} 👋</h2>
-
-        <p>لقد طلبت <strong>${purpose}</strong>.</p>
-
-        <p>استخدم رمز التحقق التالي:</p>
-
-        <div
-          style="
-            font-size:32px;
-            font-weight:bold;
-            letter-spacing:8px;
-            text-align:center;
-            margin:30px 0;
-            color:#2c7be5;
-          "
-        >
-          ${otp}
-        </div>
-
-        <p>صلاحية هذا الرمز <strong>10 دقائق</strong>.</p>
-
-        <p>إذا لم تقم بهذا الطلب، يمكنك تجاهل هذه الرسالة.</p>
-
-        <hr/>
-
-        <p style="text-align:center;color:#777">
-          Avicena Team
-        </p>
-      </div>
-    `,
+    subject: subjects[purpose] || "Your verification code",
+    html: buildOtpTemplate({
+      name,
+      otp,
+      purpose,
+    }),
   });
 };
 
