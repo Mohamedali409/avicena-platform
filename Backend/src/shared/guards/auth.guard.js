@@ -6,6 +6,7 @@ export const authGuard = catchAsync(async (req, res, next) => {
   const token =
     req.headers.authorization?.split(" ")[1] ||
     req.headers.token ||
+    req.cookies?.accessToken || // unified login sets this httpOnly cookie
     req.cookies?.token;
 
   if (!token) throw new ApiError("غير مصرح لك بالدخول، سجل دخولك أولاً", 401);

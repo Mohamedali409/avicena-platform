@@ -19,14 +19,13 @@ interface AuthState {
   login: (email: string, password: string) => Promise<Session>;
   /** Register a patient. Returns nothing usable — the account must verify its email first. */
   register: (name: string, email: string, password: string) => Promise<{ email: string }>;
-  /** Verify the email OTP → returns a token and logs the user in. */
+  /** Verify the email OTP → backend sets the auth cookies and logs the user in. */
   verifyEmail: (email: string, otp: string) => Promise<Session>;
   logout: () => Promise<void>;
 }
 
 const toSession = (r: AuthResult): Session => ({
   role: r.role,
-  token: r.token,
   user: r.user,
 });
 

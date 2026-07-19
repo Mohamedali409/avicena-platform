@@ -5,6 +5,7 @@ node_modules
 
 *.env
 .claude
+DISCUSSION.md
 # =========================
 # Environment Variables
 # =========================

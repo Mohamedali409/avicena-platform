@@ -1,66 +1,50 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { ROLES } from "@/config/roles";
-import { getSession, patchToken, clearSession } from "@/lib/auth/session";
+import { getSession, clearSession } from "@/lib/auth/session";
 
 // Single Axios instance shared by the whole app.
-// The request interceptor injects the CORRECT auth header for the current role
-// (Authorization: Bearer for patients, dtoken/atoken/ltoken for the others),
-// so feature code never has to know which scheme a role uses.
+// Auth is cookie-based: the backend sets httpOnly `accessToken` / `refreshToken`
+// cookies at login. The browser sends them automatically because of
+// `withCredentials: true`, so there is NO Authorization header and NO token in
+// JavaScript / localStorage. (Requires the backend CORS to allow credentials
+// with an explicit origin — already configured.)
 
-const baseURL =
+const baseURL = (
   process.env.NEXT_PUBLIC_API_URL ??
-  "https://avicena-platform-production.up.railway.app/";
+  "https://avicena-platform-production.up.railway.app"
+).replace(/\/+$/, ""); // strip any trailing slash to avoid `//api/...`
 
-export const api = axios.create({ baseURL, timeout: 20000 });
+export const api = axios.create({ baseURL, timeout: 20000, withCredentials: true });
 
-// ---- Request: attach role-specific auth header ----
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const session = getSession();
-  if (session?.token) {
-    const { authHeader, bearer } = ROLES[session.role];
-    config.headers.set(
-      authHeader,
-      bearer ? `Bearer ${session.token}` : session.token,
-    );
-  }
-  return config;
-});
-
-// ---- Response: transparent refresh for patients on 401 (when a refreshToken exists) ----
-let refreshing: Promise<string> | null = null;
+// ---- Response: silent refresh on 401 ----
+// The accessToken cookie lives 15 minutes. On the first 401 for a logged-in
+// user we call /api/auth/refresh once — it reads the refreshToken cookie and
+// sets a fresh accessToken cookie — then retry the original request. Auth calls
+// are excluded so a failed login/refresh doesn't loop.
+let refreshing: Promise<void> | null = null;
 
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
-    const session = getSession();
+    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const isAuthCall = (original?.url ?? "").includes("/api/auth/");
 
     const canRefresh =
       error.response?.status === 401 &&
-      session?.role === "patient" &&
-      !!session.refreshToken &&
-      !original?._retry;
+      !!getSession() &&
+      !original?._retry &&
+      !isAuthCall;
 
     if (canRefresh) {
       original._retry = true;
       try {
         refreshing ??= axios
-          .post(`${baseURL}/api/auth/refresh`, {
-            refreshToken: session!.refreshToken,
-          })
-          .then((r) => {
-            const token = r.data?.accessToken as string; // backend returns top-level accessToken
-            patchToken(token);
-            return token;
-          })
+          .post(`${baseURL}/api/auth/refresh`, {}, { withCredentials: true })
+          .then(() => undefined)
           .finally(() => {
             refreshing = null;
           });
 
-        const newToken = await refreshing;
-        original.headers.set("Authorization", `Bearer ${newToken}`);
+        await refreshing;
         return api(original);
       } catch {
         clearSession();

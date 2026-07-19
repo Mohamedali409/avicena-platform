@@ -1,7 +1,11 @@
 import type { Role } from "@/config/roles";
 
-// Lightweight client-side session store. For production, prefer httpOnly cookies
-// set by a Next.js route handler over localStorage to reduce XSS token theft.
+// Client-side session store. Auth tokens live in httpOnly cookies set by the
+// backend (accessToken / refreshToken) — NEVER in localStorage. JavaScript
+// cannot read httpOnly cookies, which blocks XSS token theft. Here we keep only
+// non-secret data needed by the UI: the `role` (to route the user to their
+// dashboard after a page reload) and a light profile for the header. No token
+// is ever stored on the client.
 
 const KEY = "avicena.session";
 
@@ -14,8 +18,6 @@ export interface SessionUser {
 
 export interface Session {
   role: Role;
-  token: string;              // backend returns a single `token` (JWT, 7d)
-  refreshToken?: string;      // reserved — backend does not issue one at login yet
   user: SessionUser;
 }
 
@@ -31,9 +33,4 @@ export const getSession = (): Session | null => {
 
 export const clearSession = () => {
   if (typeof window !== "undefined") localStorage.removeItem(KEY);
-};
-
-export const patchToken = (token: string) => {
-  const s = getSession();
-  if (s) saveSession({ ...s, token });
 };

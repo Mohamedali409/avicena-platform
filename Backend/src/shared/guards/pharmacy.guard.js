@@ -6,7 +6,8 @@ export const pharmacyGuard = catchAsync(async (req, res, next) => {
   const token =
     req.headers.authorization?.split(" ")[1] ||
     req.headers.phtoken ||
-    req.coolies?.phtoken;
+    req.cookies?.accessToken || // unified login sets this httpOnly cookie
+    req.cookies?.phtoken; // was `req.coolies` (typo) — cookies never matched
 
   if (!token) throw new ApiError("Not authorization to you.", 401);
 

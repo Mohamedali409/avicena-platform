@@ -1,7 +1,9 @@
 import { io, Socket } from "socket.io-client";
 import { getSession } from "@/lib/auth/session";
 
-// One shared Socket.io connection, authenticated with the current session token.
+// One shared Socket.io connection. Auth rides on the httpOnly cookies via
+// `withCredentials: true` (the handshake sends them automatically) — no token
+// is read from JS. `role` is passed for convenience/routing only.
 // Used by chat, notifications, and video-call features.
 
 let socket: Socket | null = null;
@@ -15,7 +17,8 @@ export const getSocket = (): Socket => {
   socket = io(url, {
     autoConnect: true,
     transports: ["websocket"],
-    auth: { token: session?.token, role: session?.role },
+    withCredentials: true,
+    auth: { role: session?.role },
   });
 
   return socket;
