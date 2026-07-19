@@ -7,6 +7,30 @@ export interface Paginated<T> { items: T[]; page: number; limit: number; total: 
 
 export const getProfile = async () => (await api.get("/api/user/profile")).data.data;
 
+export interface ProfileInput {
+  name?: string;
+  phone?: string;
+  gender?: string;
+  dob?: string;
+  nationality?: string;
+  nationalId?: string;
+  address?: { line1?: string; line2?: string };
+}
+
+// PUT /api/user/profile — backend expects multipart/form-data.
+export const updateProfile = async (input: ProfileInput) => {
+  const fd = new FormData();
+  if (input.name) fd.append("name", input.name);
+  if (input.phone) fd.append("phone", input.phone);
+  if (input.gender) fd.append("gender", input.gender);
+  if (input.dob) fd.append("dob", input.dob);
+  if (input.nationality) fd.append("nationality", input.nationality);
+  if (input.nationalId) fd.append("nationalId", input.nationalId);
+  if (input.address) fd.append("address", JSON.stringify(input.address));
+  const { data } = await api.put("/api/user/profile", fd);
+  return data;
+};
+
 export const listAppointments = async (page = 1, limit = 10) =>
   (await api.get<{ data: Paginated<unknown> }>("/api/user/appointments", { params: { page, limit } })).data.data;
 

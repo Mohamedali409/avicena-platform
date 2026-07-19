@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/shared/Providers";
 
-const plexArabic = IBM_Plex_Sans_Arabic({
+// Modern Arabic-first typeface.
+const appFont = Cairo({
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-plex-arabic",
   display: "swap",
 });
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Arabic-first, RTL by default.
   return (
-    <html lang="ar" dir="rtl" className={plexArabic.variable}>
+    <html lang="ar" dir="rtl" className={appFont.variable}>
       <head>
         {/* Material Symbols icons used by the Clinical Clarity design */}
         <link

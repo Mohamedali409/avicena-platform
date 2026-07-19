@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, homeFor } from "@/store/auth.store";
 import { resendVerificationRequest } from "@/features/auth/api";
+import { updateProfile } from "@/features/patient/api";
 import { getErrorMessage } from "@/lib/api/errors";
 
 export default function VerifyEmailPage() {
@@ -38,7 +39,6 @@ function VerifyEmailForm() {
     if (!clean) { setDigits((d) => d.map((x, idx) => (idx === i ? "" : x))); return; }
     setDigits((d) => {
       const next = [...d];
-      // support pasting multiple digits
       clean.split("").forEach((ch, k) => { if (i + k < 6) next[i + k] = ch; });
       return next;
     });
@@ -57,6 +57,14 @@ function VerifyEmailForm() {
     if (otp.length !== 6) return setError("أدخل الرمز المكوّن من 6 أرقام");
     try {
       const s = await verifyEmail(email, otp);
+      // Apply the profile collected during registration (now that we have a token).
+      try {
+        const pending = sessionStorage.getItem("avicena.pendingProfile");
+        if (pending) {
+          await updateProfile(JSON.parse(pending));
+          sessionStorage.removeItem("avicena.pendingProfile");
+        }
+      } catch { /* profile is optional — ignore failures */ }
       router.replace(homeFor(s.role));
     } catch (err) {
       setError(getErrorMessage(err, "رمز غير صحيح أو منتهي"));
