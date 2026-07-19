@@ -1,66 +1,33 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { ROLES } from "@/config/roles";
-import { getSession, patchToken, clearSession } from "@/lib/auth/session";
+import { getSession, clearSession } from "@/lib/auth/session";
 
-// Single Axios instance shared by the whole app.
-// The request interceptor injects the CORRECT auth header for the current role
-// (Authorization: Bearer for patients, dtoken/atoken/ltoken for the others),
-// so feature code never has to know which scheme a role uses.
+// Single Axios instance. Auth uses httpOnly cookies, so:
+//  - withCredentials: true  → the browser sends/receives the auth cookies automatically
+//  - no Authorization header to attach (JS can't read the token)
+const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  "https://avicena-platform-production.up.railway.app/";
+export const api = axios.create({ baseURL, timeout: 20000, withCredentials: true });
 
-export const api = axios.create({ baseURL, timeout: 20000 });
-
-// ---- Request: attach role-specific auth header ----
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const session = getSession();
-  if (session?.token) {
-    const { authHeader, bearer } = ROLES[session.role];
-    config.headers.set(
-      authHeader,
-      bearer ? `Bearer ${session.token}` : session.token,
-    );
-  }
-  return config;
-});
-
-// ---- Response: transparent refresh for patients on 401 (when a refreshToken exists) ----
-let refreshing: Promise<string> | null = null;
+// On a 401, silently refresh the access-token cookie once, then retry the request.
+let refreshing: Promise<void> | null = null;
 
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
-    const session = getSession();
+    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const status = error.response?.status;
+    const isAuthCall = original?.url?.includes("/api/auth/");
 
-    const canRefresh =
-      error.response?.status === 401 &&
-      session?.role === "patient" &&
-      !!session.refreshToken &&
-      !original?._retry;
-
-    if (canRefresh) {
+    // Only try refresh when we think we're logged in and this isn't an auth call itself.
+    if (status === 401 && getSession() && !original?._retry && !isAuthCall) {
       original._retry = true;
       try {
+        // refresh token is read from the httpOnly cookie server-side (no body needed)
         refreshing ??= axios
-          .post(`${baseURL}/api/auth/refresh`, {
-            refreshToken: session!.refreshToken,
-          })
-          .then((r) => {
-            const token = r.data?.accessToken as string; // backend returns top-level accessToken
-            patchToken(token);
-            return token;
-          })
-          .finally(() => {
-            refreshing = null;
-          });
-
-        const newToken = await refreshing;
-        original.headers.set("Authorization", `Bearer ${newToken}`);
+          .post(`${baseURL}/api/auth/refresh`, {}, { withCredentials: true })
+          .then(() => {})
+          .finally(() => { refreshing = null; });
+        await refreshing;
         return api(original);
       } catch {
         clearSession();

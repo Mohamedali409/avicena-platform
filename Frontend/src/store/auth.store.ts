@@ -26,7 +26,6 @@ interface AuthState {
 
 const toSession = (r: AuthResult): Session => ({
   role: r.role,
-  token: r.token,
   user: r.user,
 });
 

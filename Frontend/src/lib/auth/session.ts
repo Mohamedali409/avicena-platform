@@ -1,7 +1,7 @@
 import type { Role } from "@/config/roles";
 
-// Lightweight client-side session store. For production, prefer httpOnly cookies
-// set by a Next.js route handler over localStorage to reduce XSS token theft.
+// The JWT lives in an httpOnly cookie (JS can't read it). We only persist the
+// non-sensitive identity needed for routing + UI: the role and basic profile.
 
 const KEY = "avicena.session";
 
@@ -14,8 +14,6 @@ export interface SessionUser {
 
 export interface Session {
   role: Role;
-  token: string;              // backend returns a single `token` (JWT, 7d)
-  refreshToken?: string;      // reserved — backend does not issue one at login yet
   user: SessionUser;
 }
 
@@ -31,9 +29,4 @@ export const getSession = (): Session | null => {
 
 export const clearSession = () => {
   if (typeof window !== "undefined") localStorage.removeItem(KEY);
-};
-
-export const patchToken = (token: string) => {
-  const s = getSession();
-  if (s) saveSession({ ...s, token });
 };

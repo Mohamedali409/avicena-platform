@@ -5,8 +5,9 @@ import type { SessionUser } from "@/lib/auth/session";
 // Auth endpoints — all under /api/auth. Backend spreads the payload at the top level.
 // register + reset-password do NOT return a token; login + verify-email DO.
 
+// Login/verify set httpOnly cookies server-side — the response body carries only
+// the role + user (no token in JS).
 export interface AuthResult {
-  token: string;
   role: Role;
   user: SessionUser;
 }
@@ -18,12 +19,12 @@ export const registerRequest = async (name: string, email: string, password: str
 
 export const loginRequest = async (email: string, password: string) => {
   const { data } = await api.post("/api/auth/login", { email, password });
-  return { token: data.token, role: data.role, user: data.user ?? {} } as AuthResult;
+  return { role: data.role as Role, user: data.user ?? {} } as AuthResult;
 };
 
 export const verifyEmailRequest = async (email: string, otp: string) => {
   const { data } = await api.post("/api/auth/verify-email", { email, otp });
-  return { token: data.token, role: (data.role ?? "patient") as Role, user: data.user ?? {} } as AuthResult;
+  return { role: (data.role ?? "patient") as Role, user: data.user ?? {} } as AuthResult;
 };
 
 export const resendVerificationRequest = async (email: string) => {
