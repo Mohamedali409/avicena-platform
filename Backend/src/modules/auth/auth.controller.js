@@ -82,6 +82,21 @@ const changePassword = catchAsync(async (req, res) => {
   messageResponse.successResponse(res, "Password changed successfully", data);
 });
 
+// google login
+const googleLogin = catchAsync(async (req, res) => {
+  console.log("BODY =>", req.body);
+  const { idToken } = req.body;
+
+  const data = await authService.googleLogin(idToken);
+
+  setAuthCookies(res, data.accessToken, data.refreshToken);
+
+  delete data.accessToken;
+  delete data.refreshToken;
+
+  messageResponse.successResponse(res, "Google login successfully", data);
+});
+
 // admin login
 
 const adminLogin = catchAsync(async (req, res) => {
@@ -141,4 +156,5 @@ export {
   resendVerificationOtp,
   resendResetPasswordOtp,
   changePassword,
+  googleLogin,
 };

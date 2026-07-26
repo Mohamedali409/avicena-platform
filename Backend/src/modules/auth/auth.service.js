@@ -19,6 +19,7 @@ import * as userRepository from "../User/user.repository.js";
 import * as otpService from "../otp/otp.service.js";
 import * as otpRepository from "../otp/otp.repository.js";
 import * as pharmacyRepository from "../pharmacy/pharmacy/pharmacy.repository.js";
+import { verifyGoogleToken } from "./auth.google.js";
 import {
   signRefreshToken,
   verifyRefreshToken,
@@ -466,7 +467,60 @@ const changePassword = async (
 };
 
 // ── Google OAuth
-// TODO
+const googleLogin = async (idToken) => {
+  console.log(process.env.GOOGLE_CLIENT_ID);
+  if (!idToken) {
+    throw new ApiError("Google token is required", 400);
+  }
+
+  const googleUser = await verifyGoogleToken(idToken);
+
+  let user = await authRepository.findUserByGoogleId(googleUser.googleId);
+
+  // if the user don't have account
+  if (!user) {
+    user = await authRepository.createUser({
+      name: googleUser.name,
+      email: googleUser.email,
+      image: googleUser.image,
+      googleId: googleUser.googleId,
+      provider: "google",
+      isVerified: true,
+    });
+    // here is user have account but he want connect google
+  } else if (!user.googleId) {
+    user = await authRepository.updateUser(user._id, {
+      googleId: googleUser.googleId,
+      provider: "google",
+      isVerified: true,
+      image: user.image || googleUser.image,
+    });
+  }
+
+  if (!user.isActive) throw new ApiError("This Account is blocked", 403);
+
+  const { accessToken, refreshToken } = await issueTokens({
+    _id: user._id,
+    role: "patient",
+  });
+
+  authEventsTotal.inc({
+    event: "login",
+    role: "patient",
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    role: user.role,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+    },
+  };
+};
 
 // ── Doctor login
 const loginDoctor = async ({ email, password }) => {
@@ -600,4 +654,5 @@ export {
   resendVerificationOtp,
   resendResetPasswordOtp,
   changePassword,
+  googleLogin,
 };

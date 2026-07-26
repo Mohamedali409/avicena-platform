@@ -27,6 +27,7 @@ import medicationRoutes from "./src/modules/pharmacy/medicine/medication.routes.
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import compression from "compression";
 import { metricsMiddleware } from "./src/infrastructure/monitoring/metrics.middleware.js";
 import { register } from "./src/infrastructure/monitoring/metrics.service.js";
 
@@ -50,6 +51,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(compression());
 
 app.use(metricsMiddleware);
 

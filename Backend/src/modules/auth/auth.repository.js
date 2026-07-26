@@ -18,4 +18,14 @@ const findUserById = (id) => {
   return User.findById(id).select("+password");
 };
 
-export { createUser, findUserByEmail, updateUser, findUserById };
+const findUserByGoogleId = (googleId) => {
+  return User.findOne({ googleId });
+};
+
+export {
+  createUser,
+  findUserByEmail,
+  updateUser,
+  findUserById,
+  findUserByGoogleId,
+};

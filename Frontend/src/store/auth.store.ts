@@ -1,12 +1,18 @@
 import { create } from "zustand";
 import type { Role } from "@/config/roles";
 import { ROLES } from "@/config/roles";
-import { clearSession, getSession, saveSession, type Session } from "@/lib/auth/session";
+import {
+  clearSession,
+  getSession,
+  saveSession,
+  type Session,
+} from "@/lib/auth/session";
 import { disconnectSocket } from "@/lib/socket/socket";
 import {
   loginRequest,
   registerRequest,
   verifyEmailRequest,
+  googleLoginRequest,
   type AuthResult,
 } from "@/features/auth/api";
 import { api } from "@/lib/api/client";
@@ -18,9 +24,15 @@ interface AuthState {
   /** Unified login — the backend detects the role from the email. May throw 403 if unverified. */
   login: (email: string, password: string) => Promise<Session>;
   /** Register a patient. Returns nothing usable — the account must verify its email first. */
-  register: (name: string, email: string, password: string) => Promise<{ email: string }>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<{ email: string }>;
   /** Verify the email OTP → backend sets the auth cookies and logs the user in. */
   verifyEmail: (email: string, otp: string) => Promise<Session>;
+  googleLogin: (credential: string) => Promise<Session>;
+
   logout: () => Promise<void>;
 }
 
@@ -70,10 +82,32 @@ export const useAuth = create<AuthState>((set) => ({
   },
 
   logout: async () => {
-    try { await api.post("/api/auth/logout"); } catch { /* best effort */ }
+    try {
+      await api.post("/api/auth/logout");
+    } catch {
+      /* best effort */
+    }
     clearSession();
     disconnectSocket();
     set({ session: null });
+  },
+
+  googleLogin: async (credential) => {
+    set({ loading: true });
+    try {
+      const session = toSession(await googleLoginRequest(credential));
+      saveSession(session);
+
+      set({
+        session,
+      });
+
+      return session;
+    } finally {
+      set({
+        loading: false,
+      });
+    }
   },
 }));
 

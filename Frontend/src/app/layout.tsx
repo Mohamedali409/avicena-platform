@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   description: "منصة رعاية صحية عن بُعد — احجز، استشر، وتابع تقاريرك الطبية.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // Arabic-first, RTL by default.
   return (
     <html lang="ar" dir="rtl" className={appFont.variable}>

@@ -11,8 +11,16 @@ export interface AuthResult {
   user: SessionUser;
 }
 
-export const registerRequest = async (name: string, email: string, password: string) => {
-  const { data } = await api.post("/api/auth/register", { name, email, password });
+export const registerRequest = async (
+  name: string,
+  email: string,
+  password: string,
+) => {
+  const { data } = await api.post("/api/auth/register", {
+    name,
+    email,
+    password,
+  });
   return data as { message: string; user: SessionUser };
 };
 
@@ -23,7 +31,10 @@ export const loginRequest = async (email: string, password: string) => {
 
 export const verifyEmailRequest = async (email: string, otp: string) => {
   const { data } = await api.post("/api/auth/verify-email", { email, otp });
-  return { role: (data.role ?? "patient") as Role, user: data.user ?? {} } as AuthResult;
+  return {
+    role: (data.role ?? "patient") as Role,
+    user: data.user ?? {},
+  } as AuthResult;
 };
 
 export const resendVerificationRequest = async (email: string) => {
@@ -36,12 +47,33 @@ export const forgotPasswordRequest = async (email: string) => {
   return data as { message: string };
 };
 
-export const resetPasswordRequest = async (email: string, otp: string, newPassword: string) => {
-  const { data } = await api.post("/api/auth/reset-password", { email, otp, newPassword });
+export const resetPasswordRequest = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
+  const { data } = await api.post("/api/auth/reset-password", {
+    email,
+    otp,
+    newPassword,
+  });
   return data as { message: string };
 };
 
 export const resendResetPasswordRequest = async (email: string) => {
   const { data } = await api.post("/api/auth/resend-reset-password", { email });
   return data as { message: string };
+};
+
+export const googleLoginRequest = async (credential: string) => {
+  const { data } = await api.post("/api/auth/google", {
+    idToken: credential,
+  });
+
+  console.log(data);
+
+  return {
+    role: data.role,
+    user: data.user,
+  } as AuthResult;
 };

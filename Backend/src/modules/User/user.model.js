@@ -43,7 +43,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    googleId: { type: String },
+    googleId: { type: String, default: null },
+    provider: { type: String, enum: ["local", "google"], default: "local" },
     image: {
       type: String,
       default:

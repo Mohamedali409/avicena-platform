@@ -13,6 +13,7 @@ import {
   resendVerificationOtp,
   resendResetPasswordOtp,
   changePassword,
+  googleLogin,
 } from "./auth.controller.js";
 import { authGuard } from "../../shared/guards/auth.guard.js";
 import {
@@ -27,7 +28,7 @@ authRouter.post("/register", authlimiter, register);
 authRouter.post("/login", authlimiter, login);
 
 // google login OAuth
-// TODO...
+authRouter.post("/google", googleLogin);
 
 // Refresh & Logout
 authRouter.post("/refresh", authlimiter, refresh);
