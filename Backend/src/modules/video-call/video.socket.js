@@ -1,6 +1,7 @@
 import { videoCallsTotal } from "../../infrastructure/monitoring/metrics.service.js";
 import * as videoService from "./video.service.js";
 import * as notificationService from "../notifications/notification.service.js";
+import * as requestService from "../chat/chat.request.service.js";
 import { emitNotification } from "../../infrastructure/socket/socket.server.js";
 
 const registerVideoHandlers = (io, socket) => {
@@ -10,6 +11,13 @@ const registerVideoHandlers = (io, socket) => {
     async ({ receiverId, receiverType, consultationId, type }) => {
       try {
         const callerType = socket.role === "doctor" ? "doctor" : "user";
+
+        // A patient can only call a doctor who approved the conversation (same
+        // gate as chat). Doctors may initiate freely.
+        if (callerType !== "doctor") {
+          await requestService.assertChatAllowed(socket.userId, receiverId);
+        }
+
         const call = await videoService.initiateCall({
           callerId: socket.userId,
           callerType,
@@ -54,7 +62,7 @@ const registerVideoHandlers = (io, socket) => {
   );
 
   // ── Accept call ────────────────────────────────────────────────────────────
-  socket.on("call-accept", async ({ callId, roomId }) => {
+  const handleAccept = async ({ callId, roomId }) => {
     try {
       const call = await videoService.acceptCall(callId);
       socket.join(roomId);
@@ -66,7 +74,9 @@ const registerVideoHandlers = (io, socket) => {
     } catch (err) {
       socket.emit("call:error", { message: err.message });
     }
-  });
+  };
+  socket.on("call:accept", handleAccept);
+  socket.on("call-accept", handleAccept); // legacy alias
 
   // ── Reject call ────────────────────────────────────────────────────────────
   socket.on("call:reject", async ({ callId, targetId }) => {
@@ -103,7 +113,7 @@ const registerVideoHandlers = (io, socket) => {
   // ── WebRTC signaling ───────────────────────────────────────────────────────
   socket.on("call:offer", ({ targetId, offer, roomId }) => {
     videoCallsTotal.inc();
-    io.to(`user:${targetId}`).emit("call-offer", {
+    io.to(`user:${targetId}`).emit("call:offer", {
       from: socket.userId,
       offer,
       roomId,
@@ -111,7 +121,7 @@ const registerVideoHandlers = (io, socket) => {
   });
 
   socket.on("call:answer", ({ targetId, answer, roomId }) => {
-    io.to(`user:${targetId}`).emit("call-answer", {
+    io.to(`user:${targetId}`).emit("call:answer", {
       from: socket.userId,
       answer,
       roomId,

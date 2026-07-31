@@ -8,6 +8,15 @@ const getDoctorList = catchAsync(async (req, res) => {
   successResponse(res, "Get all doctors", { doctor });
 });
 
+// Public — available booking slots for a doctor on a date (?date=YYYY-MM-DD)
+const getAvailableSlots = catchAsync(async (req, res) => {
+  const slots = await doctorService.getAvailableSlots(
+    req.params.id,
+    req.query.date,
+  );
+  successResponse(res, "Available slots", { slots });
+});
+
 // Profile
 const getProfile = catchAsync(async (req, res) => {
   const doctorInfo = await doctorService.getProfile(req.docId);
@@ -75,7 +84,7 @@ const createConsultation = catchAsync(async (req, res) => {
 
 const getConsultations = catchAsync(async (req, res) => {
   const consultations = await doctorService.getConsultations(req.docId);
-  successResponse(res, "Done get all doctor consultations");
+  successResponse(res, "Done get all doctor consultations", { consultations });
 });
 
 const completeConsultation = catchAsync(async (req, res) => {
@@ -112,6 +121,7 @@ const getPatientStats = catchAsync(async (req, res) => {
 
 export {
   getDoctorList,
+  getAvailableSlots,
   getProfile,
   updateProfile,
   getAppointments,

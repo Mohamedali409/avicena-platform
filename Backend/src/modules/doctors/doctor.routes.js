@@ -6,6 +6,7 @@ const router = Router();
 
 // ── Public ─────────────────────────────────────────────
 router.get("/list", doctorController.getDoctorList);
+router.get("/:id/slots", doctorController.getAvailableSlots);
 
 // ── Protected ──────────────────────────────────────────
 router.use(doctorGuard);

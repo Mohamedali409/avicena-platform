@@ -14,7 +14,7 @@ import * as consultationRepository from "../consultations/consultation.repositor
 
 import * as reportRepository from "../report/report.repository.js";
 import ApiError from "../../shared/utils/ApiError.js";
-import { removeSlot } from "../../shared/utils/slots.utils.js";
+import { removeSlot, generateDaySlots } from "../../shared/utils/slots.utils.js";
 import { sendReportEmail } from "../../infrastructure/mail/mail.service.js";
 const TTL = 120;
 
@@ -25,6 +25,41 @@ const getDoctorList = async () => {
   const doctors = await doctorRepository.findDoctorActive();
   await setCache("doctors:list", doctors, 60);
   return doctors;
+};
+
+// ── Available booking slots (public) ──────────────────
+// Returns the free "HH:MM" slots for a doctor on a given date so the patient
+// can pick one before calling POST /api/user/appointments. Booked slots come
+// from doctor.slots_booked[date]; for today, already-passed times are dropped.
+const getAvailableSlots = async (docId, date) => {
+  if (!date) throw new ApiError("Please provide a date", 400);
+
+  const doctor = await doctorRepository.findDoctorById(docId);
+  if (!doctor) throw new ApiError("Doctor not found", 404);
+
+  const { from = 9, to = 16, booking_period = 15 } = doctor.start_booked || {};
+  const allSlots = generateDaySlots(from, to, booking_period);
+  const booked = doctor.slots_booked?.[date] || [];
+
+  let available = allSlots.filter((t) => !booked.includes(t));
+
+  // Drop past times when the requested date is today.
+  const now = new Date();
+  if (new Date(date).toDateString() === now.toDateString()) {
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    available = available.filter((t) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m > nowMins;
+    });
+  }
+
+  return {
+    date,
+    available,
+    booked,
+    working: { from, to, booking_period },
+    doctorAvailable: doctor.available,
+  };
 };
 
 // ── Profile ───────────────────────────────────────────
@@ -224,9 +259,10 @@ const deleteReport = async (docId, reportId) => {
 
 // ── Consultations ─────────────────────────────────────
 const createConsultation = async (docId, body) => {
-  const { userId, consultDay, notes, appointmentId, amount } = body;
+  const { userId, consultDay, consultTime, notes, appointmentId, amount } = body;
 
   if (!consultDay) throw new ApiError("Please select consultation day", 400);
+  if (!consultTime) throw new ApiError("Please select consultation time", 400);
 
   const appointment =
     await appointmentRepository.findAppointmentById(appointmentId);
@@ -254,10 +290,11 @@ const createConsultation = async (docId, body) => {
     userId,
     docId,
     consultDay,
+    consultTime,
     notes,
     appointmentId,
     amount,
-    appointmentDate: appointment,
+    appointmentData: appointment,
     userData: appointment.userData,
     docData: appointment.docData,
   });
@@ -365,6 +402,7 @@ const getPatientStats = async (userId) => {
 
 export {
   getDoctorList,
+  getAvailableSlots,
   getProfile,
   updateProfile,
   getAppointments,

@@ -24,7 +24,7 @@ const findRequestsByUser = (userId) => {
 
 // update last room request
 const updateLatestStatus = (roomId, status, rejectReason = "") => {
-  return ChatRequest.findByIdAndUpdate(
+  return ChatRequest.findOneAndUpdate(
     { roomId },
     { status, ...(rejectReason && { rejectReason }) },
     { new: true, sort: { createdAt: -1 } },

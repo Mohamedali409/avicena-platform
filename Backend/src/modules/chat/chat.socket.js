@@ -29,7 +29,7 @@ const registerChatHandlers = (io, socket) => {
 
       if (receiverId) {
         const recipientType = senderType === "doctor" ? "user" : "doctor";
-        const notification = await notifService.createNotification({
+        const notification = await notificationService.createNotification({
           recipientId: receiverId,
           recipientType,
           type: "chat",

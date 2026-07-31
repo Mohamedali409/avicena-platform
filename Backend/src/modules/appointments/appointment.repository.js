@@ -71,6 +71,17 @@ const findAppointmentByDoctorId = (docId) => {
   return Appointment.find({ docId }).sort({ date: -1 });
 };
 
+// Active (non-cancelled) appointments between a patient and a doctor.
+// `cancelled: { $ne: true }` also matches docs where the field is undefined
+// (the model has no default), so legacy/active bookings are not missed.
+const findActiveByUserAndDoctor = (userId, docId) => {
+  return Appointment.find({
+    userId,
+    docId,
+    cancelled: { $ne: true },
+  }).sort({ slotDate: 1, slotTime: 1 });
+};
+
 const findConflictingAppointment = (userId, slotDate, slotTime) => {
   return Appointment.findOne({
     userId,
@@ -91,7 +102,7 @@ const findAllAppointmentByUserIdPaginated = (userId, skip, limit) => {
 };
 
 const getCountDocumentsByUserId = (userId) => {
-  return Report.countDocuments(userId);
+  return Appointment.countDocuments({ userId });
 };
 
 export {
@@ -110,6 +121,7 @@ export {
   completeAppointment,
   findAppointmentByDoctorId,
   findAppointmentByIdAndUpdate,
+  findActiveByUserAndDoctor,
   findConflictingAppointment,
   findAllAppointmentByUserIdPaginated,
   getCountDocumentsByUserId,

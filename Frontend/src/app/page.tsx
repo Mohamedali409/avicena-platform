@@ -136,17 +136,21 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-4 gap-gutter">
               {DOCS_DESKTOP.map((d) => (
-                <div key={d.name} className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                  <div className="relative h-52 overflow-hidden">
+                <Link key={d.name} href="/doctors" className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-outline-variant/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-primary/25">
+                  <div className="relative h-56 overflow-hidden">
                     <img src={d.img} alt={d.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 shadow-sm"><span className="material-symbols-outlined text-sm text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span><span className="text-label-md font-bold">{d.rating}</span></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 shadow-sm backdrop-blur-md"><span className="material-symbols-outlined text-[15px] text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span><span className="text-caption font-bold text-on-surface">{d.rating}</span></div>
+                    <div className="absolute inset-x-0 bottom-0 p-4 text-right">
+                      <h5 className="text-headline-md font-bold leading-tight text-white drop-shadow-sm">{d.name}</h5>
+                      <p className="mt-0.5 text-caption text-white/90">{d.spec}</p>
+                    </div>
                   </div>
-                  <div className="p-6 text-right">
-                    <h5 className="mb-1 text-headline-md text-on-surface transition-colors group-hover:text-primary">{d.name}</h5>
-                    <p className="mb-4 text-label-md text-primary-container">{d.spec}</p>
-                    <div className="flex flex-row-reverse items-center justify-between"><span className="text-caption text-on-surface-variant">الخبرة: +{d.exp} عاماً</span><Link href="/doctors" className="rounded-lg bg-primary/5 p-2 text-primary-container transition-all hover:bg-primary-container hover:text-white"><span className="material-symbols-outlined">calendar_add_on</span></Link></div>
+                  <div className="flex items-center justify-between p-5 text-right">
+                    <span className="text-caption text-on-surface-variant">الخبرة: +{d.exp} عاماً</span>
+                    <span className="flex items-center gap-1 rounded-lg bg-primary-container px-4 py-2 text-label-md text-white transition-all group-hover:opacity-90"><span>احجز</span><span className="material-symbols-outlined text-[18px]">calendar_add_on</span></span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

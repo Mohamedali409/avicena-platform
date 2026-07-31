@@ -21,10 +21,10 @@ const imgFor = (image: string | undefined, i: number) =>
   image?.startsWith("http") ? image : PHOTOS[i % PHOTOS.length];
 
 const SAMPLE: Doctor[] = [
-  { _id: "s1", doctorName: "د. ليلى الماجد", Specialization: "أخصائية أمراض القلب", degree: "دكتوراه في جراحة القلب والأوعية الدموية", expertise: "15", fees: 250, available: true, image: PHOTOS[0] },
-  { _id: "s2", doctorName: "د. سمير المنصور", Specialization: "استشاري جراحة القلب", degree: "زمالة كلية الجراحين الملكية", expertise: "12", fees: 300, available: true, image: PHOTOS[1] },
-  { _id: "s3", doctorName: "د. نورا العلي", Specialization: "أخصائية الأمراض الجلدية", degree: "ماجستير الأمراض الجلدية والتجميل", expertise: "10", fees: 200, available: true, image: PHOTOS[2] },
-  { _id: "s4", doctorName: "د. باسم حكيم", Specialization: "استشاري الطب النفسي", degree: "دكتوراه الطب النفسي", expertise: "20", fees: 350, available: false, image: PHOTOS[3] },
+  { _id: "s1", doctorName: "د. ليلى الماجد", specialization: "أخصائية أمراض القلب", degree: "دكتوراه في جراحة القلب والأوعية الدموية", expertise: "15", fees: 250, available: true, image: PHOTOS[0] },
+  { _id: "s2", doctorName: "د. سمير المنصور", specialization: "استشاري جراحة القلب", degree: "زمالة كلية الجراحين الملكية", expertise: "12", fees: 300, available: true, image: PHOTOS[1] },
+  { _id: "s3", doctorName: "د. نورا العلي", specialization: "أخصائية الأمراض الجلدية", degree: "ماجستير الأمراض الجلدية والتجميل", expertise: "10", fees: 200, available: true, image: PHOTOS[2] },
+  { _id: "s4", doctorName: "د. باسم حكيم", specialization: "استشاري الطب النفسي", degree: "دكتوراه الطب النفسي", expertise: "20", fees: 350, available: false, image: PHOTOS[3] },
 ];
 
 function FilterPanel() {
@@ -89,42 +89,51 @@ function FilterPanel() {
 }
 
 function DoctorCard({ d, img }: { d: Doctor; img: string }) {
+  const href = `/doctors/${d._id}`;
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover">
-      {/* Image on top */}
-      <div className="relative h-52 w-full overflow-hidden bg-surface-container-low">
+    <div className="group flex flex-col overflow-hidden rounded-2xl bg-surface-container-lowest ring-1 ring-outline-variant/20 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-hover hover:ring-primary/25">
+      {/* Image (clickable → profile) with gradient + overlaid name */}
+      <Link href={href} className="relative block h-56 w-full overflow-hidden bg-surface-container-low">
         <img alt={d.doctorName} src={img} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-        {/* rating chip */}
-        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 shadow-sm backdrop-blur-sm">
-          <span className="material-symbols-outlined text-sm text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-          <span className="text-label-md font-bold">4.8</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 shadow-sm backdrop-blur-md">
+          <span className="material-symbols-outlined text-[15px] text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+          <span className="text-caption font-bold text-on-surface">4.8</span>
         </div>
-        {/* availability */}
-        <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-caption font-medium ${d.available === false ? "bg-surface-container-highest text-on-surface-variant" : "bg-green-100 text-green-700"}`}>
+        <span className={`absolute left-3 top-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-medium text-white backdrop-blur-md ${d.available === false ? "bg-black/45" : "bg-green-500/90"}`}>
+          <span className="h-1.5 w-1.5 rounded-full bg-white" />
           {d.available === false ? "غير متاح" : "متاح الآن"}
         </span>
-      </div>
+
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <h3 className="text-headline-md font-bold leading-tight text-white drop-shadow-sm">{d.doctorName}</h3>
+          <p className="mt-0.5 text-caption text-white/90">{d.specialization}</p>
+        </div>
+      </Link>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="mb-1 text-headline-md text-on-surface transition-colors group-hover:text-primary">{d.doctorName}</h3>
-        <p className="mb-2 text-body-md font-medium text-primary">{d.Specialization}</p>
-        {d.degree && <p className="mb-4 line-clamp-2 text-caption text-on-surface-variant">{d.degree}</p>}
+      <div className="flex flex-1 flex-col gap-4 p-5">
+        {d.degree && <p className="line-clamp-2 text-caption leading-relaxed text-on-surface-variant">{d.degree}</p>}
 
-        <div className="mt-auto flex flex-col gap-4">
-          <div className="flex items-center justify-between border-t border-outline-variant/30 pt-4 text-body-md text-on-surface-variant">
-            <div className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-[18px]">work_history</span>
-              <span className="text-caption">{d.expertise ? `${d.expertise}+ سنوات خبرة` : "خبرة واسعة"}</span>
-            </div>
-            <div className="flex items-center gap-1 font-bold text-primary">
-              <span className="material-symbols-outlined text-[18px]">payments</span>
-              <span>{d.fees} ج.م</span>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-on-surface-variant">
+            <span className="material-symbols-outlined text-[18px]">work_history</span>
+            <span className="text-caption">{d.expertise ? `${d.expertise}+ سنة خبرة` : "خبرة واسعة"}</span>
           </div>
-          <Link href={`/doctors/${d._id}`} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-container py-3 text-label-md text-white shadow-sm transition-all hover:bg-primary active:scale-[0.98]">
+          <div className="flex items-baseline gap-1">
+            <span className="text-headline-md font-bold text-primary">{d.fees}</span>
+            <span className="text-caption text-on-surface-variant">ج.م</span>
+          </div>
+        </div>
+
+        <div className="mt-auto flex items-stretch gap-2">
+          <Link href={href} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary-container py-3 text-label-md text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.98]">
             <span className="material-symbols-outlined text-[18px]">calendar_month</span>
             احجز موعد
+          </Link>
+          <Link href={href} aria-label="عرض الملف الشخصي" className="flex items-center justify-center rounded-xl border border-outline-variant px-3.5 text-on-surface-variant transition-colors hover:border-primary hover:bg-surface-container-low hover:text-primary">
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
           </Link>
         </div>
       </div>

@@ -75,7 +75,11 @@ const updateProfile = async (userId, body, imageFile) => {
 
 // ──── Appointment ───────────────────────────────────────────
 
-const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
+const bookAppointment = async (
+  userId,
+  { docId, slotDate, slotTime, type },
+) => {
+  const visitType = type === "consultation" ? "consultation" : "examination";
   if (!docId) {
     throw new ApiError("Doctor id is required", 400);
   }
@@ -128,26 +132,43 @@ const bookAppointment = async (userId, { docId, slotDate, slotTime }) => {
   if (conflict)
     throw new ApiError("لديك حجز بالفعل في نفس اليوم والوقت مع دكتور آخر", 409);
 
-  const slots_booked = addSlot(doctor.slots_booked, slotDate, slotTime);
-
-  await doctorRepository.findDoctorAndUpdate(docId, {
-    slots_booked,
-  });
-
   const docData = doctor.toObject();
 
   delete docData.slots_booked;
   delete docData.password;
   delete docData.confirmPassword;
 
-  const appointment = await appointmentRepository.createAppointment({
-    userId,
-    docId,
-    userData: user,
-    docData,
-    slotDate,
-    slotTime,
-    amount: doctor.fees,
+  // Create the appointment FIRST — the unique partial index on
+  // (docId, slotDate, slotTime) is the atomic guard against a race where two
+  // patients book the same slot at once. The loser gets a duplicate-key error.
+  const amount =
+    visitType === "consultation"
+      ? (doctor.consultation_fees ?? doctor.fees)
+      : doctor.fees;
+
+  let appointment;
+  try {
+    appointment = await appointmentRepository.createAppointment({
+      userId,
+      docId,
+      userData: user,
+      docData,
+      slotDate,
+      slotTime,
+      type: visitType,
+      amount,
+    });
+  } catch (err) {
+    if (err?.code === 11000) {
+      throw new ApiError("This time slot is already booked", 409);
+    }
+    throw err;
+  }
+
+  // Only after the booking is persisted do we reserve the slot on the doctor.
+  const slots_booked = addSlot(doctor.slots_booked, slotDate, slotTime);
+  await doctorRepository.findDoctorAndUpdate(docId, {
+    slots_booked,
   });
 
   appointmentsBooked.inc();

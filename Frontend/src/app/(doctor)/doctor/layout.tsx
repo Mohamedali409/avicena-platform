@@ -1,23 +1,37 @@
 import { RoleGuard } from "@/components/shared/RoleGuard";
+import { CallProvider } from "@/features/video/CallProvider";
+import { PortalSidebar } from "@/components/shared/PortalSidebar";
+import { PortalHeader } from "@/components/shared/PortalHeader";
+
+const NAV = [
+  { href: "/doctor/dashboard", label: "لوحة التحكم", icon: "space_dashboard" },
+  { href: "/doctor/appointments", label: "المواعيد", icon: "calendar_month" },
+  { href: "/doctor/patients", label: "المرضى", icon: "groups" },
+  { href: "/doctor/reports", label: "التقارير", icon: "description" },
+  { href: "/doctor/consultations", label: "الاستشارات", icon: "clinical_notes" },
+  { href: "/doctor/chat", label: "المحادثات + AI", icon: "forum" },
+  { href: "/doctor/settings", label: "الإعدادات", icon: "settings" },
+];
 
 // DoctorLayout — the doctor workspace. Guarded to role=doctor.
-// The chat route embeds the Medical-AI side panel (doctor-only RAG assistant).
+// CallProvider mounts the single video-call controller so incoming calls ring
+// anywhere in the workspace and startCall is available to any page.
 export default function DoctorLayout({ children }: { children: React.ReactNode }) {
   return (
     <RoleGuard role="doctor">
-      <div className="flex min-h-screen">
-        <aside className="w-60 border-l bg-gray-50 p-4">
-          <nav className="space-y-2 text-sm">
-            <a href="/doctor/dashboard">لوحة التحكم</a>
-            <a href="/doctor/appointments">المواعيد</a>
-            <a href="/doctor/patients">المرضى</a>
-            <a href="/doctor/reports">التقارير</a>
-            <a href="/doctor/consultations">الاستشارات</a>
-            <a href="/doctor/chat">المحادثات + مساعد AI</a>
-          </nav>
-        </aside>
-        <main className="flex-1 p-6">{children}</main>
-      </div>
+      <CallProvider>
+        <div className="flex min-h-screen bg-background">
+          <PortalSidebar
+            brand={{ icon: "health_and_safety", label: "ابن سينا" }}
+            user={{ icon: "stethoscope", roleLabel: "طبيب" }}
+            nav={NAV}
+          />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <PortalHeader />
+            <main className="flex-1 p-4 md:p-8">{children}</main>
+          </div>
+        </div>
+      </CallProvider>
     </RoleGuard>
   );
 }

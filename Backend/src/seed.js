@@ -27,7 +27,7 @@ const USERS = [
     role: "admin",
     phone: "01000000001",
     gender: "Not selected",
-    address: { line1: "Nasr City", line2: "Cairo" },
+    address: { line1: "Nasr City", line2: "Cairo", city: "Cairo" },
   },
   {
     name: "Mohamed Ali",
@@ -70,7 +70,7 @@ const DOCTORS = [
     password: "Doctor@1234",
     image: AVATAR,
     phone: "01198765432",
-    Specialization: "Cardiology",
+    specialization: "Cardiology",
     degree: "MBBS, MD Cardiology",
     expertise: "10",
     about:
@@ -78,7 +78,7 @@ const DOCTORS = [
     available: true,
     fees: 250,
     consultation_fees: 180,
-    address: { line1: "Nasr City", line2: "Cairo" },
+    address: { line1: "Nasr City", line2: "Cairo", city: "Cairo" },
     date: Date.now(),
     slots_booked: {},
     start_booked: { from: 9, to: 17, booking_period: 30 },
@@ -89,7 +89,7 @@ const DOCTORS = [
     password: "Doctor@1234",
     image: AVATAR,
     phone: "01234567890",
-    Specialization: "Dermatology",
+    specialization: "Dermatology",
     degree: "MBBS, Diploma Dermatology",
     expertise: "7",
     about:
@@ -97,7 +97,7 @@ const DOCTORS = [
     available: true,
     fees: 200,
     consultation_fees: 150,
-    address: { line1: "Zamalek", line2: "Cairo" },
+    address: { line1: "Zamalek", line2: "Cairo", city: "Cairo" },
     date: Date.now(),
     slots_booked: {},
     start_booked: { from: 10, to: 16, booking_period: 20 },
@@ -108,7 +108,7 @@ const DOCTORS = [
     password: "Doctor@1234",
     image: AVATAR,
     phone: "01567890123",
-    Specialization: "Orthopedics",
+    specialization: "Orthopedics",
     degree: "MBBS, MS Orthopedics",
     expertise: "15",
     about:
@@ -116,7 +116,7 @@ const DOCTORS = [
     available: true,
     fees: 300,
     consultation_fees: 220,
-    address: { line1: "Heliopolis", line2: "Cairo" },
+    address: { line1: "Heliopolis", line2: "Cairo", city: "Cairo" },
     date: Date.now(),
     slots_booked: {},
     start_booked: { from: 9, to: 15, booking_period: 30 },
@@ -127,14 +127,14 @@ const DOCTORS = [
     password: "Doctor@1234",
     image: AVATAR,
     phone: "01698765432",
-    Specialization: "Pediatrics",
+    specialization: "Pediatrics",
     degree: "MBBS, MD Pediatrics",
     expertise: "8",
     about: "Dedicated pediatrician providing comprehensive care for children.",
     available: false,
     fees: 180,
     consultation_fees: 130,
-    address: { line1: "Maadi", line2: "Cairo" },
+    address: { line1: "Maadi", line2: "Cairo", city: "Cairo" },
     date: Date.now(),
     slots_booked: {},
     start_booked: { from: 11, to: 18, booking_period: 15 },
@@ -145,7 +145,7 @@ const DOCTORS = [
     password: "Doctor@1234",
     image: AVATAR,
     phone: "01745678901",
-    Specialization: "Neurology",
+    specialization: "Neurology",
     degree: "MBBS, MD Neurology, Fellowship",
     expertise: "12",
     about:
@@ -153,7 +153,7 @@ const DOCTORS = [
     available: true,
     fees: 350,
     consultation_fees: 250,
-    address: { line1: "Dokki", line2: "Giza" },
+    address: { line1: "Dokki", line2: "Giza", city: "Giza" },
     date: Date.now(),
     slots_booked: {},
     start_booked: { from: 9, to: 14, booking_period: 45 },
@@ -320,7 +320,7 @@ const seed = async () => {
     for (const d of DOCTORS) {
       await Doctor.create({ ...d, password: await hash(d.password) });
       console.log(
-        `   🩺 ${d.doctorName.padEnd(22)} — ${d.Specialization} (${d.email})`,
+        `   🩺 ${d.doctorName.padEnd(22)} — ${d.specialization} (${d.email})`,
       );
     }
 
@@ -348,7 +348,7 @@ const seed = async () => {
 
     console.log("\n🩺 DOCTORS  (password: Doctor@1234)");
     DOCTORS.forEach((d) =>
-      console.log(`   ${d.email.padEnd(32)} — ${d.Specialization}`),
+      console.log(`   ${d.email.padEnd(32)} — ${d.specialization}`),
     );
 
     console.log("\n🔬 LABS  (password: Lab@1234)");

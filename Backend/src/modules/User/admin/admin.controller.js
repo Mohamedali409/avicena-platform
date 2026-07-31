@@ -31,7 +31,7 @@ const removeDoctor = catchAsync(async (req, res) => {
 });
 
 const toggleAvailability = catchAsync(async (req, res) => {
-  await adminService.toggleDoctorAvailability(req.body, req.body.docId);
+  await adminService.toggleDoctorAvailability(req.body.docId);
   successResponse(res, "Doctor status updated success");
 });
 

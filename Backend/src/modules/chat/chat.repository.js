@@ -32,7 +32,7 @@ const getRoomsForParticipant = async (participantId) => {
   const rooms = await ChatModel.aggregate([
     {
       $match: {
-        rooId: { $regex: `^(${idStr}_)|(_${idStr})` },
+        roomId: { $regex: `(^${idStr}_)|(_${idStr}$)` },
       },
     },
     { $sort: { createdAt: -1 } },

@@ -6,7 +6,7 @@ import * as requestService from "./chat.request.service.js";
 
 // send request to the doctor
 const sendRequest = catchAsync(async (req, res) => {
-  const { doct, initialMessage } = req.body;
+  const { docId, initialMessage } = req.body;
 
   const request = await requestService.sendChatRequest(
     req.userId,
@@ -23,9 +23,12 @@ const getMyRequests = catchAsync(async (req, res) => {
 });
 
 // ── Doctor ───────────────────────────────────────────
+// Note: these routes use authGuard, which sets req.userId (the unified login
+// gives every role a userId). Fall back to req.docId for the doctorGuard path.
 const getDoctorRequests = catchAsync(async (req, res) => {
   const { status } = req.query;
-  const requests = await requestService.getDoctorRequests(req.docId, status);
+  const docId = req.userId ?? req.docId;
+  const requests = await requestService.getDoctorRequests(docId, status);
   successResponse(res, "your request from user", { requests });
 });
 
@@ -33,7 +36,8 @@ const acceeptRequest = catchAsync(async (req, res) => {
   const { roomId } = req.body;
   if (!roomId) throw new Error("roomId is required");
 
-  const data = await requestService.acceptRequest(req.docId, roomId);
+  const docId = req.userId ?? req.docId;
+  const data = await requestService.acceptRequest(docId, roomId);
   successResponse(res, "the request is accepted ", { data });
 });
 
@@ -41,8 +45,9 @@ const rejectRequest = catchAsync(async (req, res) => {
   const { roomId, rejectReason } = req.body;
   if (!roomId) throw new Error("roomId is required");
 
+  const docId = req.userId ?? req.docId;
   const request = await requestService.rejectRequest(
-    req.docId,
+    docId,
     roomId,
     rejectReason,
   );

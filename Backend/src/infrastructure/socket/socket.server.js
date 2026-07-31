@@ -14,10 +14,12 @@ export const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
       origin: [
+        "http://localhost:3000", // Next.js dev (this frontend)
         "http://localhost:5173",
         "http://localhost:5174",
         process.env.FRONTEND_URL,
         process.env.ADMIN_URL,
+        ...(process.env.CLIENT_ORIGIN?.split(",").map((o) => o.trim()) ?? []),
       ].filter(Boolean),
       credentials: true,
     },

@@ -1,27 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { MobileBottomNav } from "@/components/public/MobileBottomNav";
+import { getDoctor } from "@/features/doctors/api";
+import { BookingWidget } from "@/features/booking/components/BookingWidget";
 
-type Tab = "about" | "hours" | "reviews";
+const HOURS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
 
 export default function DoctorDetailPage() {
-  const [tab, setTab] = useState<Tab>("about");
-  const [slot, setSlot] = useState("01:00 م");
+  const { id } = useParams<{ id: string }>();
 
-  const tabBtn = (key: Tab, label: string) => (
-    <button
-      onClick={() => setTab(key)}
-      className={`px-6 py-5 text-label-md transition-all ${
-        tab === key ? "border-b-2 border-primary text-primary" : "text-on-surface-variant hover:text-primary"
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const { data: doctor, isLoading } = useQuery({
+    queryKey: ["doctor", id],
+    queryFn: () => getDoctor(id),
+    enabled: !!id,
+  });
 
   const stat = (icon: string, label: string, value: string) => (
     <div className="flex items-center gap-2">
@@ -35,14 +32,9 @@ export default function DoctorDetailPage() {
     </div>
   );
 
-  const days = [
-    { d: "اليوم", n: "24", m: "يوليو" },
-    { d: "السبت", n: "25", m: "يوليو" },
-    { d: "الأحد", n: "26", m: "يوليو" },
-    { d: "الاثنين", n: "27", m: "يوليو" },
-  ];
-  const morning = ["09:00 ص", "09:30 ص", "10:00 ص"];
-  const evening = ["01:00 م", "01:30 م", "02:00 م"];
+  const workLabel = doctor?.start_booked
+    ? `${doctor.start_booked.from}:00 - ${doctor.start_booked.to}:00`
+    : "—";
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -55,170 +47,135 @@ export default function DoctorDetailPage() {
           <span className="material-symbols-outlined text-[18px]">chevron_left</span>
           <Link href="/doctors" className="hover:text-primary">الأطباء</Link>
           <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-          <span className="font-medium text-primary">د. ليلى الماجد</span>
+          <span className="font-medium text-primary">
+            {doctor ? `د. ${doctor.doctorName}` : "…"}
+          </span>
         </nav>
 
-        <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-10">
-          {/* Info column */}
-          <div className="space-y-gutter lg:col-span-6">
-            {/* Profile card */}
-            <div className="flex flex-col gap-8 rounded-xl bg-white p-8 shadow-card md:flex-row">
-              <div className="relative flex-shrink-0">
-                <div className="flex h-40 w-40 items-center justify-center overflow-hidden rounded-xl bg-surface-container text-primary">
-                  <span className="material-symbols-outlined text-[64px]">stethoscope</span>
-                </div>
-                <div className="absolute -bottom-2 -right-2 flex items-center gap-1 rounded-full bg-primary-container px-3 py-1 text-caption text-white shadow-lg">
-                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                  <span>موثّق</span>
-                </div>
-              </div>
+        {isLoading && (
+          <p className="py-20 text-center text-on-surface-variant">جارٍ تحميل بيانات الطبيب…</p>
+        )}
 
-              <div className="flex-grow space-y-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h1 className="text-headline-lg text-on-surface">د. ليلى الماجد</h1>
-                    <p className="mt-1 text-body-md text-primary">استشاري جراحة القلب والأوعية الدموية</p>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <div className="flex text-amber-500">
-                      {[0, 1, 2, 3].map((i) => (
-                        <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                      ))}
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star_half</span>
-                    </div>
-                    <span className="text-caption text-on-surface-variant">(124 تقييم)</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 border-t border-outline-variant pt-4 md:grid-cols-3">
-                  {stat("work_history", "الخبرة", "15+ عاماً")}
-                  {stat("person", "المرضى", "2,500+")}
-                  {stat("language", "اللغات", "العربية، الإنجليزية")}
-                </div>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="overflow-hidden rounded-xl bg-white shadow-card">
-              <div className="flex border-b border-outline-variant px-8">
-                {tabBtn("about", "نبذة عن الطبيب")}
-                {tabBtn("hours", "مواعيد العمل")}
-                {tabBtn("reviews", "التقييمات")}
-              </div>
-
-              <div className="p-8">
-                {tab === "about" && (
-                  <div className="space-y-8">
-                    <section>
-                      <h3 className="mb-4 text-headline-md text-on-surface">السيرة المهنية</h3>
-                      <p className="text-body-md leading-relaxed text-on-surface-variant">
-                        تُعد الدكتورة ليلى الماجد من الرواد في مجال جراحة القلب والأوعية الدموية. حصلت على زمالة كلية الجراحين الملكية، وشاركت في أكثر من 1,000 عملية جراحية معقدة، وتركّز على تقنيات الجراحة طفيفة التوغل.
-                      </p>
-                    </section>
-                    <section>
-                      <h3 className="mb-4 text-headline-md text-on-surface">الشهادات والاعتمادات</h3>
-                      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        {[
-                          ["school", "دكتوراه في جراحة القلب - جامعة لندن"],
-                          ["verified", "البورد العربي للجراحة العامة"],
-                          ["workspace_premium", "عضو الجمعية الأوروبية لجراحة القلب"],
-                          ["clinical_notes", "ترخيص مزاولة استشاري - الفئة أ"],
-                        ].map(([icon, text]) => (
-                          <li key={text} className="flex items-center gap-3 rounded-lg bg-surface-container-low p-4">
-                            <span className="material-symbols-outlined text-primary">{icon}</span>
-                            <span className="text-body-md">{text}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </div>
-                )}
-
-                {tab === "hours" && (
-                  <div className="divide-y divide-outline-variant">
-                    {[["الأحد - الخميس", "08:00 ص - 04:00 م", false], ["الجمعة", "مغلق", true], ["السبت", "10:00 ص - 02:00 م", false]].map(([d, h, closed]) => (
-                      <div key={d as string} className="flex items-center justify-between py-4">
-                        <span className="text-body-md">{d}</span>
-                        <span className={`font-medium ${closed ? "text-error" : "text-primary"}`}>{h}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {tab === "reviews" && (
-                  <div className="space-y-6">
-                    <div className="rounded-xl border border-outline-variant p-6">
-                      <div className="mb-2 flex justify-between">
-                        <span className="text-label-md">أحمد المرزوقي</span>
-                        <div className="flex origin-left scale-75 text-amber-500">
-                          {[0, 1, 2, 3, 4].map((i) => (
-                            <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-body-md text-on-surface-variant">دكتورة رائعة ومتمكنة جداً، شرحت لي الحالة بالتفصيل. الطاقم الطبي أيضاً كان ممتازاً.</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+        {!isLoading && !doctor && (
+          <div className="rounded-xl bg-white p-12 text-center shadow-card">
+            <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
+              person_off
+            </span>
+            <p className="mt-2 text-body-md text-on-surface-variant">الطبيب غير موجود</p>
+            <Link href="/doctors" className="mt-4 inline-block text-primary underline">
+              العودة لقائمة الأطباء
+            </Link>
           </div>
+        )}
 
-          {/* Booking widget */}
-          <aside className="sticky top-24 lg:col-span-4">
-            <div className="rounded-xl border-t-4 border-primary bg-white p-8 shadow-card">
-              <h2 className="mb-6 flex items-center gap-2 text-headline-md text-on-surface">
-                <span className="material-symbols-outlined text-primary">calendar_month</span>
-                احجز موعدك الآن
-              </h2>
+        {doctor && (
+          <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-10">
+            {/* Info column */}
+            <div className="space-y-gutter lg:col-span-6">
+              {/* Profile hero */}
+              <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-outline-variant/20">
+                <div className="h-24 bg-gradient-to-l from-primary to-primary-container" />
+                <div className="flex flex-col gap-6 p-6 md:flex-row md:p-8">
+                  <div className="relative -mt-20 flex-shrink-0 self-center md:self-start">
+                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-2xl bg-surface-container text-primary ring-4 ring-white md:h-36 md:w-36">
+                      {doctor.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={doctor.image} alt={doctor.doctorName} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-[64px]">stethoscope</span>
+                      )}
+                    </div>
+                    {doctor.available && (
+                      <span className="absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-green-500 px-3 py-1 text-caption text-white shadow-lg">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                        متاح الآن
+                      </span>
+                    )}
+                  </div>
 
-              <div className="mb-8 space-y-4">
-                <label className="block text-label-md text-on-surface-variant">اختر التاريخ</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {days.map((day, i) => (
-                    <button key={day.n} className={`flex flex-col items-center rounded-lg p-3 transition-colors ${i === 0 ? "border-2 border-primary bg-surface-container-low text-primary ring-2 ring-primary/10" : "border border-outline-variant hover:border-primary"}`}>
-                      <span className="text-caption">{day.d}</span>
-                      <span className="text-body-md font-bold">{day.n}</span>
-                      <span className="text-caption">{day.m}</span>
-                    </button>
-                  ))}
+                  <div className="flex-grow space-y-4 md:pt-2">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h1 className="text-headline-lg text-on-surface">د. {doctor.doctorName}</h1>
+                          <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                        </div>
+                        <span className="mt-2 inline-block rounded-full bg-surface-container-low px-3 py-1 text-caption font-medium text-primary">
+                          {doctor.specialization}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1.5">
+                        <span className="material-symbols-outlined text-[16px] text-amber-500" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                        <span className="text-label-md font-bold text-on-surface">4.8</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 border-t border-outline-variant pt-4 sm:grid-cols-3">
+                      {stat("work_history", "الخبرة", doctor.expertise ? `${doctor.expertise}+ سنة` : "—")}
+                      {stat("school", "الدرجة", doctor.degree ?? "—")}
+                      {stat("location_on", "المدينة", doctor.address?.city ?? "—")}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 border-t border-outline-variant pt-4">
+                      <span className="flex items-center gap-1.5 rounded-xl bg-primary-container/10 px-4 py-2 text-body-md">
+                        <span className="material-symbols-outlined text-[18px] text-primary">payments</span>
+                        <span className="text-on-surface-variant">الكشف</span>
+                        <span className="font-bold text-primary">{doctor.fees} ج.م</span>
+                      </span>
+                      {doctor.consultation_fees != null && (
+                        <span className="flex items-center gap-1.5 rounded-xl bg-primary-container/10 px-4 py-2 text-body-md">
+                          <span className="material-symbols-outlined text-[18px] text-primary">videocam</span>
+                          <span className="text-on-surface-variant">الاستشارة</span>
+                          <span className="font-bold text-primary">{doctor.consultation_fees} ج.م</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-8 space-y-4">
-                <label className="block text-label-md text-on-surface-variant">المواعيد المتاحة</label>
-                <span className="text-caption text-primary">صباحاً</span>
-                <div className="grid grid-cols-3 gap-2">
-                  {morning.map((t, i) => (
-                    <button key={t} disabled={i === 2} onClick={() => setSlot(t)}
-                      className={`rounded-lg border py-2 text-center text-body-md transition-all ${i === 2 ? "cursor-not-allowed border-outline-variant bg-surface-container-highest text-on-surface-variant opacity-50" : slot === t ? "border-primary bg-primary-container text-white" : "border-outline-variant hover:bg-primary-container hover:text-white"}`}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
-                <span className="text-caption text-primary">مساءً</span>
-                <div className="grid grid-cols-3 gap-2">
-                  {evening.map((t) => (
-                    <button key={t} onClick={() => setSlot(t)}
-                      className={`rounded-lg border py-2 text-center text-body-md transition-all ${slot === t ? "border-primary bg-primary-container text-white" : "border-outline-variant hover:bg-primary-container hover:text-white"}`}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
+              {/* About */}
+              <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-outline-variant/20 md:p-8">
+                <h3 className="mb-4 flex items-center gap-2 text-headline-md text-on-surface">
+                  <span className="material-symbols-outlined text-primary">badge</span>
+                  نبذة عن الطبيب
+                </h3>
+                <p className="text-body-md leading-relaxed text-on-surface-variant">
+                  {doctor.about || "لا توجد نبذة متاحة."}
+                </p>
+                {(doctor.address?.line1 || doctor.address?.city) && (
+                  <p className="mt-4 flex items-center gap-2 border-t border-outline-variant pt-4 text-body-md text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[18px] text-primary">location_on</span>
+                    {[doctor.address?.line1, doctor.address?.line2, doctor.address?.city]
+                      .filter(Boolean)
+                      .join("، ")}
+                  </p>
+                )}
               </div>
 
-              <div className="space-y-6 border-t border-outline-variant pt-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-body-md text-on-surface-variant">رسوم الاستشارة</span>
-                  <span className="text-headline-md text-primary">350 ج.م</span>
+              {/* Working hours */}
+              <div className="rounded-2xl bg-white p-6 shadow-card ring-1 ring-outline-variant/20 md:p-8">
+                <h3 className="mb-4 flex items-center gap-2 text-headline-md text-on-surface">
+                  <span className="material-symbols-outlined text-primary">schedule</span>
+                  مواعيد العمل
+                </h3>
+                <div className="divide-y divide-outline-variant">
+                  {HOURS.map((d) => (
+                    <div key={d} className="flex items-center justify-between py-3">
+                      <span className="text-body-md">{d}</span>
+                      <span className="font-medium text-primary">{workLabel}</span>
+                    </div>
+                  ))}
                 </div>
-                <Link href="/login" className="block w-full rounded-xl bg-primary-container py-4 text-center text-headline-md text-white shadow-lg transition-all hover:opacity-90 active:scale-95">
-                  تأكيد الحجز
-                </Link>
-                <p className="text-center text-caption text-on-surface-variant">* لا يتم خصم المبلغ إلا بعد إتمام الزيارة</p>
               </div>
             </div>
-          </aside>
-        </div>
+
+            {/* Booking widget (real) */}
+            <aside className="sticky top-24 lg:col-span-4">
+              <BookingWidget doctor={doctor} />
+            </aside>
+          </div>
+        )}
       </main>
 
       <MobileBottomNav active="specialties" />

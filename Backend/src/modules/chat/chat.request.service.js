@@ -17,8 +17,8 @@ const sendChatRequest = async (userId, docId, initialMessage) => {
     throw new ApiError("the first message is required", 400);
   }
 
-  if (!initialMessage.trim().length > 500) {
-    throw new ApiError("the first message must not be bigar than 500", 400);
+  if (initialMessage.trim().length > 500) {
+    throw new ApiError("the first message must not be bigger than 500", 400);
   }
 
   const roomId = buildRoomId(userId.toString(), docId.toString());
@@ -27,11 +27,11 @@ const sendChatRequest = async (userId, docId, initialMessage) => {
 
   if (latest) {
     if (latest.status === "pending") {
-      throw new ApiError("wait for doctor acceept your request", 409);
+      throw new ApiError("wait for doctor to accept your request", 409);
     }
-    if (latest.status === "pending") {
+    if (latest.status === "accepted") {
       throw new ApiError(
-        "the chat is opent you can sent message to the doctor",
+        "the chat is open, you can send messages to the doctor",
         409,
       );
     }
@@ -97,7 +97,7 @@ const rejectRequest = async (docId, roomId, rejectReason = "") => {
   if (request.status !== "pending")
     throw new ApiError("the request processing before", 400);
 
-  await requestRepo.updateLatestStatus(roomId, "accepted", rejectReason);
+  await requestRepo.updateLatestStatus(roomId, "rejected", rejectReason);
 
   const notification = await notifService.createNotification({
     recipientId: request.userId,
@@ -114,23 +114,21 @@ const rejectRequest = async (docId, roomId, rejectReason = "") => {
   return { request };
 };
 
+// Gate a patient's chat with a doctor: the doctor must have APPROVED the
+// conversation. The patient sends a chat-request (with a first message); the
+// doctor accepts/rejects it. Only an accepted request opens the room.
 const assertChatAllowed = async (userId, docId) => {
   const roomId = buildRoomId(userId.toString(), docId.toString());
   const latest = await requestRepo.findLatestByRoomId(roomId);
 
   if (!latest)
-    throw new ApiError("send request to the doctor to start chat", 403);
-
+    throw new ApiError("أرسل طلب محادثة للطبيب أولًا", 403);
   if (latest.status === "pending")
-    throw new ApiError("the doctor not accept your requrst yet", 403);
-
+    throw new ApiError("طلبك قيد مراجعة الطبيب", 403);
   if (latest.status === "rejected")
-    throw new ApiError(
-      "the doctor reject your request, you can try it next time ",
-      403,
-    );
+    throw new ApiError("رفض الطبيب طلب المحادثة", 403);
 
-  return roomId;
+  return roomId; // accepted
 };
 
 const getDoctorRequests = (docId, status) => {

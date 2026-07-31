@@ -19,7 +19,7 @@ export const ROLES: Record<Role, RoleConfig> = {
   patient: { authHeader: "Authorization", bearer: true,  home: "/patient/dashboard", basePath: "/patient", label: "Patient" },
   doctor:  { authHeader: "dtoken",        bearer: false, home: "/doctor/dashboard",  basePath: "/doctor",  label: "Doctor"  },
   admin:   { authHeader: "atoken",        bearer: false, home: "/admin/dashboard",   basePath: "/admin",   label: "Admin"   },
-  lab:     { authHeader: "ltoken",        bearer: false, home: "/lab/profile",       basePath: "/lab",     label: "Lab"     },
+  lab:     { authHeader: "ltoken",        bearer: false, home: "/lab/dashboard",     basePath: "/lab",     label: "Lab"     },
 };
 
 /** Which login endpoint to hit per role. */
