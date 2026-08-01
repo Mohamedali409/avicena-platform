@@ -9,5 +9,7 @@
 9- Kubernetes
 10- Session Storage -- caching
 11- Audit Logs
-12 - Deployment
+12 - Deployment -- Done
 13 - Access token and Refresh Token -- (CSRF).
+14 - find doctor or lab or pharmacy near you.
+15 - اني عرف العلاج ده كام حبايه و من خلالها اقول لي الماريض فاضل كام وحده و لما ياخد الحبايه يسجل عندو و كمان لما يقرب يخلص او الدكتور قال لمده اسبوعين مثلاا يقترح عليهانو يشتري من الصيدليه قبل ما يخلص و يشوف في الصيدليه المتاحه.
