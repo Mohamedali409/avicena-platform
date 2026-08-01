@@ -99,7 +99,7 @@ jest.config.js.snap
 # =========================
 
 # npm
-package-lock.json
+# package-lock.json
 
 # yarn
 # yarn.lock
