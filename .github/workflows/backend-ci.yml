@@ -33,10 +33,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Semgrep
+        run: python3 -m pip install semgrep
+
       - name: Semgrep Scan
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
+        run: |
+          semgrep scan \
+            --config p/nodejs \
+            .
+
       - name: Build Docker Image
         run: |
           docker build \
