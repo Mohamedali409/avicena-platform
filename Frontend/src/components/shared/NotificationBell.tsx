@@ -9,6 +9,7 @@ import { useAuth } from "@/store/auth.store";
 const iconFor = (type: string) => {
   if (type === "consultation") return "videocam";
   if (type === "chat" || type === "chat_request") return "forum";
+  if (type === "appointment") return "event";
   return "notifications";
 };
 

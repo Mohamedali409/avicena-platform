@@ -6,6 +6,7 @@ import {
   markAllRead,
   getUnreadCount,
   markOneRead,
+  markRoomRead,
 } from "./notification.controller.js";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.use(anyAuth);
 router.get("/", getNotifications);
 router.get("/unread", getUnreadCount);
 router.patch("/read-all", markAllRead);
+router.patch("/read-room/:roomId", markRoomRead);
 router.patch("/:id/read", markOneRead);
 
 export default router;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { VideoStream } from "./VideoStream";
 import type { CallStatus } from "../types";
 
@@ -10,6 +11,8 @@ interface CallScreenProps {
   micOn: boolean;
   camOn: boolean;
   title?: string;
+  /** true → render as a contained panel inside the chat page (not full-screen) */
+  embedded?: boolean;
   onToggleMic: () => void;
   onToggleCam: () => void;
   onEnd: () => void;
@@ -24,7 +27,11 @@ const statusLabel: Record<CallStatus, string> = {
   ended: "انتهت المكالمة",
 };
 
-// Full-screen 1:1 call overlay: remote fills the screen, local is a PiP.
+const fmt = (s: number) =>
+  `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
+// 1:1 call view. Embedded (a panel inside the chat) by default; a maximize
+// button expands it to a full-screen overlay. Shows a live elapsed timer.
 export function CallScreen({
   status,
   localStream,
@@ -32,16 +39,56 @@ export function CallScreen({
   micOn,
   camOn,
   title,
+  embedded = false,
   onToggleMic,
   onToggleCam,
   onEnd,
 }: CallScreenProps) {
   const connected = status === "in-call" && !!remoteStream;
 
+  // Elapsed-time counter — runs only while the call is connected.
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (status !== "in-call") {
+      setElapsed(0);
+      return;
+    }
+    const t = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [status]);
+
+  // Maximize toggle — only meaningful when embedded.
+  const [expanded, setExpanded] = useState(false);
+  const fullscreen = !embedded || expanded;
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-inverse-surface">
+    <div
+      className={
+        fullscreen
+          ? "fixed inset-0 z-50 flex flex-col bg-inverse-surface"
+          : "relative flex h-[70vh] flex-col overflow-hidden rounded-xl bg-inverse-surface shadow-card"
+      }
+    >
       {/* Remote video / placeholder */}
       <div className="relative flex-1 overflow-hidden">
+        {/* Top bar: timer / status + maximize toggle */}
+        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-3">
+          <span className="rounded-full bg-black/45 px-3 py-1 text-sm font-medium text-white backdrop-blur">
+            {status === "in-call" ? fmt(elapsed) : statusLabel[status]}
+          </span>
+          {embedded && (
+            <button
+              onClick={() => setExpanded((e) => !e)}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur transition-all hover:bg-black/60 active:scale-95"
+              aria-label={expanded ? "تصغير" : "تكبير"}
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                {expanded ? "close_fullscreen" : "open_in_full"}
+              </span>
+            </button>
+          )}
+        </div>
+
         {connected ? (
           <VideoStream
             stream={remoteStream}

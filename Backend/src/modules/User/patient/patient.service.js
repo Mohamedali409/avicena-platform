@@ -15,6 +15,8 @@ import { uploadImage } from "../../../infrastructure/storage/cloudinary.service.
 import ApiError from "../../../shared/utils/ApiError.js";
 import * as userRepository from "../user.repository.js";
 import * as doctorRepository from "../../doctors/doctor.repository.js";
+import * as notificationService from "../../notifications/notification.service.js";
+import { emitNotification } from "../../../infrastructure/socket/socket.server.js";
 import * as appointmentRepository from "../../appointments/appointment.repository.js";
 import * as reportRepository from "../../report/report.repository.js";
 import * as consultationRepository from "../../consultations/consultation.repository.js";
@@ -175,6 +177,21 @@ const bookAppointment = async (
   sendAppointmentEmail(user.email, user.name, appointment, docData).catch(
     console.error,
   );
+
+  // Notify the doctor of the new booking (in-app + live socket push).
+  notificationService
+    .createNotification({
+      recipientId: docId,
+      recipientType: "doctor",
+      type: "appointment",
+      title: "حجز جديد",
+      message: `حجز ${
+        visitType === "consultation" ? "استشارة" : "كشف"
+      } جديد من ${user.name} — ${slotDate} ${slotTime}`,
+      data: { appointmentId: appointment._id, slotDate, slotTime },
+    })
+    .then((notif) => emitNotification(docId, notif))
+    .catch(console.error);
 
   return appointment;
 };

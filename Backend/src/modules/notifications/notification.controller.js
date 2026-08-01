@@ -32,3 +32,10 @@ export const markOneRead = catchAsync(async (req, res) => {
   await notifService.markOneRead(id, req.params.id);
   successResponse(res, "تم قراءة الإشعار");
 });
+
+// Mark this conversation's chat notifications read (when the user opens it).
+export const markRoomRead = catchAsync(async (req, res) => {
+  const { id } = getRecipient(req);
+  const count = await notifService.markRoomChatRead(id, req.params.roomId);
+  successResponse(res, "تم قراءة إشعارات المحادثة", { count });
+});

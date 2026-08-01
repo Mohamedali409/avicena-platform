@@ -8,20 +8,25 @@ const registerChatHandlers = (io, socket) => {
   socket.on("chat:join", (roomId) => socket.join(roomId));
   socket.on("chat:leave", (roomId) => socket.leave(roomId));
 
-  socket.on("chat:message", async ({ roomId, receiverId, message }) => {
-    try {
-      if (socket.role !== "doctor") {
-        await requestService.assertChatAllowed(socket.userId, receiverId);
-      }
+  socket.on(
+    "chat:message",
+    async ({ roomId, receiverId, message, type, audioUrl, duration }) => {
+      try {
+        if (socket.role !== "doctor") {
+          await requestService.assertChatAllowed(socket.userId, receiverId);
+        }
 
-      const senderType = socket.role === "doctor" ? "doctor" : "user";
+        const senderType = socket.role === "doctor" ? "doctor" : "user";
 
-      const saved = await chatService.saveMessage({
-        roomId,
-        senderId: socket.userId,
-        senderType,
-        message,
-      });
+        const saved = await chatService.saveMessage({
+          roomId,
+          senderId: socket.userId,
+          senderType,
+          message,
+          type,
+          audioUrl,
+          duration,
+        });
 
       socket.to(roomId).emit("chat:message", saved);
       socket.emit("chat:message:sent", saved);
@@ -34,7 +39,10 @@ const registerChatHandlers = (io, socket) => {
           recipientType,
           type: "chat",
           title: "رسالة جديدة",
-          message: message.substring(0, 50),
+          message:
+            type === "audio"
+              ? "🎤 رسالة صوتية"
+              : (message || "").substring(0, 50),
           data: { roomId, senderId: socket.userId },
         });
         emitNotification(receiverId, notification);

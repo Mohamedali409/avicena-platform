@@ -22,7 +22,7 @@ export const SOCKET_EVENTS = {
   // ── Video (WebRTC signaling) ──────────────────────────
   callInitiate: "call:initiate", // C→S { receiverId, receiverType, consultationId?, type }
   callInitiated: "call:initiated", // S→C { callId, roomId }
-  callIncoming: "call:incoming", // S→C { callerId, roomId, from, callerType, type }
+  callIncoming: "call:incoming", // S→C { callId, roomId, from, callerType, type }
   callAccept: "call:accept", // C→S { callId, roomId }
   callAccepted: "call:accepted", // S→C { callId, roomId, from }
   callReject: "call:reject", // C→S { callId, targetId }

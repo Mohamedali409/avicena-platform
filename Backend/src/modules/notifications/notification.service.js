@@ -58,3 +58,18 @@ export const markOneRead = async (recipientId, notifId) => {
 export const getUnreadCount = async (recipientId) => {
   return NotificationModel.countDocuments({ recipientId, isRead: false });
 };
+
+// Mark all chat notifications for a specific room as read (called when the user
+// opens that conversation). Returns the fresh unread count.
+export const markRoomChatRead = async (recipientId, roomId) => {
+  await NotificationModel.updateMany(
+    {
+      recipientId,
+      type: { $in: ["chat", "chat_request"] },
+      "data.roomId": roomId,
+      isRead: false,
+    },
+    { isRead: true },
+  );
+  return getUnreadCount(recipientId);
+};

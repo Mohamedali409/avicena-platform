@@ -53,6 +53,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compression());
 
+// Serve uploaded files (voice notes, images) from the local uploads/ folder.
+app.use("/uploads", express.static("uploads"));
+
 app.use(metricsMiddleware);
 
 app.get("/", (req, res) =>

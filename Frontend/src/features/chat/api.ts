@@ -51,6 +51,15 @@ export const markRoomRead = async (roomId: string): Promise<void> => {
   await api.get(`/api/chat/room/${roomId}/read`);
 };
 
+// POST /api/chat/upload-voice (multipart "audio") → { url } (relative to API host)
+export const uploadVoice = async (blob: Blob): Promise<string> => {
+  const ext = blob.type.includes("mp4") || blob.type.includes("mpeg") ? "mp4" : "webm";
+  const form = new FormData();
+  form.append("audio", blob, `voice-${Date.now()}.${ext}`);
+  const { data } = await api.post("/api/chat/upload-voice", form);
+  return data.url as string;
+};
+
 // ── Chat requests (legacy gate — booking is the primary gate now) ──────────
 
 // POST /api/chat/request  { docId, initialMessage }  (patient)

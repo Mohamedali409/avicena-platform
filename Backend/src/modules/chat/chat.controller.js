@@ -1,6 +1,14 @@
 import { successResponse } from "../../shared/utils/ApiResponse.js";
 import catchAsync from "../../shared/utils/catchAsync.js";
+import ApiError from "../../shared/utils/ApiError.js";
 import * as chatService from "./chat.service.js";
+
+// POST /api/chat/upload-voice — multipart "audio" → returns a servable URL.
+const uploadVoice = catchAsync(async (req, res) => {
+  if (!req.file) throw new ApiError("No audio file uploaded", 400);
+  const url = `/uploads/voice/${req.file.filename}`;
+  successResponse(res, "Voice uploaded", { url });
+});
 
 const getParticipant = (req) => ({
   id: req.userId || req.docId,
@@ -46,4 +54,5 @@ export {
   markRoomAsRead,
   getRoomUnreadCount,
   getRoomIdWith,
+  uploadVoice,
 };

@@ -1,8 +1,23 @@
-import { fa } from "zod/locales";
 import ChatModel from "./message.model.js";
 
-const createMessage = async ({ roomId, senderId, senderType, message }) => {
-  return ChatModel.create({ roomId, senderId, senderType, message });
+const createMessage = async ({
+  roomId,
+  senderId,
+  senderType,
+  message,
+  type,
+  audioUrl,
+  duration,
+}) => {
+  return ChatModel.create({
+    roomId,
+    senderId,
+    senderType,
+    message,
+    type,
+    audioUrl,
+    duration,
+  });
 };
 
 const getMessagesByRoom = async (roomId, { page = 1, limit = 30 } = {}) => {

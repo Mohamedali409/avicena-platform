@@ -3,6 +3,7 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { ChatRoom } from "@/features/chat/components/ChatRoom";
 import { useCall } from "@/features/video/CallProvider";
+import { CallPanel } from "@/features/video/CallPanel";
 import { useAuth } from "@/store/auth.store";
 
 // Chat room screen. roomId comes from the URL; the doctor's name can be passed
@@ -22,12 +23,13 @@ export default function PatientChatRoomPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
+      <CallPanel title={title} />
       <ChatRoom
         roomId={roomId}
         selfId={selfId}
         title={title}
         onStartCall={
-          doctorId ? () => startCall(doctorId, "doctor", "video") : undefined
+          doctorId ? (type) => startCall(doctorId, "doctor", type) : undefined
         }
       />
     </div>

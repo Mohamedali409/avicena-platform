@@ -5,7 +5,7 @@
   "main": "server",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon -L server.js",
     "seed": "node src/seed.js"
   },
   "author": "Mohamed ali",

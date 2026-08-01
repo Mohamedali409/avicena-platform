@@ -32,7 +32,9 @@ const registerVideoHandlers = (io, socket) => {
 
         // notify receiver
         io.to(`user:${receiverId}`).emit("call:incoming", {
-          callerId: call._id, // call document ID (used to accept/reject)
+          callId: call._id, // call document ID (used to accept/reject) — the
+          // frontend reads `callId`; sending `callerId` here left it undefined,
+          // so accept/reject/end all failed with "The call not found".
           roomId: call.roomId, // actual socket room (used to join)
           from: socket.userId,
           callerType,

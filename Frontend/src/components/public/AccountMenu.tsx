@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, homeFor } from "@/store/auth.store";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 // Single account entry point used in every header (desktop + mobile).
 // - Logged out: the icon links straight to /login.
@@ -13,6 +14,7 @@ export function AccountMenu() {
   const session = useAuth((s) => s.session);
   const logout = useAuth((s) => s.logout);
   const [open, setOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,8 +42,9 @@ export function AccountMenu() {
   const initial = session.user?.name?.trim()?.charAt(0) || "؟";
 
   const onLogout = async () => {
-    await logout();
+    setConfirmLogout(false);
     setOpen(false);
+    await logout();
     router.push("/");
   };
 
@@ -73,12 +76,29 @@ export function AccountMenu() {
             {item("/points", "stars", "نقاطي")}
             {item("/patient/profile", "person", "الملف الشخصي")}
           </nav>
-          <button onClick={onLogout} className="flex w-full items-center gap-3 border-t border-outline-variant/40 px-5 py-3 text-body-md text-error transition-colors hover:bg-error-container/40">
+          <button
+            onClick={() => {
+              setOpen(false);
+              setConfirmLogout(true);
+            }}
+            className="flex w-full items-center gap-3 border-t border-outline-variant/40 px-5 py-3 text-body-md text-error transition-colors hover:bg-error-container/40"
+          >
             <span className="material-symbols-outlined text-[20px]">logout</span>
             تسجيل الخروج
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmLogout}
+        title="تسجيل الخروج"
+        message="هل أنت متأكد أنك تريد تسجيل الخروج؟"
+        confirmLabel="تسجيل الخروج"
+        cancelLabel="إلغاء"
+        danger
+        onConfirm={onLogout}
+        onCancel={() => setConfirmLogout(false)}
+      />
     </div>
   );
 }

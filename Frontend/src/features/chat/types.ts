@@ -9,6 +9,10 @@ export interface ChatMessage {
   isRead: boolean;
   createdAt: string;
   updatedAt?: string;
+  // "text" (default) or "audio" (voice note)
+  type?: "text" | "audio";
+  audioUrl?: string; // relative path served from the API's /uploads
+  duration?: number; // voice-note length in seconds
   // client-only: set on optimistic messages before the server echo arrives
   pending?: boolean;
 }

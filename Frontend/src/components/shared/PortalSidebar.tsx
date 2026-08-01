@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/store/auth.store";
 import { useSidebar } from "@/store/ui.store";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 export interface PortalNavItem {
   href: string;
@@ -24,14 +25,22 @@ interface PortalSidebarProps {
 // store; on md+ it's a static in-flow column. Closes itself on route change.
 export function PortalSidebar({ brand, user, nav }: PortalSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const name = useAuth((s) => s.session?.user.name);
   const logout = useAuth((s) => s.logout);
   const { open, close } = useSidebar();
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   // close the mobile drawer whenever the route changes (e.g. nav link tapped)
   useEffect(() => {
     close();
   }, [pathname, close]);
+
+  const handleLogout = async () => {
+    setConfirmLogout(false);
+    await logout();
+    router.push("/");
+  };
 
   return (
     <>
@@ -99,13 +108,24 @@ export function PortalSidebar({ brand, user, nav }: PortalSidebarProps) {
 
         {/* Logout */}
         <button
-          onClick={() => logout()}
+          onClick={() => setConfirmLogout(true)}
           className="mt-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-label-md text-on-surface-variant transition-colors hover:bg-error-container hover:text-on-error-container"
         >
           <span className="material-symbols-outlined text-[20px]">logout</span>
           <span>تسجيل الخروج</span>
         </button>
       </aside>
+
+      <ConfirmDialog
+        open={confirmLogout}
+        title="تسجيل الخروج"
+        message="هل أنت متأكد أنك تريد تسجيل الخروج؟"
+        confirmLabel="تسجيل الخروج"
+        cancelLabel="إلغاء"
+        danger
+        onConfirm={handleLogout}
+        onCancel={() => setConfirmLogout(false)}
+      />
     </>
   );
 }

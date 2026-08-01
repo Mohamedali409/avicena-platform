@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket/socket";
 import { SOCKET_EVENTS } from "@/lib/socket/events";
-import { getUnreadCount } from "./api";
+import { getUnreadCount, getNotifications } from "./api";
 import type { AppNotification } from "./api";
 
 interface UseNotificationsResult {
@@ -26,8 +26,20 @@ export function useNotifications(max = 20): UseNotificationsResult {
       .then(setUnread)
       .catch(() => {});
 
+    // Seed the dropdown with the persisted history (so past bookings/messages
+    // show even after a reload — not just notifications pushed this session).
+    getNotifications(1, max)
+      .then((res: unknown) => {
+        const r = res as { notifications?: AppNotification[]; data?: AppNotification[] };
+        const list = r.notifications ?? r.data ?? (Array.isArray(res) ? res : []);
+        setLatest(list as AppNotification[]);
+      })
+      .catch(() => {});
+
     const onNew = (notif: AppNotification) => {
-      setLatest((prev) => [notif, ...prev].slice(0, max));
+      setLatest((prev) =>
+        [notif, ...prev.filter((n) => n._id !== notif._id)].slice(0, max),
+      );
       setUnread((c) => c + 1);
     };
     const onCount = (p: { count: number }) => setUnread(p.count);

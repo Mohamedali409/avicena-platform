@@ -3,6 +3,7 @@ import * as chatController from "./chat.controller.js";
 import * as requestController from "./chat-request.controller.js";
 import { doctorGuard } from "../../shared/guards/doctor.guard.js";
 import { authGuard } from "../../shared/guards/auth.guard.js";
+import voiceUpload from "../../shared/middleware/voice.multer.js";
 
 const router = Router();
 
@@ -28,6 +29,13 @@ router.post(
 );
 
 router.use(anyAuth);
+
+// Voice-note upload (multipart field "audio") → { url }
+router.post(
+  "/upload-voice",
+  voiceUpload.single("audio"),
+  chatController.uploadVoice,
+);
 
 router.get("/conversations", chatController.getMyConversations);
 router.get("/room/:otherId/id", chatController.getRoomIdWith);

@@ -35,3 +35,8 @@ export const markAllRead = async () => {
 export const markOneRead = async (id: string) => {
   await api.patch(`/api/notifications/${id}/read`);
 };
+
+// PATCH /api/notifications/read-room/:roomId → mark this room's chat notifs read
+export const markRoomNotificationsRead = async (roomId: string) => {
+  await api.patch(`/api/notifications/read-room/${roomId}`);
+};

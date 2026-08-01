@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { ChatRoom } from "@/features/chat/components/ChatRoom";
 import { MedicalAIPanel } from "@/features/medical-ai/MedicalAIPanel";
 import { useCall } from "@/features/video/CallProvider";
+import { CallPanel } from "@/features/video/CallPanel";
 import { useAuth } from "@/store/auth.store";
 
 // Doctor's chat room with a patient + the Medical-AI assistant side panel.
@@ -40,13 +41,15 @@ export default function DoctorChatRoomPage() {
         </button>
       </div>
 
+      <CallPanel title={title} />
+
       <div className={`grid gap-4 ${showAI ? "lg:grid-cols-2" : "grid-cols-1"}`}>
         <ChatRoom
           roomId={roomId}
           selfId={selfId}
           title={title}
           onStartCall={
-            patientId ? () => startCall(patientId, "user", "video") : undefined
+            patientId ? (type) => startCall(patientId, "user", type) : undefined
           }
         />
         {showAI && patientId && <MedicalAIPanel patientId={patientId} />}

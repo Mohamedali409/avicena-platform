@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getSocket } from "@/lib/socket/socket";
 import { SOCKET_EVENTS } from "@/lib/socket/events";
 import { getRoomMessages, markRoomRead } from "./api";
+import { markRoomNotificationsRead } from "@/features/notifications/api";
 import type { ChatMessage } from "./types";
 
 interface UseChatArgs {
@@ -20,6 +21,7 @@ interface UseChatResult {
   error: string | null;
   peerTyping: boolean;
   sendMessage: (text: string) => void;
+  sendVoice: (audioUrl: string, duration: number) => void;
   notifyTyping: () => void;
 }
 
@@ -57,6 +59,11 @@ export function useChat({ roomId, receiverId, selfId }: UseChatArgs): UseChatRes
     socket.emit(SOCKET_EVENTS.chatJoin, roomId);
     markRoomRead(roomId).catch(() => {});
     socket.emit(SOCKET_EVENTS.chatRead, { roomId });
+
+    // Opening the room clears its chat notifications + refreshes the unread badge.
+    markRoomNotificationsRead(roomId)
+      .then(() => socket.emit(SOCKET_EVENTS.notifFetchUnread))
+      .catch(() => {});
 
     const onIncoming = (msg: ChatMessage) => {
       if (msg.roomId !== roomId) return;
@@ -157,6 +164,38 @@ export function useChat({ roomId, receiverId, selfId }: UseChatArgs): UseChatRes
     [roomId, receiverId, selfId],
   );
 
+  // Send a voice note (already uploaded → we have its URL + duration).
+  const sendVoice = useCallback(
+    (audioUrl: string, duration: number) => {
+      if (!roomId || !selfId || !audioUrl) return;
+      const socket = getSocket();
+
+      const optimistic: ChatMessage = {
+        _id: `tmp-${++tempSeq}`,
+        roomId,
+        senderId: selfId,
+        senderType: "user",
+        message: "",
+        type: "audio",
+        audioUrl,
+        duration,
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        pending: true,
+      };
+      setMessages((prev) => [...prev, optimistic]);
+
+      socket.emit(SOCKET_EVENTS.chatMessage, {
+        roomId,
+        receiverId,
+        type: "audio",
+        audioUrl,
+        duration,
+      });
+    },
+    [roomId, receiverId, selfId],
+  );
+
   // Debounced typing: emit "typing" on keystrokes, "stopTyping" after a pause.
   const notifyTyping = useCallback(() => {
     if (!roomId) return;
@@ -179,6 +218,7 @@ export function useChat({ roomId, receiverId, selfId }: UseChatArgs): UseChatRes
     error,
     peerTyping,
     sendMessage,
+    sendVoice,
     notifyTyping,
   };
 }

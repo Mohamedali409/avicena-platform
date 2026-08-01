@@ -6,15 +6,31 @@ const buildRoomId = (idA, idB) => {
   return `${a}_${b}`;
 };
 
-const saveMessage = async ({ roomId, senderId, senderType, message }) => {
-  if (!message || !message.trim()) {
+const saveMessage = async ({
+  roomId,
+  senderId,
+  senderType,
+  message,
+  type = "text",
+  audioUrl,
+  duration,
+}) => {
+  if (type === "audio") {
+    if (!audioUrl) {
+      throw new ApiError("Audio URL is required", 400);
+    }
+  } else if (!message || !message.trim()) {
     throw new ApiError("The message cannot be empty", 400);
   }
+
   return chatRepo.createMessage({
     roomId,
     senderId,
     senderType,
-    message: message.trim(),
+    type,
+    message: message ? message.trim() : "",
+    audioUrl,
+    duration,
   });
 };
 

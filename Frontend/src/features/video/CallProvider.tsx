@@ -1,60 +1,70 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useVideoCall } from "./useVideoCall";
-import { CallScreen } from "./components/CallScreen";
 import { IncomingCallModal } from "./components/IncomingCallModal";
-import type { ParticipantType, CallType } from "@/lib/socket/events";
-import type { CallStatus } from "./types";
+import { useAuth } from "@/store/auth.store";
 
-interface CallContextValue {
-  status: CallStatus;
-  startCall: (
-    receiverId: string,
-    receiverType: ParticipantType,
-    type?: CallType,
-    consultationId?: string,
-  ) => Promise<void>;
-}
+type CallContextValue = ReturnType<typeof useVideoCall>;
 
 const CallContext = createContext<CallContextValue | null>(null);
 
 // Mount ONCE high in a role's tree (e.g. patient/doctor layout). Holds the
 // single useVideoCall instance so incoming calls are caught anywhere, renders
-// the ringing modal + in-call screen, and exposes startCall to descendants.
+// the ringing modal globally, and exposes the whole call controller to
+// descendants. The in-call video is rendered INSIDE the chat page via
+// <CallPanel/> (see ./CallPanel), not as a full-screen overlay.
 export function CallProvider({ children }: { children: React.ReactNode }) {
   const call = useVideoCall();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const role = useAuth((s) => s.session?.role);
+  const selfId = useAuth((s) => s.session?.user._id ?? null);
 
-  const showCallScreen =
-    call.status === "calling" ||
-    call.status === "connecting" ||
-    call.status === "in-call";
+  // When a call ends, refresh the call log so the new entry shows inline in the
+  // chat thread (and in the conversations list) without a manual reload.
+  useEffect(() => {
+    if (call.status === "ended") {
+      queryClient.invalidateQueries({ queryKey: ["call-history"] });
+    }
+  }, [call.status, queryClient]);
+
+  // When a call is accepted from the global ringing modal, route the callee to
+  // the chat room with the caller so the embedded call panel is visible.
+  const onAccept = async () => {
+    const peerId = call.incomingCall?.from;
+    await call.acceptCall();
+    if (peerId && selfId && (role === "patient" || role === "doctor")) {
+      const chatRoom = [selfId, peerId].sort().join("_");
+      router.push(`/${role}/chat/${chatRoom}`);
+    }
+  };
 
   return (
-    <CallContext.Provider
-      value={{ status: call.status, startCall: call.startCall }}
-    >
+    <CallContext.Provider value={call}>
       {children}
 
       {call.incomingCall && (
         <IncomingCallModal
           call={call.incomingCall}
-          onAccept={call.acceptCall}
+          onAccept={onAccept}
           onReject={call.rejectCall}
         />
       )}
 
-      {showCallScreen && (
-        <CallScreen
-          status={call.status}
-          localStream={call.localStream}
-          remoteStream={call.remoteStream}
-          micOn={call.micOn}
-          camOn={call.camOn}
-          onToggleMic={call.toggleMic}
-          onToggleCam={call.toggleCam}
-          onEnd={call.endCall}
-        />
+      {/* Surface call errors — previously these were swallowed, so a failed
+          getUserMedia (camera busy / permission denied) looked like "nothing
+          happens" when the call button was pressed. */}
+      {call.error && (
+        <div
+          role="alert"
+          className="fixed bottom-4 left-1/2 z-[80] flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-lg bg-error px-4 py-3 text-sm text-white shadow-card"
+        >
+          <span className="material-symbols-outlined text-[18px]">error</span>
+          {call.error}
+        </div>
       )}
     </CallContext.Provider>
   );
