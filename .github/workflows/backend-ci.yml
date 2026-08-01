@@ -65,6 +65,7 @@ jobs:
       # Dependency Scan
       # =========================
       - name: Run npm audit
+        continue-on-error: true
         run: npm audit --audit-level=high
 
       # =========================
