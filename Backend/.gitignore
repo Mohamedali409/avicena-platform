@@ -105,3 +105,12 @@ jest.config.js.snap
 
 # pnpm
 # pnpm-lock.yaml
+
+# =========================
+# Terraform
+# =========================
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+terraform.tfvars
