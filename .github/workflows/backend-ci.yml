@@ -107,12 +107,12 @@ jobs:
         run: |
           docker push $IMAGE_NAME:latest
 
-      # =========================
-      # Deploy Kubernetes
-      # =========================
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl set image deployment/avicena-backend \
-          avicena-backend=$IMAGE_NAME:latest
+      # # =========================
+      # # Deploy Kubernetes
+      # # =========================
+      # - name: Deploy to Kubernetes
+      #   run: |
+      #     kubectl set image deployment/avicena-backend \
+      #     avicena-backend=$IMAGE_NAME:latest
 
-          kubectl rollout status deployment/avicena-backend
+      #     kubectl rollout status deployment/avicena-backend
