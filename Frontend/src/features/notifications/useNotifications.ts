@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { getSocket } from "@/lib/socket/socket";
 import { SOCKET_EVENTS } from "@/lib/socket/events";
-import { getUnreadCount, getNotifications } from "./api";
+import { getUnreadCount, getNotifications, markOneRead } from "./api";
 import type { AppNotification } from "./api";
 
 interface UseNotificationsResult {
   unread: number;
   latest: AppNotification[];
   markAllRead: () => void;
+  markRead: (id: string) => void;
 }
 
 // Live notifications: seeds the unread count over REST, then keeps it in sync
@@ -64,5 +65,13 @@ export function useNotifications(max = 20): UseNotificationsResult {
     setUnread(0);
   }, []);
 
-  return { unread, latest, markAllRead };
+  const markRead = useCallback((id: string) => {
+    markOneRead(id).catch(() => {});
+    setUnread((c) => Math.max(0, c - 1));
+    setLatest((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
+    );
+  }, []);
+
+  return { unread, latest, markAllRead, markRead };
 }

@@ -16,6 +16,25 @@ import * as reportRepository from "../report/report.repository.js";
 import ApiError from "../../shared/utils/ApiError.js";
 import { removeSlot, generateDaySlots } from "../../shared/utils/slots.utils.js";
 import { sendReportEmail } from "../../infrastructure/mail/mail.service.js";
+import * as notificationService from "../notifications/notification.service.js";
+import { emitNotification } from "../../infrastructure/socket/socket.server.js";
+
+// Notify a patient (in-app + live socket push). Best-effort — never blocks.
+const notifyPatient = (recipientId, type, title, message, data = {}) =>
+  notificationService
+    .createNotification({
+      recipientId,
+      recipientType: "user",
+      type,
+      title,
+      message,
+      data,
+    })
+    .then((n) => emitNotification(recipientId.toString(), n))
+    .catch(console.error);
+
+const doctorName = (appointment) =>
+  appointment?.docData?.name || appointment?.docData?.doctorName || "الطبيب";
 const TTL = 120;
 
 // ── Public ────────────────────────────────────────────
@@ -115,6 +134,14 @@ const completeAppointment = async (docId, appointmentId) => {
   );
   await doctorRepository.findDoctorAndUpdate(docId, { slots_booked: slots });
   await deleteCache(`doctor:${docId}:appointments`);
+
+  notifyPatient(
+    appointment.userId,
+    "appointment",
+    "اكتمل موعدك",
+    `تم إكمال موعدك مع ${doctorName(appointment)} — ${appointment.slotDate} ${appointment.slotTime}`,
+    { appointmentId },
+  );
 };
 
 const cancelAppointment = async (docId, appointmentId) => {
@@ -131,6 +158,14 @@ const cancelAppointment = async (docId, appointmentId) => {
   );
   await doctorRepository.findDoctorAndUpdate(docId, { slots_booked: slots });
   await deleteCache(`doctor:${docId}:appointments`);
+
+  notifyPatient(
+    appointment.userId,
+    "appointment",
+    "تم إلغاء موعدك",
+    `ألغى ${doctorName(appointment)} موعدك بتاريخ ${appointment.slotDate} الساعة ${appointment.slotTime}`,
+    { appointmentId },
+  );
 };
 
 // ── Reports ───────────────────────────────────────────
@@ -182,6 +217,14 @@ const addReport = async (docId, body) => {
   }
 
   sendReportEmail(appointment.userData.email, report).catch(console.error);
+
+  notifyPatient(
+    appointment.userId,
+    "report",
+    "تقريرك الطبي جاهز",
+    `أضاف ${doctorName(appointment)} تقريرك الطبي — يمكنك الاطلاع عليه الآن`,
+    { reportId: report._id, appointmentId },
+  );
 
   return report;
 };
@@ -286,7 +329,7 @@ const createConsultation = async (docId, body) => {
   if (new Date(consultDay) <= appointmentDate)
     throw new ApiError("The consultation day must be After appointment day");
 
-  return consultationRepository.createConsultation({
+  const consultation = await consultationRepository.createConsultation({
     userId,
     docId,
     consultDay,
@@ -298,6 +341,16 @@ const createConsultation = async (docId, body) => {
     userData: appointment.userData,
     docData: appointment.docData,
   });
+
+  notifyPatient(
+    userId,
+    "consultation",
+    "تم تحديد موعد استشارة",
+    `حدّد ${doctorName(appointment)} موعد استشارتك يوم ${consultDay} الساعة ${consultTime}`,
+    { consultationId: consultation._id },
+  );
+
+  return consultation;
 };
 
 const getConsultations = async (docId) => {

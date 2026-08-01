@@ -119,6 +119,16 @@ const rejectRequest = async (docId, roomId, rejectReason = "") => {
 // doctor accepts/rejects it. Only an accepted request opens the room.
 const assertChatAllowed = async (userId, docId) => {
   const roomId = buildRoomId(userId.toString(), docId.toString());
+
+  // The doctor can open a conversation directly (doctors bypass this gate).
+  // Once ANY message exists in the room, the chat is open — the patient may
+  // reply without having to send a separate chat request.
+  const existing = await chatRepo.getMessagesByRoom(roomId, {
+    page: 1,
+    limit: 1,
+  });
+  if (existing && existing.length > 0) return roomId;
+
   const latest = await requestRepo.findLatestByRoomId(roomId);
 
   if (!latest)

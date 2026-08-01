@@ -2,6 +2,7 @@ import {
   deleteCache,
   getCache,
   setCache,
+  invalidatePattern,
 } from "../../../infrastructure/redis/cache.service.js";
 import {
   appointmentsBooked,
@@ -174,6 +175,11 @@ const bookAppointment = async (
   });
 
   appointmentsBooked.inc();
+
+  // Bust the patient's cached appointment pages so the new booking shows up
+  // immediately instead of after the cache TTL expires.
+  await invalidatePattern(`user:${userId}:appointments:*`).catch(() => {});
+
   sendAppointmentEmail(user.email, user.name, appointment, docData).catch(
     console.error,
   );
@@ -238,7 +244,22 @@ const cancelAppointment = async (userId, appointmentId) => {
     slots_booked,
   });
 
-  await deleteCache(`user:${userId}:appointments`);
+  // Paginated keys look like `user:<id>:appointments:<page>:<limit>` — a plain
+  // deleteCache of the base key never matched them, so clear by pattern.
+  await invalidatePattern(`user:${userId}:appointments:*`).catch(() => {});
+
+  // Notify the doctor that the patient cancelled.
+  notificationService
+    .createNotification({
+      recipientId: appointment.docId,
+      recipientType: "doctor",
+      type: "appointment",
+      title: "تم إلغاء موعد",
+      message: `ألغى ${appointment.userData?.name ?? "المريض"} موعده — ${appointment.slotDate} ${appointment.slotTime}`,
+      data: { appointmentId },
+    })
+    .then((n) => emitNotification(appointment.docId.toString(), n))
+    .catch(console.error);
 };
 
 // ──── Report ───────────────────────────────────────────

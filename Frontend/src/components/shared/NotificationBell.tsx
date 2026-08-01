@@ -23,12 +23,14 @@ const timeLabel = (iso?: string) => {
 // Bell + unread badge + dropdown of the latest pushed notifications.
 // Lives in the portal header; relies on the shared socket (post-login).
 export function NotificationBell() {
-  const { unread, latest, markAllRead } = useNotifications();
+  const { unread, latest, markAllRead, markRead } = useNotifications();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const role = useAuth((s) => s.session?.role);
-  const chatBase = role === "doctor" ? "/doctor/chat" : "/patient/chat";
+  const base =
+    role === "doctor" ? "/doctor" : role === "patient" ? "/patient" : null;
+  const chatBase = `${base ?? "/patient"}/chat`;
 
   // close on outside click
   useEffect(() => {
@@ -41,9 +43,17 @@ export function NotificationBell() {
   }, [open]);
 
   const linkFor = (n: AppNotification): string | null => {
-    const roomId = n.data?.roomId as string | undefined;
+    const d = n.data ?? {};
+    const roomId = d.roomId as string | undefined;
     if (roomId && (n.type === "chat" || n.type === "chat_request"))
       return `${chatBase}/${roomId}`;
+    if (!base) return null;
+    if (n.type === "appointment") return `${base}/appointments`;
+    if (n.type === "report") return `${base}/reports`;
+    // A scheduled consultation is navigable; a live-call "consultation"
+    // notification (has roomId only) is not.
+    if (n.type === "consultation" && d.consultationId)
+      return `${base}/consultations`;
     return null;
   };
 
@@ -87,7 +97,11 @@ export function NotificationBell() {
               latest.map((n, i) => {
                 const href = linkFor(n);
                 const body = (
-                  <div className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-container-low">
+                  <div
+                    className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-surface-container-low ${
+                      n.isRead ? "" : "bg-primary-container/5"
+                    }`}
+                  >
                     <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-surface-container-low text-primary">
                       <span className="material-symbols-outlined text-[18px]">
                         {iconFor(n.type)}
@@ -105,7 +119,14 @@ export function NotificationBell() {
                   </div>
                 );
                 return href ? (
-                  <Link key={n._id ?? i} href={href} onClick={() => setOpen(false)}>
+                  <Link
+                    key={n._id ?? i}
+                    href={href}
+                    onClick={() => {
+                      setOpen(false);
+                      if (n._id && !n.isRead) markRead(n._id);
+                    }}
+                  >
                     {body}
                   </Link>
                 ) : (
