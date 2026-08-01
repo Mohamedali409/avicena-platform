@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  IMAGE_NAME: mohamedali409/avicena-backend
+  IMAGE_NAME: mohamedali77i/avicena-backend
 
 jobs:
   backend:
