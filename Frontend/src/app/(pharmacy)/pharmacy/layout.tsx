@@ -6,6 +6,7 @@ const NAV = [
   { href: "/pharmacy/dashboard", label: "لوحة التحكم", icon: "space_dashboard" },
   { href: "/pharmacy/inventory", label: "المخزون", icon: "inventory_2" },
   { href: "/pharmacy/orders", label: "الطلبات", icon: "receipt_long" },
+  { href: "/pharmacy/coupons", label: "الكوبونات", icon: "sell" },
   { href: "/pharmacy/profile", label: "ملف الصيدلية", icon: "local_pharmacy" },
 ];
 

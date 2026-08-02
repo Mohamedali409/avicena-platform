@@ -23,6 +23,7 @@ import productRoutes from "./src/modules/pharmacy/products/product.route.js";
 import orderRoutes from "./src/modules/pharmacy/order/order.route.js";
 import inventoryRoutes from "./src/modules/pharmacy/inventory/inventory.routes.js";
 import medicationRoutes from "./src/modules/pharmacy/medicine/medication.routes.js";
+import couponRoutes from "./src/modules/pharmacy/coupon/coupon.routes.js";
 
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -113,6 +114,9 @@ app.use("/api/medical-ai", medicalAiRouter);
 
 // pharmacy
 app.use("/api/v1/pharmacy/applications", pharmacyApplicationRoutes);
+// NOTE: specific sub-routes MUST be mounted before the generic "/api/v1/pharmacy"
+// (its GET /:id would otherwise swallow /coupon as an id).
+app.use("/api/v1/pharmacy/coupon", couponRoutes);
 app.use("/api/v1/pharmacy", pharmacyRoutes);
 app.use("/api/v1/pharmacy/product", productRoutes);
 app.use("/api/v1/pharmacy/order", orderRoutes);

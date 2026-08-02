@@ -8,6 +8,8 @@ const NAV = [
   { href: "/patient/appointments", label: "مواعيدي", icon: "calendar_month" },
   { href: "/patient/consultations", label: "الاستشارات", icon: "clinical_notes" },
   { href: "/patient/reports", label: "تقاريري", icon: "description" },
+  { href: "/patient/pharmacies", label: "الصيدليات", icon: "local_pharmacy" },
+  { href: "/patient/orders", label: "طلباتي", icon: "shopping_bag" },
   { href: "/patient/chat", label: "المحادثات", icon: "forum" },
   { href: "/patient/subscriptions", label: "الاشتراك", icon: "workspace_premium" },
   { href: "/patient/profile", label: "الملف الشخصي", icon: "person" },

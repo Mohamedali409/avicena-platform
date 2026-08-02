@@ -173,3 +173,186 @@ export const updateOrderStatus = async (
   );
   return data.order as Order;
 };
+
+// ── Patient side ───────────────────────────────────────
+
+export interface PublicPharmacy {
+  _id: string;
+  pharmacyName: string;
+  image?: string;
+  address?: { line1?: string; city?: string };
+  rating?: { average?: number; count?: number };
+  delivery?: { available?: boolean; fee?: number; minOrder?: number; etaMinutes?: number };
+  workingHours?: { from?: string; to?: string };
+}
+
+export const listPharmacies = async (): Promise<PublicPharmacy[]> => {
+  const { data } = await api.get("/api/v1/pharmacy");
+  return (data.pharmacies ?? []) as PublicPharmacy[];
+};
+
+// A medicine match at a specific pharmacy.
+export interface MatchRow {
+  pharmacy: { _id: string; pharmacyName: string; delivery?: { fee?: number; minOrder?: number } };
+  product: { _id: string; name: string; activeIngredient?: string; requiresPrescription?: boolean };
+  price: number;
+  stock: number;
+  inventoryId: string;
+}
+
+export interface MedicineSearchResult {
+  query: string;
+  available: MatchRow[];
+  alternatives: MatchRow[];
+}
+
+// GET /inventory/search?medicine= → pharmacies that have it + alternatives.
+export const searchMedicine = async (
+  medicine: string,
+): Promise<MedicineSearchResult> => {
+  const { data } = await api.get("/api/v1/pharmacy/inventory/search", {
+    params: { medicine },
+  });
+  return {
+    query: data.query ?? medicine,
+    available: (data.available ?? []) as MatchRow[],
+    alternatives: (data.alternatives ?? []) as MatchRow[],
+  };
+};
+
+export interface ReportSearchItem {
+  medicine: string;
+  dosage?: string;
+  duration?: string;
+  available: MatchRow[];
+  alternatives: MatchRow[];
+}
+
+// GET /inventory/report/:reportId → per-medicine availability for a report.
+export const searchByReport = async (
+  reportId: string,
+): Promise<ReportSearchItem[]> => {
+  const { data } = await api.get(`/api/v1/pharmacy/inventory/report/${reportId}`);
+  return (data.items ?? []) as ReportSearchItem[];
+};
+
+export interface CreateOrderInput {
+  pharmacyId: string;
+  items: { productId: string; qty: number }[];
+  fulfillment: {
+    method: "delivery" | "pickup";
+    address?: { line1?: string; line2?: string; city?: string; phone?: string };
+  };
+  payment: { method: "cod" | "online" };
+  couponCode?: string;
+  reportId?: string;
+}
+
+export const createOrder = async (
+  input: CreateOrderInput,
+): Promise<{ order: Order; paymentSession: { checkoutUrl?: string } | null }> => {
+  const { data } = await api.post("/api/v1/pharmacy/order", input);
+  return { order: data.order as Order, paymentSession: data.paymentSession ?? null };
+};
+
+export const getMyOrders = async (): Promise<Order[]> => {
+  const { data } = await api.get("/api/v1/pharmacy/order/my");
+  return (data.orders ?? []) as Order[];
+};
+
+export const getMyOrder = async (id: string): Promise<Order> => {
+  const { data } = await api.get(`/api/v1/pharmacy/order/my/${id}`);
+  return data.order as Order;
+};
+
+export const cancelMyOrder = async (id: string, reason = "") => {
+  const { data } = await api.patch(`/api/v1/pharmacy/order/my/${id}/cancel`, {
+    reason,
+  });
+  return data.order as Order;
+};
+
+// ── Applications (public submit + admin review) ────────
+
+export interface PharmacyApplication {
+  _id: string;
+  pharmacyName: string;
+  ownerName: string;
+  email: string;
+  phone: string;
+  address?: { line1?: string; line2?: string; city?: string };
+  licenseNumber: string;
+  description?: string;
+  status: "pending" | "approved" | "rejected";
+  rejectReason?: string;
+  createdAt: string;
+}
+
+// POST /applications — public, multipart (documents file optional).
+export const submitApplication = async (form: FormData) => {
+  const { data } = await api.post("/api/v1/pharmacy/applications", form);
+  return data.application as PharmacyApplication;
+};
+
+export const listApplications = async (): Promise<PharmacyApplication[]> => {
+  const { data } = await api.get("/api/v1/pharmacy/applications");
+  return (data.applications ?? []) as PharmacyApplication[];
+};
+
+export const approveApplication = async (id: string) => {
+  const { data } = await api.patch(
+    `/api/v1/pharmacy/applications/${id}/approve`,
+  );
+  return data.application as PharmacyApplication;
+};
+
+export const rejectApplication = async (id: string, rejectReason: string) => {
+  const { data } = await api.patch(
+    `/api/v1/pharmacy/applications/${id}/reject`,
+    { rejectReason },
+  );
+  return data.application as PharmacyApplication;
+};
+
+// ── Coupons (pharmacy) ─────────────────────────────────
+
+export interface Coupon {
+  _id: string;
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  scope: string;
+  minOrder?: number;
+  maxDiscount?: number;
+  validTo: string;
+  maxUses?: number;
+  maxUsesPerUser?: number;
+  usedCount?: number;
+  isActive?: boolean;
+}
+
+export interface CreateCouponInput {
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  validTo: string;
+  minOrder?: number;
+  maxDiscount?: number;
+  maxUses?: number;
+  maxUsesPerUser?: number;
+  scope?: "all";
+}
+
+export const listCoupons = async (): Promise<Coupon[]> => {
+  const { data } = await api.get("/api/v1/pharmacy/coupon");
+  return (data.coupons ?? []) as Coupon[];
+};
+
+export const createCoupon = async (input: CreateCouponInput) => {
+  const { data } = await api.post("/api/v1/pharmacy/coupon", input);
+  return data.coupon as Coupon;
+};
+
+export const deleteCoupon = async (id: string) => {
+  await api.delete(`/api/v1/pharmacy/coupon/${id}`);
+};

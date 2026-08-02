@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getReports } from "@/features/patient/api";
 import type { MedicalReport } from "@/features/patient/api";
@@ -56,6 +57,13 @@ function ReportCard({ r }: { r: MedicalReport }) {
                   </li>
                 ))}
               </ul>
+              <Link
+                href={`/patient/pharmacies/report/${r._id}`}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-container px-4 py-2 text-label-md text-white transition-all hover:opacity-90"
+              >
+                <span className="material-symbols-outlined text-[18px]">local_pharmacy</span>
+                صرف من الصيدلية
+              </Link>
             </div>
           )}
 

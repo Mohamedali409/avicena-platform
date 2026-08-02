@@ -9,6 +9,7 @@ const NAV = [
   { href: "/admin/appointments", label: "المواعيد", icon: "calendar_month" },
   { href: "/admin/reports", label: "التقارير", icon: "description" },
   { href: "/admin/labs", label: "المعامل", icon: "biotech" },
+  { href: "/admin/pharmacies", label: "الصيدليات", icon: "local_pharmacy" },
 ];
 
 // AdminLayout — operations console. Guarded to role=admin.
