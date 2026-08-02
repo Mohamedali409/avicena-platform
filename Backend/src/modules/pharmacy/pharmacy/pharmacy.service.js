@@ -51,7 +51,7 @@ const updatePharmacyProfile = async (pharmacyId, body, imageFile) => {
     location,
   } = body;
   const update = {};
-  if (name != null) update.name = name;
+  if (pharmacyName != null) update.pharmacyName = pharmacyName;
   if (phone != null) update.phone = phone;
   if (licenseNumber != null) update.licenseNumber = licenseNumber;
   if (address != null) update.address = parseMaybeJson(address, undefined);
@@ -66,7 +66,7 @@ const updatePharmacyProfile = async (pharmacyId, body, imageFile) => {
 
   const updated = await pharmacyRepository.updatePharmacy(pharmacyId, update);
   await deleteCache("pharmacies:list");
-  return update;
+  return updated;
 };
 
 export { getAllPharmacies, getPharmacyById, updatePharmacyProfile, getProfile };

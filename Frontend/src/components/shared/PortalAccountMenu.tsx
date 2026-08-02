@@ -14,7 +14,9 @@ const profilePathFor = (role?: string) =>
       ? "/patient/profile"
       : role === "lab"
         ? "/lab/profile"
-        : null;
+        : role === "pharmacy"
+          ? "/pharmacy/profile"
+          : null;
 
 // Avatar + dropdown for the authenticated portals: profile link + logout
 // (with confirmation). Renders the user's photo when available, else an initial.

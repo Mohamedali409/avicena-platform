@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon -L server.js",
-    "seed": "node src/seed.js"
+    "seed": "node src/seed.js",
+    "seed:pharmacy": "node src/seed.pharmacy.js"
   },
   "author": "Mohamed ali",
   "license": "ISC",
