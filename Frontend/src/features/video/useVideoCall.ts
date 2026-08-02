@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getSocket } from "@/lib/socket/socket";
 import { SOCKET_EVENTS } from "@/lib/socket/events";
+import { startRing, stopRing } from "@/lib/audio/ringtone";
 import type { ParticipantType, CallType } from "@/lib/socket/events";
 import type { CallStatus, IncomingCall } from "./types";
 
@@ -251,6 +252,14 @@ export function useVideoCall(): UseVideoCallResult {
   // keep the status ref in sync for use inside the (once-subscribed) listeners
   useEffect(() => {
     statusRef.current = status;
+  }, [status]);
+
+  // Ringtone: incoming warble for the callee, ringback tone for the caller.
+  useEffect(() => {
+    if (status === "ringing") startRing("incoming");
+    else if (status === "calling") startRing("outgoing");
+    else stopRing();
+    return () => stopRing();
   }, [status]);
 
   // ── Public actions ──────────────────────────────────────────────────
