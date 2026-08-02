@@ -10,8 +10,24 @@ import type { CallStatus, IncomingCall } from "./types";
 // WebRTC 1:1 call hook. The Express backend only does signaling (see
 // Backend/CHAT_VIDEO_FIXES.md §3) — media is peer-to-peer. Public STUN only;
 // add a TURN server for production (symmetric-NAT / mobile networks).
+// STUN is enough for same-network / simple NAT (usually desktop on Wi-Fi), but
+// mobile on cellular sits behind Carrier-Grade / symmetric NAT and needs a TURN
+// relay. Provide TURN via env (NEXT_PUBLIC_TURN_URL is comma-separated) — once
+// set + rebuilt, mobile/cross-network calls connect.
+const TURN_URL = process.env.NEXT_PUBLIC_TURN_URL;
 const ICE_SERVERS: RTCConfiguration = {
-  iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
+  iceServers: [
+    { urls: ["stun:stun.l.google.com:19302"] },
+    ...(TURN_URL
+      ? [
+          {
+            urls: TURN_URL.split(",").map((u) => u.trim()),
+            username: process.env.NEXT_PUBLIC_TURN_USERNAME,
+            credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
+          },
+        ]
+      : []),
+  ],
 };
 
 interface UseVideoCallResult {
