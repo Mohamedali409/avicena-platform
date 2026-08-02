@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { generateReportPDF } from "../pdf/pdf.service.js";
 import { buildOtpTemplate } from "./templates/otp.template.js";
 import { buildWelcomeTemplate } from "./templates/welcome.template.js";
+import appointmentConfirmationTemplate from "./templates/appointmentConfirmation.template.js";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -29,22 +30,10 @@ const sendWelcomeEmail = async (toEmail, name) => {
 
 const sendAppointmentEmail = async (toEmail, name, appointment, docData) => {
   await transporter.sendMail({
-    from: FROM,
+    from: process.env.EMAIL_FROM,
     to: toEmail,
-    subject: "تفاصيل حجزك الطبي ✔️",
-    html: `
-      <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:auto;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.1)">
-        <h2 style="color:#2c7be5;text-align:center">مرحباً ${name} 👋</h2>
-        <p style="text-align:center">تم حجز موعدك الطبي بنجاح ✅</p>
-        <hr/>
-        <p><strong>الطبيب:</strong> ${docData.doctorName}</p>
-        <p><strong>التخصص:</strong> ${docData.Specialization}</p>
-        <p><strong>اليوم:</strong> ${appointment.slotDate}</p>
-        <p><strong>الساعة:</strong> ${appointment.slotTime}</p>
-        <p><strong>العنوان:</strong> ${docData.address?.line1}</p>
-        <hr/>
-        <p style="text-align:center;color:#555">فريق سلامتك الطبي 🏥</p>
-      </div>`,
+    subject: "✅ تأكيد حجز موعدك | Salamatak",
+    html: appointmentConfirmationTemplate(name, appointment, docData),
   });
 };
 
