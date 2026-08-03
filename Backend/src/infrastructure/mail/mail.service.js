@@ -33,7 +33,7 @@ const sendAppointmentEmail = async (toEmail, name, appointment, docData) => {
     from: process.env.EMAIL_FROM,
     to: toEmail,
     subject: "✅ تأكيد حجز موعدك | Salamatak",
-    html: appointmentConfirmationTemplate({ name, appointment, docData }),
+    html: appointmentConfirmationTemplate(name, appointment, docData),
   });
 };
 

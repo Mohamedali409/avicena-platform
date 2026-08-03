@@ -38,20 +38,20 @@ LABEL maintainer="Mohamed Ali"
 LABEL project="Avicena Backend"
 LABEL description="Production image for Avicena API"
 
-# إنشاء User غير root
+
 RUN addgroup -S appgroup && \
     adduser -S appuser -G appgroup
 
-# تثبيت Production Dependencies فقط
+
 COPY package*.json ./
 
 RUN npm ci --omit=dev && \
     npm cache clean --force
 
-# نسخ المشروع
+
 COPY . .
 
-# إنشاء uploads
+
 RUN mkdir -p uploads && \
     chown -R appuser:appgroup /app
 
@@ -59,7 +59,6 @@ USER appuser
 
 EXPOSE 4000
 
-# Railway هيعتبر الكونتينر Healthy
 HEALTHCHECK --interval=30s \
              --timeout=5s \
              --start-period=30s \
