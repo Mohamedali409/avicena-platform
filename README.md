@@ -374,14 +374,18 @@ PAYMOB_API_KEY=your_paymob_api_key
 - AI medical assistant answers patient questions
 - Full pharmacy module: products, inventory, prescriptions, coupons, orders
 
-**Phase 6 🚧 — Polish & Hardening**
+**Phase 6 🚧 — DevOps**
+
+- CI/CD pipeline
+- Kubernetes deployment manifests
+
+
+**Phase 7 🚧 — Polish & Hardening**
 
 - Doctor rating / review system
 - Settings module
 - Full per-endpoint API documentation
 - Automated testing (unit/integration)
-- CI/CD pipeline
-- Kubernetes deployment manifests
 - Audit logs
 - Refresh token rotation + CSRF protection
 
