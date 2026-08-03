@@ -47,12 +47,12 @@ To build a complete digital healthcare SaaS ecosystem that enables:
 | Docker Containerization (6 services)      | ✅ Done        |
 | Admin Dashboard                           | ✅ Done        |
 | Refresh Token Rotation + CSRF Protection  | ✅ Done        |
+| CI/CD Pipeline                            | ✅ Done      |
+| Kubernetes Deployment                     | ✅ Done      |
 | Doctor Rating / Reviews                   | 🚧 In Progress |
 | Settings Module                           | 🚧 In Progress |
 | Full API Documentation (per-endpoint)     | 🚧 In Progress |
 | Automated Testing                         | 🔜 Planned     |
-| CI/CD Pipeline                            | 🔜 Planned     |
-| Kubernetes Deployment                     | 🔜 Planned     |
 | Audit Logs                                | 🔜 Planned     |
 
 ---
