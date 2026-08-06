@@ -14,20 +14,33 @@ import type { CallStatus, IncomingCall } from "./types";
 // mobile on cellular sits behind Carrier-Grade / symmetric NAT and needs a TURN
 // relay. Provide TURN via env (NEXT_PUBLIC_TURN_URL is comma-separated) — once
 // set + rebuilt, mobile/cross-network calls connect.
-const TURN_URL = process.env.NEXT_PUBLIC_TURN_URL;
+const STUN_SERVER: RTCIceServer = { urls: "stun:stun.l.google.com:19302" };
+
+// Build the TURN entry defensively from env. A malformed value (trailing comma,
+// spaces, missing `turn:` scheme) used to crash RTCPeerConnection with
+// "ICE server parsing failed: Invalid hostname format". We now:
+//  - split, trim, DROP empty segments
+//  - add a `turn:` scheme if the operator forgot it
+//  - keep only turn/turns/stun URLs
+const buildTurnServer = (): RTCIceServer | null => {
+  const raw = process.env.NEXT_PUBLIC_TURN_URL;
+  if (!raw) return null;
+  const urls = raw
+    .split(",")
+    .map((u) => u.trim())
+    .filter(Boolean)
+    .map((u) => (/^(turns?|stun):/i.test(u) ? u : `turn:${u}`))
+    .filter((u) => /^(turns?|stun):[^\s]+/i.test(u));
+  if (!urls.length) return null;
+  return {
+    urls,
+    username: process.env.NEXT_PUBLIC_TURN_USERNAME,
+    credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
+  };
+};
+
 const ICE_SERVERS: RTCConfiguration = {
-  iceServers: [
-    { urls: ["stun:stun.l.google.com:19302"] },
-    ...(TURN_URL
-      ? [
-          {
-            urls: TURN_URL.split(",").map((u) => u.trim()),
-            username: process.env.NEXT_PUBLIC_TURN_USERNAME,
-            credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
-          },
-        ]
-      : []),
-  ],
+  iceServers: [STUN_SERVER, ...(buildTurnServer() ? [buildTurnServer()!] : [])],
 };
 
 // Turn a getUserMedia failure into a precise, actionable Arabic message so the
@@ -154,7 +167,13 @@ export function useVideoCall(): UseVideoCallResult {
 
   const buildPeer = useCallback(() => {
     const socket = getSocket();
-    const pc = new RTCPeerConnection(ICE_SERVERS);
+    // A bad TURN env value must never crash the call — fall back to STUN-only.
+    let pc: RTCPeerConnection;
+    try {
+      pc = new RTCPeerConnection(ICE_SERVERS);
+    } catch {
+      pc = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
+    }
 
     localStreamRef.current
       ?.getTracks()
