@@ -30,6 +30,35 @@ const ICE_SERVERS: RTCConfiguration = {
   ],
 };
 
+// Turn a getUserMedia failure into a precise, actionable Arabic message so the
+// user knows WHY (permission / no device / busy / in-app browser / not https).
+const describeMediaError = (err: unknown): string => {
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.mediaDevices?.getUserMedia
+  ) {
+    return "المتصفح لا يدعم الكاميرا/المايك — افتح الرابط في Chrome/Safari مباشرةً (مش من داخل واتساب/فيسبوك) وعلى https";
+  }
+  const name = (err as DOMException)?.name;
+  switch (name) {
+    case "NotAllowedError":
+    case "PermissionDeniedError":
+      return "تم رفض إذن الكاميرا/المايك. اسمح به من إعدادات الموقع في المتصفح، أو افتح الرابط في المتصفح مباشرةً (مش من داخل تطبيق تاني)";
+    case "NotFoundError":
+    case "DevicesNotFoundError":
+      return "لا توجد كاميرا/مايك متاحة على هذا الجهاز";
+    case "NotReadableError":
+    case "TrackStartError":
+      return "الكاميرا/المايك مستخدمة في تطبيق آخر — أغلقه وحاول مجددًا";
+    case "OverconstrainedError":
+      return "إعدادات الكاميرا غير مدعومة على هذا الجهاز";
+    case "SecurityError":
+      return "الوصول محظور — تأكد أنك تفتح الموقع عبر https";
+    default:
+      return "تعذّر الوصول للكاميرا/المايك";
+  }
+};
+
 interface UseVideoCallResult {
   status: CallStatus;
   incomingCall: IncomingCall | null;
@@ -70,6 +99,14 @@ export function useVideoCall(): UseVideoCallResult {
   const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
 
   const getMedia = useCallback(async (type: CallType) => {
+    // Insecure context / in-app webview → mediaDevices is undefined.
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+      throw new Error(describeMediaError(null));
+    }
+
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
@@ -81,13 +118,17 @@ export function useVideoCall(): UseVideoCallResult {
       // No camera (or it's busy)? Fall back to audio-only so a video call can
       // still connect from a camera-less device instead of failing outright.
       if (type === "video") {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        });
-        setCamOn(false);
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false,
+          });
+          setCamOn(false);
+        } catch (audioErr) {
+          throw new Error(describeMediaError(audioErr));
+        }
       } else {
-        throw err;
+        throw new Error(describeMediaError(err));
       }
     }
     localStreamRef.current = stream;
@@ -298,8 +339,10 @@ export function useVideoCall(): UseVideoCallResult {
           consultationId,
           type,
         });
-      } catch {
-        setError("تعذّر الوصول للكاميرا/المايك");
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "تعذّر الوصول للكاميرا/المايك",
+        );
         cleanup();
         setStatus("idle");
       }
@@ -323,8 +366,10 @@ export function useVideoCall(): UseVideoCallResult {
         roomId: incomingCall.roomId,
       });
       setIncomingCall(null);
-    } catch {
-      setError("تعذّر الوصول للكاميرا/المايك");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "تعذّر الوصول للكاميرا/المايك",
+      );
       cleanup();
       setStatus("idle");
     }
